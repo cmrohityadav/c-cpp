@@ -2,6 +2,6 @@
 // #include => pre prosessor directive
 int main(){
 
-    printf("Hello Wolrd\n");
+    printf("Hello Wolrd");
     return 0;
 }
