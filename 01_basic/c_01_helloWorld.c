@@ -1,7 +1,7 @@
 #include <stdio.h>
 // #include => pre prosessor directive
 
-int main(){
+void main(){
 
     printf("Hello Wolrd");
     return 0;
