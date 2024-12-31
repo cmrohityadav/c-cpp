@@ -39,6 +39,15 @@ gcc -o
 ```
 - produce a.out
 
+---
+
+# Format Specifiers
+%a.b
+- a is atleast width of numerical value(atleast a digit)
+- b is precious means after decimal point(atleast b digits after point)
+- %d :: decimal
+- %f:: floaring point
+- %c:: print as ascii character
 
 
 
