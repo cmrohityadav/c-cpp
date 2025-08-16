@@ -28,7 +28,8 @@ using namespace std;
 
 */
 
-#pragma comment(lib,"win2_32.lib")
+// #pragma comment(lib,"win2_32.lib")
+#pragma comment(lib,"ws2_32.lib")
 bool Initialize(){
     WSADATA data;
 
