@@ -60,6 +60,7 @@ int main()
     // connect to server
     if(connect(clientSocketDiscriptor, (struct sockaddr*)&serveraddr, sizeof(serveraddr)) == SOCKET_ERROR) {
         cout << "Not able to connect to server" << endl;
+        cout<<": "<<WSAGetLastError();
         closesocket(clientSocketDiscriptor);
         WSACleanup();
         return 1;
