@@ -166,7 +166,8 @@ When we write a C/C++ program, it passes through multiple stages
 - Errors that occur before the program is executed — i.e., during compilation.
 - These stop the compiler from generating the executable file
 - When the compiler encounters something it can’t understand (invalid syntax, undeclared variable, type mismatch, etc.), it throws compile-time errors
-- They prevent creation of .o or a.out file
+- They prevent creation of .o or a.out file.
+
 | Type                      | Description                            | Example                                      |
 | ------------------------- | -------------------------------------- | -------------------------------------------- |
 | **Syntax Error**          | Invalid grammar or punctuation in code | `int a = ;` → missing value                  |
