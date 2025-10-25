@@ -27,7 +27,7 @@
         "-Wextra",
         "${file}",
         "-o",
-        "${fileDirname}/${fileBasenameNoExtension}"
+        "${fileDirname}/main"
       ],
       "group": {
         "kind": "build",
