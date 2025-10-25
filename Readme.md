@@ -159,5 +159,51 @@ int b=2;
 */
 ```
 
-##
+## Erros and Warnings
+When we write a C/C++ program, it passes through multiple stages
+- Preprocessing → Compilation → Assembling → Linking → Execution
+1. Compile Time Errors
+- Errors that occur before the program is executed — i.e., during compilation.
+- These stop the compiler from generating the executable file
+- When the compiler encounters something it can’t understand (invalid syntax, undeclared variable, type mismatch, etc.), it throws compile-time errors
+- They prevent creation of .o or a.out file
+| Type                      | Description                            | Example                                      |
+| ------------------------- | -------------------------------------- | -------------------------------------------- |
+| **Syntax Error**          | Invalid grammar or punctuation in code | `int a = ;` → missing value                  |
+| **Type Error**            | Using wrong type in an operation       | `int x = "hello";`                           |
+| **Undeclared Identifier** | Using variable/function not declared   | `cout << a;` → `a` undeclared                |
+| **Missing Header**        | Using function without proper header   | `printf("hi");` without `#include <stdio.h>` |
+| **Missing Semicolon**     | Forgetting `;` after statement         | `int a = 5`                                  |
+| **Scope Error**           | Using variable out of its scope        | variable declared inside block used outside  |
+
+
+2. Runtime Erros
+- Errors that occur while the program is running, i.e., after successful compilation.
+- The compiler doesn’t detect these because syntax is valid, but something goes wrong during execution (e.g., division by zero, invalid memory access, file not found).
+
+| Type                         | Description                                    | Example                                         |
+| ---------------------------- | ---------------------------------------------- | ----------------------------------------------- |
+| **Division by Zero**         | Mathematical invalid operation                 | `int x = 10 / 0;`                               |
+| **Segmentation Fault**       | Invalid memory access (e.g., null pointer)     | `int *p = NULL; *p = 10;`                       |
+| **File Handling Error**      | Trying to open missing file                    | `fopen("abc.txt", "r")` when file doesn’t exist |
+| **Memory Leak / Corruption** | Forgetting to `free()` memory or double delete | `delete ptr; delete ptr;`                       |
+| **Array Index Out of Bound** | Accessing beyond valid index                   | `arr[10]` when array size = 5                   |
+| **Invalid Input**            | User enters unexpected data type               | expecting `int`, user types `abc`               |
+
+
+
+3. Warnings
+- A warning is not an error — it’s a gentle alert from the compiler saying:
+“Your code looks suspicious — it might cause problems, but I’ll still compile it.”
+- The compiler still produces output, but you should fix warnings to avoid hidden bugs.
+
+| Type                       | Description                           | Example                        |
+| -------------------------- | ------------------------------------- | ------------------------------ |
+| **Unused Variable**        | Declared but never used               | `int x = 10;` but not used     |
+| **Type Conversion Loss**   | Assigning larger type to smaller type | `int x = 3.14;`                |
+| **Uninitialized Variable** | Using variable without initialization | `int a; std::cout << a;`       |
+| **Deprecated Function**    | Using outdated APIs                   | `gets()` is deprecated         |
+| **Implicit Declaration**   | Using function without prototype      | `printf()` without `<stdio.h>` |
+
+
 
