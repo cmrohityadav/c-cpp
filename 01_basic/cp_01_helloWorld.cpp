@@ -14,3 +14,4 @@ int main()
     std::cout<<"best way to use"<<std::endl;
     return 0;
 }
+ 
