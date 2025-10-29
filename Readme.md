@@ -162,7 +162,7 @@ int b=2;
 ## Erros and Warnings
 When we write a C/C++ program, it passes through multiple stages
 - Preprocessing → Compilation → Assembling → Linking → Execution
-1. Compile Time Errors
+1. **Compile Time Errors**
 - Errors that occur before the program is executed — i.e., during compilation.
 - These stop the compiler from generating the executable file
 - When the compiler encounters something it can’t understand (invalid syntax, undeclared variable, type mismatch, etc.), it throws compile-time errors
@@ -178,7 +178,7 @@ When we write a C/C++ program, it passes through multiple stages
 | **Scope Error**           | Using variable out of its scope        | variable declared inside block used outside  |
 
 
-2. Runtime Erros
+2. **Runtime Erros**
 - Errors that occur while the program is running, i.e., after successful compilation.
 - The compiler doesn’t detect these because syntax is valid, but something goes wrong during execution (e.g., division by zero, invalid memory access, file not found).
 
@@ -193,7 +193,7 @@ When we write a C/C++ program, it passes through multiple stages
 
 
 
-3. Warnings
+3. **Warnings**
 - A warning is not an error — it’s a gentle alert from the compiler saying:
 “Your code looks suspicious — it might cause problems, but I’ll still compile it.”
 - The compiler still produces output, but you should fix warnings to avoid hidden bugs.
@@ -206,5 +206,43 @@ When we write a C/C++ program, it passes through multiple stages
 | **Deprecated Function**    | Using outdated APIs                   | `gets()` is deprecated         |
 | **Implicit Declaration**   | Using function without prototype      | `printf()` without `<stdio.h>` |
 
+## Statements
+- After every statement we put `;`
+- A statement is basically one complete instruction for the compiler
+```cpp
+int amount=100;
+amount=amount+100;
+```
+## Data input and output
+```cpp
+#include<iostream>
+
+int main(){
+    std::cout<<"Hello Rohit";
+
+    return 0;
+}
+```
+- cout means `character output`
+- The operator `<<` is called the `insertion operator` 
+- **inserts data into output stream**
+- endl = end line (flushes the buffer, like \n but forces immediate output).
 
 
+```cpp
+#include <iostream>
+using namespace std;
+
+int main() {
+    int age;
+    cout << "Enter your age: ";
+    cin >> age;      // takes input from user
+    cout << "You entered: " << age;
+    return 0;
+}
+```
+cin means “character input”.
+
+The operator >> is called the extraction operator (extracts data from input stream).
+
+You can take multiple inputs in one line
