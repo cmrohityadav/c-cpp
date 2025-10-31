@@ -214,21 +214,8 @@ int amount=100;
 amount=amount+100;
 ```
 ## Data input and output
-```cpp
-#include<iostream>
 
-int main(){
-    std::cout<<"Hello Rohit";
-
-    return 0;
-}
-```
-- cout means `character output`
-- The operator `<<` is called the `insertion operator` 
-- **inserts data into output stream**
-- endl = end line (flushes the buffer, like \n but forces immediate output).
-
-
+### stdin (input)
 ```cpp
 #include <iostream>
 using namespace std;
@@ -241,8 +228,69 @@ int main() {
     return 0;
 }
 ```
-cin means “character input”.
+- cin means `character input`.
+- The operator `>>` is called the `extraction operator` (extracts data from input stream).
+- You can take multiple inputs in one line by spacing
+```cpp
+int a, b;
+cin >> a >> b;   // input like: 10 20
+```
+- Reading data with spaces
+```cpp
+std::string fullname;
+std::getline(std::cin,fullname);
+```
+### stdout
+- Standard output stream (terminal / screen)
+```cpp
+#include<iostream>
 
-The operator >> is called the extraction operator (extracts data from input stream).
+int main(){
+    std::cout<<"Hello Rohit"<<std::endl;
+    return 0;
+}
+```
+- cout means `character output`
+- The operator `<<` is called the `insertion operator` 
+- **inserts data into output stream**
+- Buffered — output may be delayed until flushed or newline
+- `std::endl` = end line + flush buffer (forces immediate output, unlike \n)
 
-You can take multiple inputs in one line
+
+### clog (log stream)
+
+```cpp
+#include <iostream>
+
+int main() {
+    std::clog << "Program started successfully..." << std::endl;
+    return 0;
+}
+```
+- `clog` stands for character log
+- Used for logging and informational messages
+- Buffered — messages may be delayed until flushed
+
+
+### stderr
+```cpp
+#include <iostream>
+
+int main() {
+    std::cerr << "Error: Invalid input!" << std::endl;
+    return 0;
+}
+```
+- `cerr` means character error
+- Used for error or diagnostic messages
+- `Unbuffered` — output appears immediately (no need to flush)
+- Typically displayed on the same console, but can be redirected separately
+ - `./a.out 2> error.txt`
+
+
+| Command                                | What happens                                           |
+| -------------------------------------- | ------------------------------------------------------ |
+| `./a.out`                              | Everything prints on terminal                          |
+| `./a.out > output.txt`                  | Only `std::cout` → file, errors/logs still on terminal |
+| `./a.out > output.txt 2> error_log.txt` | Output and errors/logs go to separate files            |
+| `./a.out > all_output.txt 2>&1`        | Everything goes into one file                          |
