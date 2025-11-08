@@ -13,7 +13,7 @@
 - [Erros and Warnings](#Erros-and-Warnings)
 - [Statements](#Statements)
 - [Data input and output](#Data-input-and-output)
-- [Comments](#comments)
+- [C++ core language Vs Standard library Vs STL](#C-core-language-Vs-Standard-library-Vs-STL)
 - [Comments](#comments)
 - [Comments](#comments)
 
@@ -300,5 +300,40 @@ int main() {
 | `./a.out > output.txt`                  | Only `std::cout` → file, errors/logs still on terminal |
 | `./a.out > output.txt 2> error_log.txt` | Output and errors/logs go to separate files            |
 | `./a.out > all_output.txt 2>&1`        | Everything goes into one file                          |
+
+## C++ core language Vs Standard library Vs STL
+```
+┌────────────────────────────────────────────┐
+│          C++ Core Language                 │
+│  (keywords, syntax, templates, classes)    │
+└──────────────┬─────────────────────────────┘
+               │
+               ▼
+┌────────────────────────────────────────────┐
+│          C++ Standard Library              │
+│  (I/O, strings, threading, filesystem, etc.) │
+│      ┌────────────────────────────┐         │
+│      │          STL               │         │
+│      │ (containers + algorithms)  │         │
+│      └────────────────────────────┘         │
+└────────────────────────────────────────────┘
+```
+
+### C++ Core Language
+- C++ ke khud ke language ke rules, keywords aur syntax. 
+- Jaise `if, for, class, template, new, delete` : ye sab woh cheezein hain jo compiler seedhe samajhta hai. 
+- Yahaan koi ready-made tools/code nahi hote, sirf language ke building blocks milte hain jisse tum apna logic likhte ho.
+- Bina koi headers include kiye.
+
+### C++ Standard Library
+- Ab jab language ban gayi, to uske upar ek bada toolbox chahiye jisme common kaam ke liye ready code ho. 
+- Ye hi hai C++ Standard Library, isme I/O `(std::cout, std::cin), strings, threads, files, time functions,` sab milta hai. 
+- Hame har baar zero se likhne ki zarurat nahi; ye library tumhare liye heavy lifting karti hai.
+
+### STL (Standard Template Library)
+- The STL is actually a subset of the C++ Standard Library
+- Jahan pe tumhe milte hain containers `(vector, map, list) aur algorithms (sort, find, etc.)`. 
+- Ye sab templates pe based hote hain, matlab generic aur fast. 
+- STL ne C++ ko “powerful but elegant” banaya, kyunki ab tum reusable aur efficient code likh sakte ho bina wheel dubara banaye.
 
 
