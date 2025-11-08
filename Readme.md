@@ -14,6 +14,8 @@
 - [Statements](#Statements)
 - [Data input and output](#Data-input-and-output)
 - [C++ core language Vs Standard library Vs STL](#C-core-language-Vs-Standard-library-Vs-STL)
+- [Arrays](#Arrays)
+- [Comments](#comments)
 - [Comments](#comments)
 - [Comments](#comments)
 
