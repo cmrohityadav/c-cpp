@@ -10,6 +10,12 @@
 - [C++ Dev Tools](#c-dev-tools)
 - [compilation-](#cc-compilation-pipeline)
 - [Comments](#comments)
+- [Erros and Warnings](#Erros-and-Warnings)
+- [Statements](#Statements)
+- [Data input and output](#Data-input-and-output)
+- [Comments](#comments)
+- [Comments](#comments)
+- [Comments](#comments)
 
 ## Why C++
 - Systems programming
@@ -60,7 +66,7 @@
 
 
 ## C/C++ compilation pipeline
-1. High-Level Language (HLL) — the source file
+1. **High-Level Language (HLL) — the source file**
 You start with a source file, e.g. file.cpp (C++), file.c (C). This is human-readable code containing comments, preprocessor directives (#include, #define), function definitions, types, etc.
 
 ```cpp
@@ -73,7 +79,7 @@ int main() {
     return 0;
 }
 ```
-2. Preprocessing (gcc -E) → produces file.i
+2. **Preprocessing (gcc -E) → produces file.i**
 What the preprocessor does
 - Removes/handles comments. All // and /* ... */ comments are removed
 - Expands #include directives. For #include <...> and #include "..." it replaces the directive by the contents of the included header file (searching the include paths)
@@ -86,7 +92,7 @@ gcc -E file.cpp -o file.i
 - file.i is the preprocessor output (a pure C/C++ program with all includes expanded and macros processed). It is still source code (but expanded), ready for the compiler frontend.
 
 
-3. Compilation (frontend) (gcc -S) → produces assembly file.S / file.s
+3. *Compilation (frontend) (gcc -S) → produces assembly file.S / file.s*
 
 What the compiler frontend does
 - Parses the preprocessed source into an abstract syntax tree (AST).
@@ -103,7 +109,7 @@ g++ -S file.cpp -o file.S   # using the C++ frontend
 - The assembly contains function labels, instructions, data directives, references to external symbols.
 
 
-4. Assembling (gcc -c) → produces object file file.o
+4. **Assembling (gcc -c) → produces object file file.o**
 What the assembler does
 - Translates assembly text into machine code (binary instructions).
 
@@ -125,7 +131,7 @@ gcc -c file.S -o file.o
 # or compile & assemble from C++ in one step:
 g++ -c file.cpp -o file.o
 ```
-5. Linking (Linker / Loader) → produces executable (e.g., a.out)
+5. **Linking (Linker / Loader) → produces executable (e.g., a.out)**
 
 This stage resolves symbol references among object files and libraries and produces either:
 
@@ -294,3 +300,5 @@ int main() {
 | `./a.out > output.txt`                  | Only `std::cout` → file, errors/logs still on terminal |
 | `./a.out > output.txt 2> error_log.txt` | Output and errors/logs go to separate files            |
 | `./a.out > all_output.txt 2>&1`        | Everything goes into one file                          |
+
+
