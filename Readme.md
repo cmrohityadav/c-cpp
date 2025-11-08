@@ -336,4 +336,117 @@ int main() {
 - Ye sab templates pe based hote hain, matlab generic aur fast. 
 - STL ne C++ ko “powerful but elegant” banaya, kyunki ab tum reusable aur efficient code likh sakte ho bina wheel dubara banaye.
 
+## Arrays
+- An array is a collection of elements of the **same type**, **stored contiguously in memory**.
+- It’s like ek rail coach — sab compartments (elements) ek ke baad ek lagte hain.
+-   ```cpp
+    dataType nameOfArray[size]
+    ```
+### Declaring & Initializing Arrays
+```cpp
+// uninitialized (garbage values)
+int arr[5];
+int a[5];    
+
+// initialized
+int b[5] = {1, 2, 3, 4, 5}; 
+
+// size auto-calculated (3)
+int c[]  = {10, 20, 30};    
+```
+- arr is NOT a pointer —> it’s an array of 5 integers.
+- Lekin jab hum `arr` ko kisi function me pass karte ho ya kisi pointer variable me assign karte ho yas as `expression` use krte ho,
+tab compiler usko “decay” kara deta hai — i.e. `&arr[0]` bana deta hai
+
+```cpp
+// What actually happens here
+
+int arr[5] = {10, 20, 30, 40, 50};
+
+int* p = arr;
+// arr DECAYS to &arr[0]
+
+// Compiler internally treats it like
+int* p = &arr[0];
+```
+### Pointer Arithmetic in array
+```cpp
+int p[5]={10,20,30,40,50};
+//p is an array of 5 integers, stored in contiguous memory
+
+// When used in expressions, p decays into pointer to first element &p[0]
+
+// p means &p[0] 
+
+p + 1   
+// means: address of p[0] + (1 * sizeof(int))
+// moves pointer ahead by 4 bytes (if int = 4 bytes)
+// i.e. points to p[1]
+
+p + 2   
+// means: address of p[0] + (2 * sizeof(int))
+// points to p[2]
+
+
+
+// Dereferencing & Indexing
+p[i] == *(p + i)
+
+
+*(p+0) == *(p)
+// dereferences p[0] → gives 20
+
+*(p + 1) 
+// dereferences p[1] → gives 20
+*(p + 2) // dereferences p[2] → gives 30
+
+// Similarly:
+p[0] == *(p + 0) == arr[0] == 10
+p[1] == *(p + 1) == arr[1] == 20
+p[2] == *(p + 2) == arr[2] == 30
+p[3] == *(p + 3) == arr[3] == 40
+p[4] == *(p + 4) == arr[4] == 50
+
+```
+### Notes
+- `arr` = poora ghar (memory block)
+- `&arr` = us ghar ka address
+- `arr` jab decay hota hai, to us ghar ke pehle kamre (first element) ka address ban jaata hai
+- par `arr` khud koi "pointer" nahi hai — `wo address rakhta nahi`, `wo address hai`
+```cpp
+int arr[5] = {10, 20, 30, 40, 50};
+int *p = arr;
+int (*ptr)[5] = &arr;
+
+//arr     = pointer to 1st int       → moves +4 bytes per increment
+//ptr   = pointer to entire array  → moves +20 bytes per increment
+
+```
+```bash
+arr
++------+------+------+------+------+
+| 10   | 20   | 30   | 40   | 50   |
++------+------+------+------+------+
+^
+|
+Array object starts *here*
+
+
+# Visualize (Assume int = 4 bytes)
+# Memory Layout
+
+arr (array object)
+0x1000 → 10
+0x1004 → 20
+0x1008 → 30
+0x100C → 40
+0x1010 → 50
+
+So:
+
+arr        == &arr[0] == 0x1000
+&arr       == 0x1000  (same numeric, different TYPE)
+
+```
+
 
