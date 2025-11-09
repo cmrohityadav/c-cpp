@@ -1,10 +1,11 @@
 #include<iostream>
 
 int main(){
-        std::cout<<"hello123"<<std::endl;
+    double salary[3]{10.5,11.3,12.5};
 
-    for(int i=0;i<2;i++){
-        std::cout<<"hello"<<std::endl;
+    for(int i{0};i<3;i++){
+        std::cout<<*(salary+i)<<std::endl;
     }
+
     return 0;
 }
