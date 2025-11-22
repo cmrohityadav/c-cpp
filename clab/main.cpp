@@ -1,11 +1,12 @@
 #include<iostream>
+#include<iterator>
 
 int main(){
-    double salary[3]{10.5,11.3,12.5};
+    int fruits[]={1,2,3,4,5,6};
 
-    for(int i{0};i<3;i++){
-        std::cout<<*(salary+i)<<std::endl;
-    }
+    int count {std::size(fruits)};
 
+
+    std::cout<<count<<std::endl;
     return 0;
 }

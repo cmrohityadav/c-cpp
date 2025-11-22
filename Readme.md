@@ -450,5 +450,7 @@ arr        == &arr[0] == 0x1000
 &arr       == 0x1000  (same numeric, different TYPE)
 
 ```
+- Size of Array: `sizeof(arr)/sizeof(arr[0]);`
+- After c++17: `int size {std::size(arr)};`
 
-
+### Arrays of characters
