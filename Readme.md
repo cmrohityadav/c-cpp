@@ -17,6 +17,7 @@
 - [Arrays](#Arrays)
 - [Comments](#comments)
 - [Comments](#comments)
+- [OOP](#opp)
 - [Comments](#comments)
 
 ## Why C++
@@ -454,3 +455,161 @@ arr        == &arr[0] == 0x1000
 - After c++17: `int size {std::size(arr)};`
 
 ### Arrays of characters
+
+
+
+
+
+
+## OOP
+### Class
+- A class is nothing, but a blue print that is used to create Object
+- It's User Defined Data Type
+- It defines properties (data) and behaviors (methods).
+- Just like SBI Form.docx, original form(Class)it is only a template., isse print krke xerox photo copy (object)
+
+### Object
+---
+- An Object is nothing but a particular instance of a class
+- Just like Xerox copy, we can create n number of piece
+
+```c++
+class Animal {
+    public: //access modifier
+
+    // properties/member data/member variable
+    string name;
+    int age;
+
+
+    //methods/member method/class method,function
+    void sound() {
+        cout << "Animal makes a sound" << endl;
+    }
+};
+// main.cpp
+int main() {
+    Animal a1;   // Object creation
+    a1.name = "Dog";
+    a1.age = 5;
+
+    a1.sound();  // Calling method
+
+    return 0;
+}
+```
+```cpp
+class Strategy{
+ int orderQty;
+ double price;
+ int userId;
+ string userName;
+};
+
+//main.cpp
+int main{
+    //automatic storage allocation
+    Strategy s1;
+
+    s1.orderQty=100;
+    s1.price=50.02;
+    s1.userId=123456;
+    s1.userName="cmrohityadav"
+
+    Strategy Profit10X;
+
+    Profit10X.orderQty=1000;
+    Profit10X.price=500.02;
+    Profit10X.userId=123456;
+    Profit10X.userName="cmrohityadav"
+
+
+   
+    // dynamic storage allocation
+    Strategy* dynamicProfit = new Strategy();
+
+    dynamicProfit->orderQty = 1000;
+    dynamicProfit->price = 500.02;
+    dynamicProfit->userId = 123456;
+    dynamicProfit->userName = "cmrohityadav";
+
+    delete dynamicProfit;   // free heap memory
+
+    return 0;
+}
+
+```
+### **automatic storage allocation**
+- Memory is allocated automatically
+- The object is stored in stack memory
+- The constructor (if any) is called automatically
+- You do not manually free memory
+- The destructor is called automatically when main() ends
+- C++ handles everything automatically based on scope
+
+### **dynamic storage allocation**
+- Memory for the object is allocated at runtime
+- Memory is allocated in the heap
+```bash
+new Strategy();
+1. Reserves heap memory
+2. Calls the constructor of Strategy
+3. Returns the address of the allocated object
+```
+- `dynamicProfit` is a pointer that stores the address of the object
+```bash
+dynamicProfit->orderQty = 1000; <==>(*dynamicProfit).orderQty = 1000;
+```
+### **Deallocating Memory**
+- Memory allocated using `new` must be released using `delete`
+- Prevents memory leaks
+- Calls the destructor of the class
+
+### **Mermory Picture Visualize**
+- `Strategy* dynamicProfit = new Strategy();`
+```bash
+Stack:                     Heap:
+dynamicProfit  ───────▶  [ Strategy Object Data ]
+(pointer)                (orderQty, price, userId...)
+
+```
+- `dynamicProfit` → stack me pointer
+- Actual object → heap me data
+- Pointer sirf address pakad ke baitha hai
+```bash
+# Jab tum likhte ho
+delete dynamicProfit;
+
+1. Heap se data udd gaya
+2. RAM free ho gayi
+3. Object destroy ho gaya
+4. Destructor call ho chuka
+```
+```bash
+Stack:                     Heap:
+dynamicProfit  ───────▶  ❌  (memory free / reusable)
+(pointer)
+```
+- Heap ka data gaya 
+- Pointer ab bhi wahi address yaad kar raha hai 
+- Isliye ye dangerous state hai
+```bash
+# Is moment pe pointer ka haal
+dynamicProfit->orderQty = 100;  // 💥 CRASH / undefined
+
+1. Pointer zinda hai
+2. Jisko point kar raha tha wo mar chuka hai
+
+```
+- Ye hota hai `Dangling` Pointer
+- Isliye hum likhte hain
+```cpp
+delete dynamicProfit;
+dynamicProfit = nullptr;
+```
+
+
+
+
+
+
