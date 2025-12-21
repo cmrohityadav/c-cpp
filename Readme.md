@@ -788,6 +788,7 @@ public:
 #### Copy Constructor
 - A copy constructor is a special constructor that creates a new object by copying an existing object of the same class
 - The copy constructor is automatically called in these situations
+- Compiler khud ka copy constructor provide krta hai
 1. When an object is initialized from another object
 ```cpp
 Person p1;
@@ -813,7 +814,7 @@ public:
 
     Strategy(int orderQty, double orderPrice, std::string userID)
         : qty(orderQty), price(orderPrice), userName(userID) {}
-
+    
     Strategy(const Strategy& other) {
         std::cout << "Copy constructor called\n";
         qty = other.qty;
@@ -836,6 +837,11 @@ int main() {
 }
 
 ```
+
+##### Drawback of using default copy constructor
+- The default copy constructor performs a `shallow copy of pointers`, causing multiple objects to own the same memory, which leads to double deletion and undefined behavior
+
+
 
 
 
