@@ -1,29 +1,62 @@
 #include <iostream>
 #include <string>
 
-class Strategy {
-public:
-    int qty;
-    double price;
-    std::string userName;
+using namespace std;
 
-    Strategy(int orderQty, double orderPrice, std::string userID) {
-        qty = orderQty;
-        price = orderPrice;
-        userName = userID;
+class OrderBuilder
+{
+public:
+    OrderBuilder(string name, int id)
+    {
+        exchangeName = name;
+        exchangeId = id;
     }
 
-    Strategy() = delete;  
+    int exchangeId;
+    string exchangeName;
+};
 
-    void Print() {
-        std::cout << price << std::endl;
-        std::cout << qty << std::endl;
-        std::cout << userName << std::endl;
+class Strategy
+{
+    double orderQty;
+    double price;
+    string userName;
+    OrderBuilder* ob;
+
+public:
+    Strategy(double qty, double prc, string name)
+        : orderQty(qty), price(prc), userName(name)
+    {
+        cout << "Inside constructor" << endl;
+        OrderBuilder* obj = new OrderBuilder("NSE", 107);
+        ob = obj;
+    }
+
+    ~Strategy()
+    {
+        cout << "Destructor called" << endl;
+        delete ob;
+    }
+
+    void PrintStrategy()
+    {
+        cout << "OrderQty:\t" << orderQty << endl;
+        cout << "Price:\t\t" << price << endl;
+        cout << "UserName:\t" << userName << endl;
+        cout << "ExchangeName:\t" << ob->exchangeName << endl;
     }
 };
 
-int main() {
-    Strategy s1(10, 50.2, "trader");
-    s1.Print();
+int main()
+{
+    Strategy* obj1 = new Strategy(10, 100.0, "rohit");
+    obj1->PrintStrategy();
+
+    Strategy obj2(*obj1);   // DEFAULT COPY CONSTRUCTOR (SHALLOW COPY)
+
+    delete obj1;            
+
+    obj2.PrintStrategy();  
+
     return 0;
 }
