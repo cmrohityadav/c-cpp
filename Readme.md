@@ -696,6 +696,96 @@ public:
 };
 ```
 
+#### why to delete default constructor while designing any system?
+- Koi object jab banta hai tabhi kuchh valid value k sath banna hai to help krta hai,
+- bante waqt hi value dalo warna error dega
+- Delete the default constructor and never define it.
+- Prevent invalid objects
+- Enforce correctness
+- Catch bugs at compile time
+```cpp
+#include <iostream>
+#include <string>
+
+class Strategy {
+public:
+    int qty;
+    double price;
+    std::string userName;
+
+    Strategy(int orderQty, double orderPrice, std::string userID) {
+        qty = orderQty;
+        price = orderPrice;
+        userName = userID;
+    }
+
+    Strategy() = delete;  
+
+    void Print() {
+        std::cout << price << std::endl;
+        std::cout << qty << std::endl;
+        std::cout << userName << std::endl;
+    }
+};
+
+int main() {
+    Strategy s1(10, 50.2, "trader");
+    s1.Print();
+    return 0;
+}
+
+
+```
+#### Constructor Initializer List
+```cpp
+class Student {
+    int roll;
+    std::string name;
+
+public:
+    Student(int r, std::string n)
+        : roll(r), name(n) {}   // initializer list
+};
+```
+##### Advantages
+- Directly initializes data members
+- More efficient (no extra assignment)
+- Mandatory for:
+    - const data members
+    - reference members
+    - member objects without default constructors
+    - base class initialization
+- Preferred in modern C++
+##### Disadvantages
+- Initialization order is fixed by member declaration (not list order)
+- Slightly harder to understand for beginners
+- Cannot include complex logic (only initialization)
+#### Normal Initialization
+```cpp
+class Student {
+    int roll;
+    std::string name;
+
+public:
+    Student(int r, std::string n) {
+        roll = r;      // assignment
+        name = n;      // assignment
+    }
+};
+```
+##### Advantages
+- Easy to read and understand
+- Good for simple classes and beginners
+- Allows complex logic, conditions, loops
+
+##### Disadvantages
+- Less efficient (default initialization + assignment)
+- Cannot initialize:
+    - const members
+    - reference members
+    - member objects without default constructors
+- Not suitable for performance-critical code
+
 
 
 
