@@ -785,6 +785,58 @@ public:
     - reference members
     - member objects without default constructors
 - Not suitable for performance-critical code
+#### Copy Constructor
+- A copy constructor is a special constructor that creates a new object by copying an existing object of the same class
+- The copy constructor is automatically called in these situations
+1. When an object is initialized from another object
+```cpp
+Person p1;
+Person p2 = p1;   // copy constructor
+```
+2. When passing object by value to a function
+```cpp
+void display(Person p); // p is a copy
+```
+3. When returning object by value
+```cpp
+Person createPerson() {
+    Person p;
+    return p;   // copy constructor (or move)
+}
+```
+```cpp
+class Strategy {
+public:
+    int qty;
+    double price;
+    std::string userName;
+
+    Strategy(int orderQty, double orderPrice, std::string userID)
+        : qty(orderQty), price(orderPrice), userName(userID) {}
+
+    Strategy(const Strategy& other) {
+        std::cout << "Copy constructor called\n";
+        qty = other.qty;
+        price = other.price;
+        userName = other.userName;
+    }
+
+
+};
+
+int main() {
+    Strategy s1(1, 2.0, "A");
+
+    Strategy s2 = s1;   // copy constructor
+
+    // Modern C++ Best Practice
+    Strategy s3(s1);    // copy constructor
+    Strategy s4{ s1 };
+
+}
+
+```
+
 
 
 
