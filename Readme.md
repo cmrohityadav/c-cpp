@@ -17,7 +17,7 @@
 - [Arrays](#Arrays)
 - [Comments](#comments)
 - [Comments](#comments)
-- [OOP](#opp)
+- [OOP](#oop)
 - [Comments](#comments)
 
 ## Why C++
@@ -1030,7 +1030,52 @@ int main()
 - Copy assignment operator is used when:
     - Both objects already exist
     - One object is assigned to another using = operator
+
+### Destructor
+- It is special function, which is executed when an object of class is destroyed 
+- It has the **same name as the class**, preceded by a **tilde (`~`)**.
+- A destructor has **no return type** and **takes no parameters**.
+- It is used to **release resources** such as dynamically allocated memory, files, or network connections.
+- A class can have **only one destructor** (destructors cannot be overloaded).
+- It is called automatically:
+  - When an object goes out of scope
+  - When a program ends
+  - When `delete` is used on a dynamically allocated object
+
+```cpp
+#include<iostream>
+
+class Strategy{
+    public:
+    int* pInt;
+
+    Strategy(){
+        std::cout<<"Constructor Called"<<std::endl;
+        pInt=new int(10);
+    }
+
+    ~Strategy(){
+        std::cout<<"Destructor Called"<<std::endl;
+        delete pInt;
+    }
+};
+
+
+int main(){
+
+    Strategy obj;
+    std::cout<<"Inside main: "<<*obj.pInt<<std::endl;
+    {
+        Strategy obj1;
+        std::cout<<"Inside block: "<<*obj1.pInt<<std::endl;
+    }
+    std::cout<<"block end here"<<std::endl;
     
+    return 0;
+}
+
+```
+
 
 
 
