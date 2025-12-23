@@ -905,7 +905,7 @@ int main()
 }
 
 ```
-#### Deep copy
+##### Deep copy
 
 ```cpp
 #include <iostream>
@@ -991,6 +991,52 @@ int main()
 }
 
 ```
+#### Properties of Copy constructor
+- Copy constructor has the same name as the class and no return type.
+- It takes a reference to an object of the same class as an argument.
+- It is invoked automatically when a new object is created as a copy of an existing object.
+- The user can define their own copy constructor; if not defined, the compiler provides a default one.
+- The default copy constructor performs a **shallow copy**.
+- To perform a **deep copy**, the user must define their own copy constructor.
+- When an object is passed **by value** to a function, the copy constructor is called.
+
+- Copy constructor overloading is **limited**:
+  - Valid forms:
+    ```cpp
+    Strategy(const Strategy& obj);
+    Strategy(Strategy& obj);
+    ```
+  - Invalid form:
+    ```cpp
+    Strategy(Strategy obj); // causes infinite recursion
+    ```
+#### Copy Assigment Operator
+```cpp
+int main()
+{
+    Strategy obj1 = Strategy(10, 100);
+
+    Strategy obj2 = obj1;   // Copy constructor called
+
+    Strategy obj3 = Strategy(100, 120);
+
+    obj2 = obj3;            // Copy assignment operator called
+}
+```
+- Strategy obj2 = obj1;
+- Copy constructor is called (object creation + initialization)
+- obj2 = obj3;
+- Copy assignment operator is called (assignment between already existing objects).
+- Copy assignment operator is used when:
+    - Both objects already exist
+    - One object is assigned to another using = operator
+    
+
+
+
+
+
+
 
 
 
