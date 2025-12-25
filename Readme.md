@@ -1075,6 +1075,113 @@ int main(){
 }
 
 ```
+## Multithreading
+
+### Process
+- Process is nothing but a programm/code in excecution
+- Executable file run hoti hai tab process banta hai
+- - Jab **executable file run hoti hai**, tab OS ek **process** create karta hai
+- - Har process ka apna **memory space** aur **resources** hote hain
+- Har process ke paas **kam se kam ek thread (main thread)** hota hai
+```bash
++--------------------------------------------------+
+|                     PROCESS                      |
+|                                                  |
+|  Code Segment (.text)                            |
+|  Initialized Data (.data)                        |
+|  Uninitialized Data (.bss)                       |
+|  Heap Memory                                     |
+|  Stack Memory                                    |
+|                                                  |
+|  File Descriptors (stdin, stdout, stderr, files) |
+|  Environment Variables                           |
+|  Process ID (PID)                                |
+|  Parent Process ID (PPID)                        |
+|  CPU Registers (saved state)                     |
+|  Scheduling Information                          |
+|                                                  |
+|  +-------------+   +-------------+               |
+|  |  Thread 1   |   |  Thread 2   |               |
+|  |   Stack     |   |   Stack     |               |
+|  +-------------+   +-------------+               |
+|                                                  |
++--------------------------------------------------+
+
+
+```
+- **Code Segment (.text)**
+- Compiled program instructions (read-only)
+- **Initialized Data (.data)**
+- Global/static variables with initial value
+- **Uninitialized Data (.bss)** 
+- Global/static variables without init value
+- **Heap Memory**
+- Dynamic memory allocation (new / malloc)
+- Shared among all threads of the process
+-  **Stack Memory**
+- Stores function calls, local variables, return addresses
+- Each thread has its own stack
+- **File Descriptors**
+- Integer references to open files and I/O resources
+- References to open files, stdin/stdout 
+- Shared among threads in the same process
+- **Environment Variables**
+- Key-value pairs used to configure process behavior
+- Examples: PATH, HOME, USER
+- Inherited by child processes
+- **Process ID (PID)**
+- Unique identifier assigned to a process by the OS
+- Used for process management and signaling
+- **Parent Process ID (PPID)**
+- PID of the process that created this process
+- Helps maintain process hierarchy
+- **CPU Registers (Saved State)**
+- Stores execution state of the process
+- Includes program counter, stack pointer, flags, etc.
+- Used during context switching
+- **Scheduling Information**
+- Priority, state (running, waiting, stopped)
+- Determines when and how long the process runs on CPU
+
+
+### Thread
+- Thread is a light-weight process that executes some part of the code
+- Multiple threads can exist within the same process
+- Threads use the same memory and resources of a process, but each thread runs its own tasks separately
+
+```bash
++----------------------------------+
+|              THREAD              |
+|                                  |
+|  Thread ID (TID)                  |
+|  Program Counter (PC)             |
+|  CPU Registers                    |
+|  Stack (local variables)          |
+|                                  |
+|  Shares with process:             |
+|  - Code Segment                   |
+|  - Data Segment                   |
+|  - Heap                           |
+|  - Open Files                     |
+|                                  |
++----------------------------------+
+
+```
+
+```bash
+
+| Process | Thread |
+|---------|--------|
+| Communication time between two processes is **high** | Communication time between two threads is **less** |
+| Process consumes **more resources** | Thread consumes **fewer resources** |
+| Termination of one process **does not affect** other processes | If a process terminates due to an error, **all its threads terminate** |
+| Process termination time is **high** | Thread termination time is **less** |
+| Process creation time is **high** | Thread creation time is **less** |
+| Processes **do not share data** | Threads **share data** |
+| Communication between processes takes place using: **Shared memory** or **Message passing** | Communication between threads takes place using: **Shared memory** |
+
+
+```
 
 
 
