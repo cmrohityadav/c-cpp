@@ -1174,13 +1174,61 @@ int main(){
 |---------|--------|
 | Communication time between two processes is **high** | Communication time between two threads is **less** |
 | Process consumes **more resources** | Thread consumes **fewer resources** |
-| Termination of one process **does not affect** other processes | If a process terminates due to an error, **all its threads terminate** |
+| Termination of one process **does not affect** other processes | If one thread terminates due to an error, **all its threads terminate** |
 | Process termination time is **high** | Thread termination time is **less** |
 | Process creation time is **high** | Thread creation time is **less** |
 | Processes **do not share data** | Threads **share data** |
 | Communication between processes takes place using: **Shared memory** or **Message passing** | Communication between threads takes place using: **Shared memory** |
 
 
+```
+### Basic Program of Threading
+```cpp
+#include<iostream>
+#include<thread>
+#include<chrono>
+
+void function1(){
+    std::cout<<"Hello from Function1"<<std::endl;
+    
+    std::this_thread::sleep_for(std::chrono::seconds(5));
+
+    std::cout << "Function1 finished" << std::endl;
+}
+
+void function2(){
+    std::cout<<"Hello from Function2"<<std::endl;
+}
+void function3(){
+    std::cout<<"Hello from Function3"<<std::endl;
+}
+int main(){
+
+    std::thread t1(function1);
+    std::cout<<"Thread t1 created"<<std::endl;
+
+    std::thread t2(function2);
+    std::cout<<"Thread t2 created"<<std::endl;
+
+    t1.join(); //WAIT POINT
+    std::cout<<"Join t1"<<std::endl;
+
+    std::thread t3(function3);
+    std::cout<<"Thread t3 created"<<std::endl;
+    t3.join();
+    std::cout<<"Join t3"<<std::endl;
+
+
+    t2.join();
+    std::cout<<"Join t2"<<std::endl;
+
+
+    return 0;
+}
+```
+```bash
+# To run it
+g++ -pthread main.cpp
 ```
 
 
