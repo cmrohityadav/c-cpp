@@ -1,14 +1,20 @@
 #include<iostream>
 #include<thread>
 #include<chrono>
+#include<mutex>
 
 int balance=100;
+std::mutex mtx;
 void Deposite(int amt){
+    mtx.lock();
+    
     int temp=balance;
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
     temp=temp+amt;
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
     balance=temp;
+
+    mtx.unlock();
 }
 
 int main(){
