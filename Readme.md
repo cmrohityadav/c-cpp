@@ -1269,6 +1269,70 @@ int main(){
 }
 ```
 
+### Critical Section
+- Critical section is part of code where two processes/threads share the common resources 
+- Example printer,CPU(shared data structures),Shared variables / memory
+- **critical section problem**
+```cpp
+#include<iostream>
+#include<thread>
+
+int sharedVariable=0;
+
+void functionInc(){
+    std::cout<<" "<<sharedVariable<<" "<<std::endl;
+    sharedVariable++;
+}
+int main(){
+
+    std::thread arrThreads[5];
+
+    for(int i=0;i<5;i++){
+        arrThreads[i]= std::thread(functionInc);
+    }
+
+    for(int i=0;i<5;i++){
+        arrThreads[i].join();
+    }
+
+    return 0;
+}
+```
+```cpp
+#include<iostream>
+#include<thread>
+#include<chrono>
+
+int balance=100;
+void Deposite(int amt){
+    int temp=balance;
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    temp=temp+amt;
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    balance=temp;
+}
+
+int main(){
+
+    std::thread t1(Deposite,50);
+    std::thread t2(Deposite,100);
+    std::thread t3(Deposite,10);
+    std::thread t4(Deposite,10);
+
+    t1.join();
+    t2.join();
+    t3.join();
+    t4.join();
+
+    std::cout<<"Balance: "<<balance<<std::endl;
+
+    return 0;
+}
+```
+
+
+
+
 
 
 
