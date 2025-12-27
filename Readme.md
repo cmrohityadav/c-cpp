@@ -1377,7 +1377,13 @@ int main(){
 }
 ```
 
-
+### Different Types of Mutex
+1. Mutex
+2. recuresive mutex
+3. timed mutex
+4. recursive time mutex
+5. shared mutex
+6. shared timed mutex
 
 
 
