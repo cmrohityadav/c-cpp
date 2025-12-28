@@ -1075,6 +1075,34 @@ int main(){
 }
 
 ```
+### this
+- This is a special pointer to an object which is calling the member function
+- It is implicitly passed to all the member function
+- this ek pointer hota hai jo current object ka address store karta hai
+```cpp
+class Strategy {
+public:
+    int qty;
+
+    void set(int val) {
+        qty = val;
+    }
+};
+
+Strategy s1;
+s1.set(10);
+//#########################
+// Hum likte hai
+s1.set(10);
+//Compiler internally samajhta hai
+Demoxyz_set(&d1, 10);
+```
+
+
+
+
+
+
 ## Multithreading
 
 ### Process
