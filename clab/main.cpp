@@ -1,35 +1,30 @@
 #include<iostream>
-#include<thread>
-#include<chrono>
-#include<mutex>
+#include<string>
 
-int balance=100;
-std::mutex mtx;
-void Deposite(int amt){
-    mtx.lock();
-    
-    int temp=balance;
-    std::this_thread::sleep_for(std::chrono::milliseconds(10));
-    temp=temp+amt;
-    std::this_thread::sleep_for(std::chrono::milliseconds(10));
-    balance=temp;
+class OrderBook{
+    public:
+    int orderQty;
+    int price;
+    static std::string brokerName;
 
-    mtx.unlock();
-}
+    OrderBook(int ordderQty,int price){
+        this->orderQty=ordderQty;
+        this->price=price;
+    }
+};
 
+std::string OrderBook::brokerName="Rohit";
 int main(){
+    std::cout<<"Broker Name: "<<OrderBook::brokerName<<std::endl;
 
-    std::thread t1(Deposite,50);
-    std::thread t2(Deposite,100);
-    std::thread t3(Deposite,10);
-    std::thread t4(Deposite,10);
+    OrderBook ob(100,10);
 
-    t1.join();
-    t2.join();
-    t3.join();
-    t4.join();
+    std::cout<<ob.brokerName<<std::endl;
 
-    std::cout<<"Balance: "<<balance<<std::endl;
+    OrderBook ob2(200,5);
+
+    std::cout<<ob2.brokerName<<std::endl;
+
 
     return 0;
 }

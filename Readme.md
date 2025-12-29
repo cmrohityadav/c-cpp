@@ -1097,6 +1097,180 @@ s1.set(10);
 //Compiler internally samajhta hai
 Demoxyz_set(&d1, 10);
 ```
+#### Properties/uses of this keyword
+- this works as a pointer to the object
+- this  is avalible in all the `non-static` member function
+- this is a constant pointer
+- It is used to differentiate b/w member variable and paramter with same name
+- It is used to return the object itself
+
+### static in class
+
+```cpp
+#include<iostream>
+#include<string>
+
+class OrderBook{
+    public:
+    int orderQty;
+    int price;
+    static std::string brokerName;
+
+    OrderBook(int ordderQty,int price){
+        this->orderQty=ordderQty;
+        this->price=price;
+    }
+};
+
+std::string OrderBook::brokerName="Rohit";
+int main(){
+    std::cout<<"Broker Name: "<<OrderBook::brokerName<<std::endl;
+
+    OrderBook ob(100,10);
+
+    std::cout<<ob.brokerName<<std::endl;
+
+    OrderBook ob2(200,5);
+
+    std::cout<<ob2.brokerName<<std::endl;
+
+    return 0;
+}
+```
+#### Static Data Member
+- Belongs to the class
+- Single copy shared by all objects
+```cpp
+class A {
+public:
+    static int x;
+};
+
+int A::x = 10;
+
+//access
+A::x;
+```
+#### Static Member Function (no static variable inside)
+- Belongs to the class
+- Can access only static members
+- Cannot access non-static members (this not available)
+```cpp
+#include <iostream>
+using namespace std;
+
+class OrderBook {
+public:
+    static string brokerName;
+    int orderQty;
+    static void showBroker() {
+        cout << brokerName << endl;// cout << orderQty; // ERROR
+
+    }
+};
+
+string OrderBook::brokerName = "Rohit";
+
+int main() {
+    OrderBook::showBroker();
+}
+
+
+```
+
+#### Static Function USING Static Member
+```cpp
+class OrderBook {
+public:
+    static int count;
+
+    static void increment() {
+        count++;
+    }
+};
+
+int OrderBook::count = 0;
+```
+#### Static Function HAVING a Static Local Variable
+- Static local variable:
+    - Created once
+    - Retains value between calls
+- Scope: function only
+- Lifetime: entire program
+```cpp
+class Test {
+public:
+    static void counter() {
+        static int x = 0;  // local static
+        x++;
+        cout << x << endl;
+    }
+};
+
+int main() {
+    Test::counter(); // 1
+    Test::counter(); // 2
+    Test::counter(); // 3
+}
+```
+#### Normal (Non-static) Function with Static Local Variable
+- Now the function belongs to objects, but the static variable is still shared
+```cpp
+class Test {
+public:
+    void counter() {
+        static int x = 0;
+        x++;
+        cout << x << endl;
+    }
+};
+
+int main() {
+    Test a, b;
+    a.counter(); // 1
+    b.counter(); // 2
+    a.counter(); // 3
+}
+```
+#### Normal Function + Static Class Member
+```cpp
+class OrderBook {
+public:
+    static int totalOrders;
+
+    void addOrder() {
+        totalOrders++;
+    }
+};
+
+int OrderBook::totalOrders = 0;
+
+int main(){
+OrderBook o1, o2;
+
+o1.addOrder();
+o2.addOrder();
+
+cout << OrderBook::totalOrders; // 2
+
+    
+}
+```
+- Function is per-object
+- Data is shared
+#### rememebr
+```bash
+Static member variable → shared across objects
+
+Static member function → no this, only static data
+
+Static local variable → remembers value between calls
+
+Non-static function + static variable → still shared
+
+Static function + static variable → shared & class-level
+```
+
 
 
 
