@@ -1,30 +1,32 @@
 #include<iostream>
 #include<string>
-
-class OrderBook{
-    public:
+class Strategy{
+    private:
     int orderQty;
-    int price;
-    static std::string brokerName;
+    public:
+    static std::string companyName;
 
-    OrderBook(int ordderQty,int price){
-        this->orderQty=ordderQty;
-        this->price=price;
+    Strategy(int Qty):orderQty(Qty){
+        std::cout<<"Constructor called"<<std::endl;
+    }
+
+    void DisplayQty(){
+        std::cout<<"OrderQty:\t"<<orderQty<<std::endl;
+    }
+
+    static void DisplayCompanyName(){
+        //we can't able to use non-static member inside the static function
+        std::cout << "Company:\t" << companyName << std::endl;
     }
 };
+    std::string Strategy::companyName="rohit pvt ltd";
 
-std::string OrderBook::brokerName="Rohit";
 int main(){
-    std::cout<<"Broker Name: "<<OrderBook::brokerName<<std::endl;
-
-    OrderBook ob(100,10);
-
-    std::cout<<ob.brokerName<<std::endl;
-
-    OrderBook ob2(200,5);
-
-    std::cout<<ob2.brokerName<<std::endl;
-
-
+    std::cout<<Strategy::companyName<<std::endl;
+    Strategy obj(100);
+    
+    obj.DisplayQty();
+    obj.DisplayCompanyName();
+    Strategy::DisplayCompanyName();
     return 0;
 }
