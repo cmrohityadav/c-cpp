@@ -1327,8 +1327,8 @@ int main(){
 }
 ```
 
-
-
+### Inheritance
+- Mechanism to reuse the methods/behaviour of one class to another class
 
 
 
