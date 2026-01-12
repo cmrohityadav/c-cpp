@@ -1330,6 +1330,223 @@ int main(){
 ### Inheritance
 - Mechanism to reuse the methods/behaviour of one class to another class
 
+```cpp
+#include<iostream>
+
+class Base{
+    public:
+    int x=10;
+    void function(){
+        std::cout<<"Printing using base class function"<<std::endl;
+    }
+};
+
+class Derived: public Base{
+    public:
+    void function1(){
+        std::cout<<"Output from derived class "<<std::endl;
+        std::cout<<"Value of x : "<<x<<std::endl;
+    }
+};
+
+int main(){
+
+    Derived d;
+    d.function();
+    d.function1();
+
+    Base b;
+    b.function();
+    return 0;
+}
+```
+
+#### Single Inheritance
+- Child class is derived from the single Base Cclass only
+
+```cpp
+#include <iostream>
+using namespace std;
+
+class Parent {
+public:
+    void show() {
+        cout << "This is Parent class" << endl;
+    }
+};
+
+class Child : public Parent {
+public:
+    void display() {
+        cout << "This is Child class" << endl;
+    }
+};
+
+int main() {
+    Child c;
+    c.show();     // inherited from Parent
+    c.display();  // Child's own function
+    return 0;
+}
+```
+
+#### Multiple  Inheritance
+- Child class is serived from multiple base classes
+```cpp
+#include <iostream>
+using namespace std;
+
+class A {
+public:
+    void funcA() {
+        cout << "Class A function" << endl;
+    }
+};
+
+class B {
+public:
+    void funcB() {
+        cout << "Class B function" << endl;
+    }
+};
+
+class C : public A, public B {
+public:
+    void funcC() {
+        cout << "Class C function" << endl;
+    }
+};
+
+int main() {
+    C obj;
+    obj.funcA();
+    obj.funcB();
+    obj.funcC();
+    return 0;
+}
+```
+#### Multilevel Inheritance
+- A class is derived from another derived class
+```cpp
+#include <iostream>
+using namespace std;
+
+class GrandParent {
+public:
+    void gp() {
+        cout << "Grandparent class" << endl;
+    }
+};
+
+class Parent : public GrandParent {
+public:
+    void p() {
+        cout << "Parent class" << endl;
+    }
+};
+
+class Child : public Parent {
+public:
+    void c() {
+        cout << "Child class" << endl;
+    }
+};
+
+int main() {
+    Child obj;
+    obj.gp();
+    obj.p();
+    obj.c();
+    return 0;
+}
+
+```
+#### Hierarchical Inheritance
+- Multiple child classes are derived from one single base class
+```cpp
+#include <iostream>
+using namespace std;
+
+class Base {
+public:
+    void show() {
+        cout << "Base class" << endl;
+    }
+};
+
+class Child1 : public Base {
+public:
+    void display1() {
+        cout << "Child1 class" << endl;
+    }
+};
+
+class Child2 : public Base {
+public:
+    void display2() {
+        cout << "Child2 class" << endl;
+    }
+};
+
+int main() {
+    Child1 c1;
+    Child2 c2;
+
+    c1.show();
+    c1.display1();
+
+    c2.show();
+    c2.display2();
+    return 0;
+}
+
+```
+
+#### Hybrid Inheritance
+- Combination of two or more types of inheritance (e.g., multiple + multilevel)
+```cpp
+#include <iostream>
+using namespace std;
+
+class A {
+public:
+    void funcA() {
+        cout << "Class A" << endl;
+    }
+};
+
+class B : public A {
+public:
+    void funcB() {
+        cout << "Class B" << endl;
+    }
+};
+
+class C {
+public:
+    void funcC() {
+        cout << "Class C" << endl;
+    }
+};
+
+class D : public B, public C {
+public:
+    void funcD() {
+        cout << "Class D" << endl;
+    }
+};
+
+int main() {
+    D obj;
+    obj.funcA();
+    obj.funcB();
+    obj.funcC();
+    obj.funcD();
+    return 0;
+}
+
+```
+
 
 
 ## Multithreading
