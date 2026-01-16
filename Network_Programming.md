@@ -47,19 +47,64 @@ jo incoming data ko correct program ke socket tak pahunchata hai
 - Port 8080 mujhe de do
 
 ```bash
-1. int s=socket(int domain,int type,int protocol)
-# Program ke paas ek data stream
-# Abhi kisi port se juda nahi
-
-2. bind(s, IP, 8080);
-# Program kernel ko bolta hai
-# Port 8080 mujhe de do
-# Port 8080 agar koi use kare,to uska data is socket ko dena
-3. Kernel apni table me entry karta hai
-# Port 8080 → Socket FD 3 → Process PID 1234
-# Port ab “program ka” ho gaya
+int s=socket(int domain,int type,int protocol)
 
 ```
+
+```bash
+#include <sys/types.h>
+#include <sys/socket.h>
+
+int bind(int sockfd, const struct sockaddr *addr, socklen_t addrlen);
+
+// example
+struct sockaddr_in server;
+bind(sockfd, (struct sockaddr *)&server, sizeof(server));
+```
+#### struct sockaddr_in
+```cpp
+struct sockaddr_in server;
+
+```
+
+#### Internal struct sockadd_in
+```cpp
+struct sockaddr_in {
+    short sin_family;       // Address family (IPv4)
+    unsigned short sin_port; // Port number
+    struct in_addr sin_addr; // IP address
+};
+```
+- sin = socket internet
+- `server.sin_family = AF_INET;`
+- AF_INET = IPv4
+- AF_INET6= IPv6
+
+
+#### server.sin_addr.s_addr
+- server.sin_addr.s_addr = INADDR_ANY; //0.0.0.0
+- Server kisi bhi IP address se connection accept karega
+- All network interfaces (WiFi, Ethernet, localhost)
+```cpp
+#include <arpa/inet.h>
+
+inet_pton(AF_INET, "192.168.208.209", &server.sin_addr);
+```
+- Internet Presentation TO Numeric
+```cpp
+struct in_addr {
+    uint32_t s_addr;
+};
+```
+#### server.sin_port
+- server.sin_port = htons(8080);
+
+
+
+
+
+
+
 
 ## STORY
 - bind() ke waqt kernel apni table me entry karta hai:
