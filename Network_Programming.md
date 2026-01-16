@@ -98,6 +98,34 @@ struct in_addr {
 ```
 #### server.sin_port
 - server.sin_port = htons(8080);
+- htons: Host TO Network Short
+- Port number ko host byte order se
+network byte order (Big Endian) me convert karta hai
+- Network protocols Big Endian follow karte hain
+
+
+## Listen
+```
+#include<sys/socket.h>
+int listen(int sockfd,int backlog)
+
+```
+- backlog =kitne pending connections queue me allowed hain
+- Queue size for connections waiting to be accepted
+- Server accept() call kar ke request ko queue se nikalta hai
+
+## accept()
+```cpp
+#include <sys/socket.h>
+int accept(int sockfd, struct sockaddr *addr, socklen_t *addrlen);
+
+//Example
+struct sockaddr_in client;
+socklen_t client_len = sizeof(client);
+
+int clientfd = accept(sockfd, (struct sockaddr *)&client, &client_len);
+```
+
 
 
 
