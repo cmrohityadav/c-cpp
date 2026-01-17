@@ -4,6 +4,7 @@
 #include <arpa/inet.h> //struct sockaddr_in clientAdd;
 
 #include <unistd.h>  //close(clientSock);
+#include <cstring>
 int main(){
 
     int clientSock=socket(AF_INET,SOCK_STREAM,0);
@@ -20,10 +21,27 @@ int main(){
         std::cout<<"connection failed"<<std::endl;
     }
 
-    char buff[256]="hello from client";
-    ssize_t sendByte=send(clientSock,(const char*)&buff,sizeof(buff),0);
-    if(sendByte<0){
-        std::cout<<"No data send fail the sending"<<std::endl;
+    while (true) {
+        std::cout << "Enter message (type 'exit' to quit): ";
+
+        char buff[256];
+        std::cin.getline(buff, sizeof(buff));
+
+        // Handle Ctrl+D (EOF)
+        if (std::cin.eof()) {
+            break;
+        }
+
+        // Exit command
+        if (strcmp(buff, "exit") == 0) {
+            break;
+        }
+
+        ssize_t sent = send(clientSock, buff, strlen(buff), 0);
+        if (sent < 0) {
+            perror("send");
+            break;
+        }
     }
 
     close(clientSock);

@@ -4,6 +4,33 @@
 #include <arpa/inet.h>
 #include <unistd.h> 
 #include <cstring>
+#include<thread>
+void handleClient(int clientSockfd) {
+    char buff[256];
+
+    while (true) {
+        memset(buff, 0, sizeof(buff));
+
+        ssize_t recvbytes = recv(clientSockfd, (char *)&buff, sizeof(buff) - 1, 0);
+
+        if (recvbytes == 0) {
+            std::cout << "Client disconnected\n";
+            break;
+        }
+        if (recvbytes < 0) {
+            perror("recv");
+            break;
+        }
+
+        std::cout << "Client: " << buff << std::endl;
+
+        const char msg[] = "Message from server";
+        send(clientSockfd, (const char *)&msg, strlen(msg), 0);
+    }
+
+    close(clientSockfd);
+}
+
 int main(){
     
     int server_sock=socket(AF_INET,SOCK_STREAM,0);
@@ -31,27 +58,11 @@ int main(){
     while(true){
         int clientSockfd=accept(server_sock,(struct sockaddr*)&clientAdd,&sizeClientAdd);
 
-        char buff[256]={0};
-        ssize_t recvbytes=recv(clientSockfd,(char*)&buff,sizeof(buff)-1,0);
-        if(recvbytes==0){
-            std::cout<<"connection closed by peers "<<std::endl;
-        }else if(recvbytes<0){
-            std::cout<<"erro occurred"<<std::endl;
-        }
-
-        if(recvbytes>0){
-            std::cout<<"recv mes: "<<buff<<std::endl;
-        }
-
-        const char msg[]="This message froms server";
-       ssize_t sendbytes= send(clientSockfd,(const char*)&msg,strlen(msg),0);
-       if(sendbytes>0){
-        std::cout<<"message sended succesfully"<<std::endl;
-       }
-
-       close(clientSockfd);
-
+        std::thread thrd(handleClient,clientSockfd);
+        thrd.detach();
+       
     }
+    
 
     close(server_sock);
     return 1;
