@@ -104,6 +104,7 @@ struct sockaddr {
 ```
 #### struct sockaddr_in
 ```cpp
+#include <netinet/in.h>
 struct sockaddr_in server;
 ```
 
