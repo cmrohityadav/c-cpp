@@ -21,7 +21,40 @@ Baat karna = send() / recv()
 #include<sys/socket.h>
 
 int sockfd=socket(int domain,int type,int protocol)
+
+//Example
+int sockfd = socket(AF_INET, SOCK_STREAM, 0);
+//
+socket(AF_INET, SOCK_DGRAM, 0);
 ```
+- AF_INET: Address Family – Internet
+- SOCK_STREAM → Socket Stream(TCP/Transmission Control Protocol)
+- SOCK_DGRAM → Socket Datagram(UDP/User Datagram Protocol)
+
+- `int sockfd = socket(int domain, int type, int protocol);`
+- domain (Address Family)
+- Batata hai kis type ka network use hoga.
+| Constant   | Meaning                     |
+| ---------- | --------------------------- |
+| `AF_INET`  | IPv4 Internet protocol      |
+| `AF_INET6` | IPv6 Internet protocol      |
+| `AF_UNIX`  | Local (Unix domain) sockets |
+
+- type (Socket Type)
+| Type          | Meaning | Use                        |
+| ------------- | ------- | -------------------------- |
+| `SOCK_STREAM` | TCP     | Reliable, connection-based |
+| `SOCK_DGRAM`  | UDP     | Fast, connectionless       |
+
+- protocol
+| Protocol      | Meaning          |
+| ------------- | ---------------- |
+| `0`           | Default protocol |
+| `IPPROTO_TCP` | TCP              |
+| `IPPROTO_UDP` | UDP              |
+
+
+
 - Kernel ne socket object banaya
 - Program ko uska handle (FD) de diya
 - Linux ka rule: Everything is a file(File,Pipe,Socket)
