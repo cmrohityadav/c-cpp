@@ -91,13 +91,20 @@ int s=socket(int domain,int type,int protocol)
 int bind(int sockfd, const struct sockaddr *addr, socklen_t addrlen);
 
 // example
-struct sockaddr_in server;
+struct sockaddr_in server; //IPv4-specific structure
+
 bind(sockfd, (struct sockaddr *)&server, sizeof(server));
+```
+#### General-purpose structure
+```cpp
+struct sockaddr {
+    sa_family_t sa_family;
+    char sa_data[14];
+};
 ```
 #### struct sockaddr_in
 ```cpp
 struct sockaddr_in server;
-
 ```
 
 #### Internal struct sockadd_in
@@ -138,7 +145,7 @@ network byte order (Big Endian) me convert karta hai
 
 
 ## Listen
-```
+```cpp
 #include<sys/socket.h>
 int listen(int sockfd,int backlog)
 
@@ -158,10 +165,131 @@ socklen_t client_len = sizeof(client);
 
 int clientfd = accept(sockfd, (struct sockaddr *)&client, &client_len);
 ```
+-  accept() BLOCKS until a client connects
 
 
+### Header
+```cpp
+#include <sys/socket.h>   // socket(), bind(), listen(), accept()
+#include <netinet/in.h>   // sockaddr_in, INADDR_ANY
+#include <arpa/inet.h>    // htons(), htonl(), inet_addr()
+#include <unistd.h>       // close()
+#include <cstring>        // memset()
+```
+
+## send()
+- send() transmits raw bytes from a user-space memory buffer to a connected socket.
+- The operating system does not understand data types, structures, or objects — it only sends bytes
+```cpp
+ssize_t send(int sockfd, const void* buffer, size_t length, int flags);
+
+//
+send(fd, (const char*)&packet, sizeof(packet), 0);
+
+```
+- Casting to char* means:
+“Send exactly these N bytes starting from this memory address.”
+
+| Return value | Meaning                           |
+| ------------ | --------------------------------- |
+| `> 0`        | Number of bytes successfully sent |
+| `0`          | Connection closed by peer         |
+| `-1`         | Error occurred                    |
 
 
+## recv()
+- recv() receives raw bytes from a connected socket into a user-space memory buffer.
+- The operating system does not interpret the data — it only delivers bytes exactly as sent
+
+```cpp
+ssize_t recv(int sockfd, void* buffer, size_t length, int flags);
+
+// Example: Receiving a struct
+struct OrderPacket pkt;
+ssize_t n = recv(fd, (char*)&pkt, sizeof(pkt), 0);
+```
+| Return value | Meaning                                    |
+| ------------ | ------------------------------------------ |
+| `> 0`        | Number of bytes successfully received      |
+| `0`          | Connection closed by peer (graceful close) |
+| `-1`         | Error occurred                             |
+
+- recv() BLOCKS until data arrives
+# Client
+
+## Create a socket
+```cpp
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <unistd.h>
+#include <cstring>
+
+int sockfd = socket(AF_INET, SOCK_STREAM, 0); // TCP
+if (sockfd < 0) {
+    perror("socket failed");
+    return 1;
+}
+
+
+```
+## Specify server address
+```cpp
+struct sockaddr_in server;
+server.sin_family = AF_INET;
+server.sin_port = htons(8080); // server port
+
+// Convert IP string to numeric format
+inet_pton(AF_INET, "192.168.1.100", &server.sin_addr);
+```
+## Connect to the server
+```cpp
+int ret = connect(sockfd, (struct sockaddr*)&server, sizeof(server));
+if (ret < 0) {
+    perror("connect failed");
+    close(sockfd);
+    return 1;
+}
+
+```
+- Client blocks until server accepts connection (unless non-blocking)
+
+## Send data to server
+```cpp
+struct OrderPacket pkt;
+pkt.id = 101;
+pkt.price = 5000;
+
+ssize_t n = send(sockfd, (char*)&pkt, sizeof(pkt), 0);
+if (n <= 0) {
+    perror("send failed");
+}
+
+```
+- BLOCKS until data sent
+## Receive data from server
+```cpp
+struct ResponsePacket resp;
+ssize_t n = recv(sockfd, (char*)&resp, sizeof(resp), 0);
+if (n == 0) {
+    // server closed connection
+} else if (n < 0) {
+    perror("recv failed");
+}
+
+```
+- BLOCKS until data received
+## Full Client Header List
+```cpp
+#include <sys/socket.h>   // socket(), connect(), send(), recv()
+#include <netinet/in.h>   // sockaddr_in
+#include <arpa/inet.h>    // htons(), htonl(), inet_pton()
+#include <unistd.h>       // close()
+#include <cstring>        // memset(), memcpy()
+#include <cerrno>         // errno
+#include <cstdio>         // perror()
+
+```
 
 
 
