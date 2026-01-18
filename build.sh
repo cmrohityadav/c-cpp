@@ -1,3 +1,3 @@
 g++ platform.cpp -o plaftorm
-g++ server.cpp -o server
+g++ server.cpp -o server -pthread
 
