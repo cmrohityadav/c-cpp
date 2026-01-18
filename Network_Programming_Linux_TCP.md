@@ -197,6 +197,14 @@ send(fd, (const char*)&packet, sizeof(packet), 0);
 | `0`          | Connection closed by peer         |
 | `-1`         | Error occurred                    |
 
+```cpp
+ssize_t send(
+    int sockfd,        // pipe / socket FD
+    const void *buf,   // data kahan se bhejna hai
+    size_t len,        // kitna data bhejna hai
+    int flags
+);
+```
 
 ## recv()
 - recv() receives raw bytes from a connected socket into a user-space memory buffer.
@@ -216,6 +224,18 @@ ssize_t n = recv(fd, (char*)&pkt, sizeof(pkt), 0);
 | `-1`         | Error occurred                             |
 
 - recv() BLOCKS until data arrives
+
+```cpp
+ssize_t recv(
+    int sockfd,        // pipe
+    void *buf,         // data kahan rakhna hai
+    size_t len,        // maximum kitna lena hai
+    int flags
+);
+
+```
+- recv ka 3rd parameter = kitne BYTES chahiye
+buffer ka size nahi, DATA ka size
 # Client
 
 ## Create a socket
