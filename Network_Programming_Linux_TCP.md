@@ -1,6 +1,7 @@
 # Network Programming (Socket Programming)
 - Build a program that recieves and transmits data between two or more computers by means of a network
-
+- [basic socket](#socket-socket-descriptor)
+- [epoll](#epoll)
 ## Socket (socket descriptor)
 - Socket ek endpoint hota hai jiske through do programs network ke upar baat karte hain
 - Pipe → same machine ke processes ke liye
@@ -313,6 +314,8 @@ if (n == 0) {
 ```
 
 
+# EPOLL
+- Bell system ko kaam karta hua dekho
 
 
 
