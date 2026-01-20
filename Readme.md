@@ -462,6 +462,8 @@ arr        == &arr[0] == 0x1000
 
 
 ## OOP
+
+
 ### Class
 - A class is nothing, but a blue print that is used to create Object
 - It's User Defined Data Type
@@ -1548,6 +1550,15 @@ int main() {
 ```
 
 
+```bash
+| Access specifier | Same class | Derived class | Outside class |
+| ---------------- | ---------- | ------------- | ------------- |
+| **public**       | ✔️ Yes     | ✔️ Yes        | ✔️ Yes        |
+| **protected**    | ✔️ Yes     | ✔️ Yes        | ❌ No          |
+| **private**      | ✔️ Yes     | ❌ No          | ❌ No          |
+
+
+```
 
 ## Multithreading
 
