@@ -1623,6 +1623,170 @@ int main(){
 
 ```
 
+#### Access Modifiers vs Inheritance Modes
+- Different modes of inheritance
+- Parent class member → How it appears in Child class
+- Dabadaba: Private> Protected> Public
+```bash
+| **Inheritance Mode** | **Public member** | **Protected member** | **Private member** |
+| -------------------- | ----------------- | -------------------- | ------------------ |
+| **Public**           | Public            | Protected            | ❌ Not accessible   |
+| **Protected**        | Protected         | Protected            | ❌ Not accessible   |
+| **Private**          | Private           | Private              | ❌ Not accessible   |
+
+```
+
+### Compile vs Run Time Binding
+- assume derived class me X function hai, same function Parent class me bhi hai to konsa excute hoga
+#### Compile Time Binding
+- Compiler can decide at compile time itself which function to excecute
+- Early binding
+- 
+
+
+#### Run Time Binding
+- Compiler decides at runtime which function to execute
+- Late binding
+- It take extra time so we avoid for latency application
+- 
+
+### Virtual function
+- STORY
+```bash
+
+class Animal {
+public:
+    virtual void sound() {
+        cout << "Animal sound\n";
+    }
+};
+
+class Dog : public Animal {
+public:
+    void sound() {
+        cout << "Dog barks\n";
+    }
+};
+
+class Cat : public Animal {
+public:
+    void sound() {
+        cout << "Cat meows\n";
+    }
+};
+
+//Compile time pe kya banta hai?
+Vtables banti hain
+Animal vtable:
+[ Animal::sound ]
+
+Dog vtable:
+[ Dog::sound ]
+
+Cat vtable:
+[ Cat::sound ]
+
+//Virtual call ka rule banta hai
+a->sound();   // sound is virtual
+Wo direct jump nahi likhta,
+wo likhta hai:
+"runtime pe object ke vptr se function uthana"
+
+
+
+Animal* a = new Dog();
+Runtime pe ye hota hai:
+
+Heap me Dog object ke liye memory allocate
+Dog constructor chalta hai
+Constructor vptr set karta hai
+
+Dog object memory:
++-------+------------+
+| vptr  | Dog data   |
++-------+------------+
+
+vptr → Dog vtable
+
+
+a->sound();
+
+Ab actual magic
+Runtime pe steps:
+
+1. a → Dog object ko point kar raha hai
+2. Dog object ke andar ka vptr uthaya
+3. vptr → Dog vtable
+4. Dog vtable ka sound() slot dekha
+5. Usme address mila → Dog::sound
+6. Dog::sound() call ho gaya
+
+
+///Same pointer, different behavior
+Animal* a;
+
+a = new Dog();
+a->sound();   // Dog barks
+
+a = new Cat();
+a->sound();   // Cat meows
+
+THIS is runtime polymorphism
+
+
+//gar virtual hata do
+void sound(); // not virtual
+
+❌ vtable nahi
+❌ vptr nahi
+
+Compiler bolega:
+"pointer Animal ka hai → Animal::sound()"
+
+```
+- Compile time: vtables + rules bante hain
+- Runtime: object banta hai → vptr set hota hai
+- Call time: vptr decide karta hai kaunsa function chalega
+
+
+
+#### Properties of Virtual function
+
+1. **Used for Runtime Polymorphism**  
+   - Virtual functions enable **runtime (dynamic) polymorphism** in C++.
+
+2. **Declared with `virtual` Keyword in Base Class**  
+   - Only the base class function needs to be declared as `virtual`.
+
+3. **Cannot be Static**  
+   - A virtual function **cannot** be declared as `static`.
+
+4. **Should be Used via Reference or Pointer of Base Class**  
+   - To get runtime polymorphism effect, call the virtual function using:
+     - Base class pointer, or  
+     - Base class reference
+
+5. **Not Mandatory for Derived Class to Override**  
+   - Derived class may or may not override the base class virtual function.
+
+6. **Always Defined in Base Class**  
+   - Base class should provide a definition.  
+   - If needed, derived class can **override** it.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## Multithreading
 
