@@ -1774,6 +1774,11 @@ Compiler bolega:
    - If needed, derived class can **override** it.
 
 
+#### Override
+- override ek `compile-time check` hai jo ensure karta hai ki derived class ka function exactly base class ke virtual function ko override kar raha ho
+- Ye function base class ke virtual function ko override kar raha hai
+- Agar match nahi hua → compile-time error do
+- Signature mismatch se bachne ke liye
 
 
 
