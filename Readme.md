@@ -1780,7 +1780,33 @@ Compiler bolega:
 - Agar match nahi hua → compile-time error do
 - Signature mismatch se bachne ke liye
 
+### Polymorphism
+```bash
 
+Polymorphism
+│
+├── 1️⃣ Compile-Time Polymorphism (Static Binding)
+│   │
+│   ├── 🔹 Function Overloading
+│   │      - Same function name
+│   │      - Different parameter list
+│   │      - Same class
+│   │
+│   └── 🔹 Operator Overloading
+│          - Operators ko redefine karna
+│          - Same operator
+│          - Different behavior for user-defined type
+│
+└── 2️⃣ Run-Time Polymorphism (Dynamic Binding)
+    │
+    └── 🔹 Function Overriding
+           - Parent class function
+           - Child class me same signature
+           - virtual keyword required
+
+
+
+```
 
 
 
