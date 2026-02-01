@@ -1812,9 +1812,140 @@ Polymorphism
 #### Function Overloading
 - Same function name butdiffer in parameters
 
+#### Why to use virtual destructor in c++?
+- Agar destructor virtual nahi hoga, to sirf base class ka destructor call hoga — derived class ka nahi
+- Isse resource leak ho sakta hai (memory leak, file handle leak, etc.)
+
+```cpp
+#include <iostream>
+using namespace std;
+
+class Base {
+public:
+    ~Base() {
+        cout << "Base Destructor\n";
+    }
+};
+
+class Derived : public Base {
+public:
+    ~Derived() {
+        cout << "Derived Destructor\n";
+    }
+};
+
+int main() {
+    Base* ptr = new Derived();
+    delete ptr;   // Problem here
+    //output:  Base Destructor
+}
+
+```
+
+
+- Agar class me koi bhi virtual function hai, to destructor ko bhi virtual bana do
 
 
 
+
+```bash
+delete ptr
+   ↓
+(vtable se) Derived destructor call
+   ↓
+Derived ka kaam complete
+   ↓
+Automatic Base destructor call
+   ↓
+Memory free
+
+```
+- Conceptually Derived destructor aisa hota hai
+```bash
+Derived::~Derived() {
+    // Derived cleanup
+
+    Base::~Base();  // compiler automatically call karta hai
+}
+
+```
+
+```cpp
+#include <iostream>
+using namespace std;
+
+class Base {
+public:
+   virtual ~Base() {
+        cout << "Base Destructor\n";
+    }
+};
+
+class Derived1 : public Base {
+public:
+    ~Derived1() {
+        cout << "Derived1 Destructor\n";
+    }
+};
+
+class Derived2: public Derived1{
+    public:
+    ~Derived2(){
+        cout<<"Derived2 destructor"<<endl;  }
+};
+
+
+
+int main() {
+    Base* ptr = new Derived2();
+    delete ptr;   // Problem here
+   
+    /*
+    //output: 
+    Derived2 destructor
+    Derived1 Destructor
+    Base Destructor
+    */
+}
+
+```
+#### What is Object Slicing in C++?
+- Object slicing tab hota hai jab ek derived class object ko base class object me copy kiya jata hai (by value) 
+- aur derived ka extra part “cut” ho jata hai
+- Isliye isko slicing kehte hain (jaise object ka kuch hissa kat gaya)
+- Object slicing happens only with pass by value.
+- Derived ka extra data remove ho jata hai.
+- Polymorphism break ho jata hai.
+- Avoid by using `Base&` or `Base*`
+
+```cpp
+#include <iostream>
+using namespace std;
+
+class Base {
+public:
+    virtual void show(){
+    cout<<"This is the base class"<<endl;
+   }
+};
+
+class Derived:public Base{
+    public:
+    void show(){
+        cout<<"This is the derived class"<<endl;
+    }
+};
+
+void Excute(Base& obj){
+    obj.show();
+}
+
+int main() {
+   
+   Derived objDerived;
+   Excute(objDerived);
+}
+```
 
 
 
