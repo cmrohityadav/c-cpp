@@ -1997,6 +1997,18 @@ public:
     virtual ~IDriveable() {}
 };
 ```
+#### inline 
+- Inline function wo function hota hai jise compiler call karne ke bajay uski body ko directly us jagah insert kar deta hai jahan function call kiya gaya ho
+- Isse function call ka extra overhead (jaise stack me jump karna) kam ho jata hai, aur program thoda fast ho sakta hai
+```cpp
+inline return_type function_name(parameters) {
+    // function body
+}
+```
+- Program ki speed badh sakti hai (especially small functions me)
+- Function call overhead kam hota hai
+- Agar function bada ho to code size badh sakta hai
+- Har baar inline ho ye jaruri nahi (compiler decide karta hai)
 
 
 

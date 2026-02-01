@@ -1,26 +1,20 @@
 #include <iostream>
 using namespace std;
 
-class Base {
-public:
-    virtual void show(){
-    cout<<"This is the base class"<<endl;
-   }
-};
-
-class Derived:public Base{
+class Order{
     public:
-    void show(){
-        cout<<"This is the derived class"<<endl;
+    virtual void submitOrder()=0;
+    virtual void changeOrder(){
+        cout<<"Change order using Parent"<<endl;
     }
 };
 
-void Excute(Base& obj){
-    obj.show();
-}
-
+class order1:public Order{
+   void changeOrder(){
+        cout<<"Change order using Parent"<<endl;
+    } 
+};
 int main() {
    
-   Derived objDerived;
-   Excute(objDerived);
+   
 }
