@@ -1947,8 +1947,56 @@ int main() {
 }
 ```
 
+### Pure Virtual Function
+- A pure virtual function ek aisa virtual function hota hai jiska base class me implementation nahi hota, aur derived class ko usko implement karna hi padta hai
+```cpp
+class Base {
+public:
+    virtual void show() = 0;   // Pure virtual function
+};
+```
+- = 0 ka matlab hai → function pure virtual hai
+- Base class abstract class ban jati hai
+- Is class ka object directly create nahi kar sakte
+- Mandatory override in Derived class
 
+### Abstract class
+- Aisi class jisme at `least ek pure virtual function` ho
+- Abstract class = Interface + Some implementation
+- Data members ho sakte hain 
+- Constructors ho sakte hain 
+- Normal functions ho sakte hain 
+- Pure virtual functions ho sakte hain 
+- Partial implementation de sakti hai 
+```cpp
+class Vehicle {
+protected:
+    int speed;
 
+public:
+    void start() {   // implemented function
+        cout << "Vehicle started\n";
+    }
+
+    virtual void drive() = 0;  // pure virtual
+};
+
+```
+
+### Interface
+- Sirf pure virtual functions hote hain
+- Koi data member nahi hota (design practice),Usually avoided
+- Usually virtual destructor hota hai,Usually avoided
+- Partial implementation NO(no logic)
+- Interface = Only rules, no logic
+```cpp
+class IDriveable {
+public:
+    virtual void drive() = 0;
+    virtual void stop() = 0;
+    virtual ~IDriveable() {}
+};
+```
 
 
 
