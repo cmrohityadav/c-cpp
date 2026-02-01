@@ -1773,6 +1773,10 @@ Compiler bolega:
    - Base class should provide a definition.  
    - If needed, derived class can **override** it.
 
+#### Advantage of compile time binding
+- Performance
+- Type safety
+- Predictibilty
 
 #### Override
 - override ek `compile-time check` hai jo ensure karta hai ki derived class ka function exactly base class ke virtual function ko override kar raha ho
@@ -1804,9 +1808,11 @@ Polymorphism
            - Child class me same signature
            - virtual keyword required
 
-
-
 ```
+#### Function Overloading
+- Same function name butdiffer in parameters
+
+
 
 
 
