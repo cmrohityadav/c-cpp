@@ -339,6 +339,10 @@ int main() {
 - Ye sab templates pe based hote hain, matlab generic aur fast. 
 - STL ne C++ ko “powerful but elegant” banaya, kyunki ab tum reusable aur efficient code likh sakte ho bina wheel dubara banaye.
 
+
+## Function
+- pass by reference/pointer is faster than pass by value in function Parameter
+
 ## Arrays
 - An array is a collection of elements of the **same type**, **stored contiguously in memory**.
 - It’s like ek rail coach — sab compartments (elements) ek ke baad ek lagte hain.
@@ -462,6 +466,17 @@ arr        == &arr[0] == 0x1000
 
 
 ## OOP
+- [class](#class)
+- []()
+- []()
+- []()
+- []()
+- []()
+- []()
+- []()
+- []()
+- []()
+- []()
 
 
 ### Class
