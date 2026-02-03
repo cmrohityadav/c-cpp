@@ -467,7 +467,7 @@ arr        == &arr[0] == 0x1000
 
 ## OOP
 - [class](#class)
-- []()
+- [Object](#object)
 - []()
 - []()
 - []()
@@ -2025,7 +2025,25 @@ inline return_type function_name(parameters) {
 - Agar function bada ho to code size badh sakta hai
 - Har baar inline ho ye jaruri nahi (compiler decide karta hai)
 
+### Misc
+#### Why do we use const keyword after function declaration
+```cpp
+class ABC {
+    int x = 10;
 
+public:
+    void function() const {
+        std::cout << x;
+        // x = x + 10;  ❌ Error
+    }
+};
+```
+- This function promises NOT to modify any data members of the class.
+```cpp
+void function(int a) const {
+    a = a + 10;  // ✅ Allowed
+}
+```
 
 
 
