@@ -342,6 +342,7 @@ int main() {
 
 ## Function
 - pass by reference/pointer is faster than pass by value in function Parameter
+- `void function(const int x)` : Do NOT allow modification of x inside this function
 
 ## Arrays
 - An array is a collection of elements of the **same type**, **stored contiguously in memory**.
