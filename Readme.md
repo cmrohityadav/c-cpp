@@ -339,6 +339,83 @@ int main() {
 - Ye sab templates pe based hote hain, matlab generic aur fast. 
 - STL ne C++ ko “powerful but elegant” banaya, kyunki ab tum reusable aur efficient code likh sakte ho bina wheel dubara banaye.
 
+## Type Conversion
+- ek data type ko dusre data type me convert krna
+### Implicit Type Conversion (Automatic)
+- Isme compiler khud conversion karta hai.
+- Isko `Type Promotion` bhi kehte hain
+```c++
+int a = 5;
+double b = a;   // int automatically double ban gaya
+```
+- Smaller → Larger Type
+- Isko kehte hain `Upcasting` / `Widening` Conversion
+```bash
+char → int
+int → long
+int → double
+float → double
+```
+### Explicit Type Conversion (Manual / Type Casting)
+- Isme programmer khud conversion karta hai
+- Isko `Type Casting` bhi kehte hain.
+1. C-Style Casting
+2. static_cast
+3. dynamic_cast
+4. const_cast
+5. reinterpret_cast
+#### C-Style Casting
+```cpp
+double d = 5.7;
+int a = (int)d;  // 5 ban jayega
+```
+- Risky hota hai
+- Data loss ho sakta hai
+
+#### static_cast
+```cpp
+double d = 5.7;
+int a = static_cast<int>(d);
+```
+- Compile-time pe check hota hai
+- Safer than C-style
+
+#### dynamic_cast
+- Runtime pe check karta hai.
+- Mostly inheritance mein use hota hai
+
+#### const_cast
+- Ye sirf constness change karta hai, data type change nahi karta
+- const remove karta hai
+- const add karta hai
+- Pointer & reference pe kaam karta hai
+- Value pe directly apply nahi hota
+- Lekin actual object agar originally const hai, aur aap usko modify karte ho → Undefined Behavior
+- `const_cast<new_type>(expression);`
+```cpp
+    const int x = 10;
+
+    int* ptr = const_cast<int*>(&x);
+    *ptr = 20;   // ❌ Undefined Behavior
+
+    cout << x << endl;
+```
+```cpp
+int a=10;
+
+    const int* ptr=&a;
+
+    int* newValue=const_cast<int*>(ptr);
+
+    *newValue=20;
+
+    std::cout<<*newValue<<std::endl; //20 
+    std::cout<<a<<std::endl; //20 
+```
+
+
+
+#### reinterpret_cast
 
 ## Function
 - pass by reference/pointer is faster than pass by value in function Parameter
