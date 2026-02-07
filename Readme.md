@@ -14,6 +14,7 @@
 - [Statements](#Statements)
 - [Data input and output](#Data-input-and-output)
 - [C++ core language Vs Standard library Vs STL](#C-core-language-Vs-Standard-library-Vs-STL)
+- [Type Conversion](#type-conversion)
 - [Arrays](#Arrays)
 - [Comments](#comments)
 - [Comments](#comments)
@@ -339,6 +340,27 @@ int main() {
 - Ye sab templates pe based hote hain, matlab generic aur fast. 
 - STL ne C++ ko “powerful but elegant” banaya, kyunki ab tum reusable aur efficient code likh sakte ho bina wheel dubara banaye.
 
+## Pointers
+
+### unique_ptr
+- Ek object ka single owner hota hai.
+- Ek ghar ka ek hi malik
+- new → owner fixed → scope khatam → delete automatic
+- `unique_ptr` almost hamesha heap (dynamic memory) ke object ko manage karta hai.
+- unique_ptr sirf heap allocated object ke liye use karo.
+- unique_ptr ka kaam memory banana nahi hai ->Ownership manage karta hai
+- Memory create hoti hai : `make_unique` se
+- make_unique → heap me object create karta hai
+-  unique_ptr generally heap objects manage karta hai
+-  unique_ptr khud stack pe ho sakta hai
+```bash
+std::unique_ptr<Type> ptr = std::make_unique<Type>(constructor_arguments);
+```
+
+
+
+
+
 ## Type Conversion
 - ek data type ko dusre data type me convert krna
 ### Implicit Type Conversion (Automatic)
@@ -383,6 +405,112 @@ int a = static_cast<int>(d);
 #### dynamic_cast
 - Runtime pe check karta hai.
 - Mostly inheritance mein use hota hai
+- dynamic_cast C++ ka ek runtime type casting operator hai jo mainly inheritance (polymorphism) ke case me use hota hai
+- Ye ensure karta hai ki cast safe hai ya nahi, aur agar cast galat ho to:
+1. Pointer case me → nullptr return karta hai
+2. Reference case me → std::bad_cast exception throw karta hai
+```cpp
+#include <iostream>
+using namespace std;
+
+class A {
+public:
+    virtual void func() { }   // Must have at least one virtual function
+};
+
+class B : public A {
+public:
+    void show() {
+        cout << "Class B\n";
+    }
+};
+
+int main() {
+    A* ptr = new B();  // Base class pointer pointing to Derived object
+
+    B* bptr = dynamic_cast<B*>(ptr);
+
+    if (bptr != nullptr) {
+        cout << "Cast successful\n";
+        bptr->show();
+    } else {
+        cout << "Cast failed\n";
+    }
+}
+
+```
+- STORY
+```bash
+class Animal {
+public:
+    virtual void speak() {
+        cout << "Animal sound\n";
+    }
+};
+
+class Dog : public Animal {
+public:
+    void bark() {
+        cout << "Barking\n";
+    }
+};
+
+class Cat : public Animal {
+public:
+    void meow() {
+        cout << "Meow\n";
+    }
+};
+
+
+----------------------------
+Animal* a = new Dog();
+
+------------------------------
+Ab problem
+a->bark();   // ❌ Error
+
+Kyuki compiler ko sirf itna pata hai ki pointer Animal* hai
+Usko nahi pata ki ye actually Dog hai
+
+--------------------------
+Memory me Dog object hai.
+Lekin pointer Animal type ka hai.
+Toh agar hume Dog ka special function (bark()) call karna ho to?
+-----------------------------
+Pehle check karna padega ki kya ye sach me Dog hai ya nahi.
+
+Yahi
+ kaam karta hai dynamic_cast
+----------------------------
+Wo runtime pe check karta hai:
+
+"Ye Animal pointer actually Dog object ko point kar raha hai kya?"
+
+Agar haan → safe conversion
+Agar nahi → nullptr
+-----------------------------
+
+Animal* a = new Dog();
+
+Dog* d = dynamic_cast<Dog*>(a);
+
+if(d != nullptr) {
+    d->bark();   // Safe
+}
+
+-----------------------------
+Ab feel karo:
+
+Agar object Dog hai → bark chalega
+
+Agar object Cat hota → d = nullptr
+--------------
+Base class pointer/reference se derived class ka object safely nikalna ho
+----------------------------
+
+```
+
 
 #### const_cast
 - Ye sirf constness change karta hai, data type change nahi karta
