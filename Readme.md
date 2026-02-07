@@ -393,12 +393,17 @@ int a = static_cast<int>(d);
 - Lekin actual object agar originally const hai, aur aap usko modify karte ho → Undefined Behavior
 - `const_cast<new_type>(expression);`
 ```cpp
-    const int x = 10;
+   const int a=10;
 
-    int* ptr = const_cast<int*>(&x);
-    *ptr = 20;   // ❌ Undefined Behavior
+    const int* ptr=&a;
 
-    cout << x << endl;
+    int* newValue=const_cast<int*>(ptr);
+
+    *newValue=20; //// ❌ Undefined Behavior
+
+    cout<<"value of a: "<<a<<endl; //10
+    cout<<"value of newValue: "<<*newValue<<endl; //20
+
 ```
 ```cpp
 int a=10;
