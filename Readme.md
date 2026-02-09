@@ -357,8 +357,133 @@ int main() {
 std::unique_ptr<Type> ptr = std::make_unique<Type>(constructor_arguments);
 ```
 
+#### Properties of unique pointer
+##### const unique_ptr can't be copied
 
+##### We cannot create the copy of unique_ptr
+```cpp
+std::unique_ptr<int> p1 = std::make_unique<int>(20);
 
+// std::unique_ptr<int> p2(p1);   // ❌ Error
+
+ std::unique_ptr<int> p3 = p1;   // ❌ Error: copy not allowed
+```
+##### We can pass the ownership using std::move()
+```cpp
+#include <iostream>
+#include <memory>
+
+int main() {
+    std::unique_ptr<int> p1 = std::make_unique<int>(30);
+
+    std::unique_ptr<int> p2 = std::move(p1);  // Ownership transferred
+
+    if (!p1)
+        std::cout << "p1 is now null\n";
+
+    std::cout << "p2 value: " << *p2 << "\n";
+}
+```
+##### Memory deletion is guaranteed in normal exit and exception exit
+```cpp
+#include <memory>
+
+void func() {
+    std::unique_ptr<int> ptr = std::make_unique<int>(100);
+}  // Memory automatically deleted here
+
+void funcException() {
+    std::unique_ptr<int> ptr = std::make_unique<int>(200);
+    throw std::runtime_error("Error occurred");
+}
+
+int main() {
+    try {
+        funcException();
+    } catch (...) {
+        std::cout << "Exception caught\n";
+    }
+}
+```
+
+### shared_ptr
+- Ek object ke multiple owners ho sakte hain.
+- Ek ghar ke kai malik (joint ownership).
+- new → reference count start = 1
+- Har copy → reference count ++
+- Jab last owner scope se bahar → delete automatic
+- shared_ptr bhi generally heap (dynamic memory) ke object ko manage karta hai.
+- shared_ptr sirf heap allocated object ke liye use karo.
+- shared_ptr ka kaam memory banana nahi hai → Ownership manage karta hai
+- Memory create hoti hai: make_shared se
+- make_shared → heap me object create karta hai
+- shared_ptr generally heap objects manage karta hai
+- shared_ptr khud stack pe ho sakta hai
+```cpp
+std::shared_ptr<Type> ptr = std::make_shared<Type>(constructor_arguments);
+```
+#### Properties of shared_ptr
+##### shared_ptr can be copied
+✔ Copy allowed
+✔ Reference count increase hota hai
+```cpp
+#include <iostream>
+#include <memory>
+
+int main() {
+    std::shared_ptr<int> p1 = std::make_shared<int>(20);
+
+    std::shared_ptr<int> p2 = p1;   // ✅ Copy allowed
+
+    std::cout << "p1 count: " << p1.use_count() << "\n";
+    std::cout << "p2 count: " << p2.use_count() << "\n";
+}
+
+```
+- use_count() object ka hota hai, pointer ka nahi.
+
+##### Ownership shared hota hai (Reference Counting)
+```cpp
+#include <iostream>
+#include <memory>
+
+int main() {
+    std::shared_ptr<int> p1 = std::make_shared<int>(50);
+
+    {
+        std::shared_ptr<int> p2 = p1;
+        std::cout << "Inside block count: " << p1.use_count() << "\n";
+    } // p2 destroyed here
+
+    std::cout << "Outside block count: " << p1.use_count() << "\n";
+}
+
+```
+
+##### Memory deletion is automatic (Normal + Exception)
+```cpp
+void func() {
+    std::shared_ptr<int> ptr = std::make_shared<int>(100);
+}  // Memory deleted when ref count becomes 0
+
+/////////////////
+#include <iostream>
+#include <memory>
+
+void funcException() {
+    std::shared_ptr<int> ptr = std::make_shared<int>(200);
+    throw std::runtime_error("Error occurred");
+}
+
+int main() {
+    try {
+        funcException();
+    } catch (...) {
+        std::cout << "Exception caught\n";
+    }
+}
+
+```
 
 
 ## Type Conversion
