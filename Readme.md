@@ -14,6 +14,8 @@
 - [Statements](#Statements)
 - [Data input and output](#Data-input-and-output)
 - [C++ core language Vs Standard library Vs STL](#C-core-language-Vs-Standard-library-Vs-STL)
+- [Pointers](#pointers)
+- [Reference](#reference)
 - [Type Conversion](#type-conversion)
 - [Arrays](#Arrays)
 - [Comments](#comments)
@@ -484,7 +486,20 @@ int main() {
 }
 
 ```
+## Reference
+- A reference is an alias (another name) for an existing variable
+```c++
+int a = 5, b = 10;
 
+// int& r;        // ❌ Error – must initialize
+   
+int& r = a;    // r refers to the same memory as a
+// r actually a ka dusra naam (alias) hai
+
+r = b;       // ❌ doesn't rebind, just assigns value
+
+int& r = nullptr;  // ❌ Not allowed
+```
 
 ## Type Conversion
 - ek data type ko dusre data type me convert krna
