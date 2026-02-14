@@ -1,19 +1,24 @@
 #include<iostream>
 
+class Acc{
+  int money;
+
+  public:
+  void setMoney(int m){
+    if(m<0){
+      std::cout<<"Hey Invalid amount"<<std::endl;
+    }else{
+      money=m;
+      std::cout<<"Hey Invalid amount"<<std::endl;
+    }
+    
+  }
+};
 int main(){
 
-  int a=10, b=40;
+  Acc rohit;
 
-  std::cout<<a<<std::endl;
-
-  int& ref=a;
-
-  ref=b;
-
-  std::cout<<ref<<std::endl;
-
-  std::cout<<"after a: "<<std::endl;
-  std::cout<<a<<std::endl;
+  rohit.setMoney(-10);
   
 
   return 0;

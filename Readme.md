@@ -819,8 +819,8 @@ arr        == &arr[0] == 0x1000
 ## OOP
 - [class](#class)
 - [Object](#object)
-- []()
-- []()
+- [Access Modifiers](#access-modifiers)
+- [Constructor](#constructor)
 - []()
 - []()
 - []()
@@ -840,7 +840,11 @@ arr        == &arr[0] == 0x1000
 ---
 - An Object is nothing but a particular instance of a class
 - Just like Xerox copy, we can create n number of piece
-
+### Access Specifiers
+- ``private`` Members are accessible only within the class. This is the default access level for classmembers.
+- `public` Members are accessible from outside the class
+- `protected` Members are accessible with in the class and its derived classes
+(used in inheritance)
 ```c++
 class Animal {
     public: //access modifier
@@ -876,7 +880,10 @@ class Strategy{
 
 //main.cpp
 int main{
-    //automatic storage allocation
+    //automatic storage allocation(Memory allocated on stack)
+    //Constructor runs automatically
+    //Destructor runs automatically when scope ends
+
     Strategy s1;
 
     s1.orderQty=100;
@@ -893,7 +900,7 @@ int main{
 
 
    
-    // dynamic storage allocation
+    // dynamic storage allocation (Allocates memory on the heap)
     Strategy* dynamicProfit = new Strategy();
 
     dynamicProfit->orderQty = 1000;
@@ -928,6 +935,7 @@ new Strategy();
 ```bash
 dynamicProfit->orderQty = 1000; <==>(*dynamicProfit).orderQty = 1000;
 ```
+- `->  =  (*pointer).`
 ### **Deallocating Memory**
 - Memory allocated using `new` must be released using `delete`
 - Prevents memory leaks
@@ -992,6 +1000,34 @@ dynamicProfit = nullptr;
 - Class ke andar
 - Derived class ke andar
 - Bahar se `nhi `
+
+### Accessing Class Members
+- `Public Members`: Public members can be accessed directly using the dot operator
+(.) on the object
+- `Private Members`: Private members cannot be accessed directly from outside the
+class.
+They can only be accessed through public member functions (`getters and
+setters`).
+```cpp
+class Strategy {
+private:
+    int orderQty;
+
+public:
+    void setOrderQty(int qty) {
+        orderQty = qty;
+    }
+
+    int getOrderQty() {
+        return orderQty;
+    }
+};
+
+Strategy s1;
+s1.setOrderQty(100);   // ✅ correct
+// s1.orderQty = 100;  ❌ error (private)
+```
+- `Protected` :Member class ke andar aur uske derived (child) classes ke andar accessible hoga, lekin outside world se direct access nahi hoga
 
 ### Constructor
 - This is an special function that is used to `initilize the member variables` during object creation
