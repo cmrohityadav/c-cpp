@@ -1,25 +1,23 @@
 #include<iostream>
-
-class Acc{
-  int money;
-
+class Strategy{
   public:
-  void setMoney(int m){
-    if(m<0){
-      std::cout<<"Hey Invalid amount"<<std::endl;
-    }else{
-      money=m;
-      std::cout<<"Hey Invalid amount"<<std::endl;
-    }
-    
+  int amt;
+
+  Strategy()=delete;
+
+  Strategy(int amt){
+    this->amt=amt;
+    std::cout<<"Constructor called"<<std::endl;
+  }
+
+  Strategy(){
+    this->amt=5;
+    std::cout<<"Constructor called"<<std::endl;
   }
 };
 int main(){
 
-  Acc rohit;
-
-  rohit.setMoney(-10);
-  
-
+  Strategy s;
+  std::cout<<s.amt<<std::endl;
   return 0;
 }
