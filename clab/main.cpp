@@ -1,73 +1,46 @@
 #include<iostream>
-class Box{
-   int* len;
-public: 
-   void Volume(){
-    std::cout<<"Volume: "<<(*len)*(*len)*(*len)<<std::endl;
-   }
 
-  Box(int length){
-    len=new int(length);
-  }
-  ~Box(){
-    delete len;
-  }
-   
-};
-
-class Circle{
-  int* radius;
-
+class Animal{
   public:
-  void Area(){
-    std::cout<<"Area: "<<3.14*(*radius)*(*radius)<<std::endl;
+  void Speak(){
+    std::cout<<"Speak"<<std::endl;
   }
-
-  Circle(int rad){
-    radius=new int(rad);
+};
+class Dog: public Animal{
+  public:
+  void Speak(){
+    std::cout<<"Bhowwwwwwwwwwwwww"<<std::endl;
   }
-
-  //  Deep copy constructor
-  Circle(const Circle& other){
-    radius=new int(*other.radius);
-  }
-
-  //Copy Assignment Operator
-  Circle& operator=(const Circle& other) {
-        if (this == &other)
-            return *this;
-
-        delete radius;
-        radius = new int(*other.radius);
-        return *this;
-    }
-
-  ~Circle(){
-    delete radius;
+};
+class Cat:public Animal{
+  public:
+  void Speak(){
+    std::cout<<"Meowwwwwwwwwwwww"<<std::endl;
   }
 };
 int main(){
 
-  //Shallow Copy Example
-  Box b1(10);
+  Animal a;
+  a.Speak();
 
-  Box b2=b1; //// Copy constructor called
+  Dog d;
+  d.Speak();
 
-  b1.Volume();
+  Cat c;
+  c.Speak();
 
-  b2.Volume();
+  Animal* pA=new Animal();
+  pA->Speak();//Speak
 
-  //Deep Copy Example
-  Circle c1(5);
-  Circle c2=c1;   // Copy constructor called
-  Circle c3(10); 
+  Animal* pAD=new Dog();
+  pAD->Speak(); //Speak
 
-  c1.Area();
-  c2.Area();
-  c3.Area();
-  
-  c3=c1; //c2.operator=(c1);  // Copy assignment operator called
-  c3.Area();
+  Dog* pDD=new Dog();
+  pDD->Speak(); //Bhowwwwwwwwwwwwww
+
+
+
+
 
   return 0;
 }

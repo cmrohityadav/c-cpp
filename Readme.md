@@ -821,9 +821,9 @@ arr        == &arr[0] == 0x1000
 - [Object](#object)
 - [Access Modifiers](#access-modifiers)
 - [Constructor](#constructor)
-- []()
-- []()
-- []()
+- [this](#this)
+- [Static](#static-in-class)
+- [Inheritance](#inheritance)
 - []()
 - []()
 - []()
@@ -1833,7 +1833,17 @@ int main(){
 
 ### Inheritance
 - Mechanism to reuse the methods/behaviour of one class to another class
+- A `base class` (also called a parent class or superclass) is an existing class from which other classes can inherit. It defines the common properties and behaviors that are shared by all derived classes.
 
+- A `derived class` (also called a child class or subclass) is a class that
+inherits from a base class. It can add new properties and behaviors or override
+existing ones
+```cpp
+ class DerivedClass : access-specifier BaseClass {
+// Derived class members
+}```
+
+- Example 
 ```cpp
 #include<iostream>
 
@@ -2136,6 +2146,51 @@ int main(){
 | **Protected**        | Protected         | Protected            | ❌ Not accessible   |
 | **Private**          | Private           | Private              | ❌ Not accessible   |
 
+```
+
+```cpp
+#include<iostream>
+
+class Animal{
+  public:
+  void Speak(){
+    std::cout<<"Speak"<<std::endl;
+  }
+};
+class Dog: public Animal{
+  public:
+  void Speak(){
+    std::cout<<"Bhowwwwwwwwwwwwww"<<std::endl;
+  }
+};
+class Cat:public Animal{
+  public:
+  void Speak(){
+    std::cout<<"Meowwwwwwwwwwwww"<<std::endl;
+  }
+};
+int main(){
+
+  Animal a;
+  a.Speak();
+
+  Dog d;
+  d.Speak();
+
+  Cat c;
+  c.Speak();
+
+  Animal* pA=new Animal();
+  pA->Speak();//Speak
+
+  Animal* pAD=new Dog();
+  pAD->Speak(); //Speak
+
+  Dog* pDD=new Dog();
+  pDD->Speak(); //Bhowwwwwwwwwwwwww
+
+  return 0;
+}
 ```
 
 ### Compile vs Run Time Binding
