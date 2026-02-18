@@ -1042,6 +1042,9 @@ do `not have a return type`, **not even void**
 - [Constructor Initializer List](#constructor-initializer-list)
 - [Normal Initialization](#normal-initialization)
 - [Copy Constructor](#copy-constructor)
+- [Example of Shallow/Deep Copy, Copy constructor,Copy Assignment Operator](#example-of-shallowdeep-copy-copy-constructorcopy-assignment-operator)
+- [Move ](TODO)
+- [RAII](TODO)
 - []()
 - []()
 
@@ -1493,8 +1496,9 @@ class Circle{
 
   //Copy Assignment Operator
   Circle& operator=(const Circle& other) {
-        if (this == &other)
-            return *this;
+        // other → reference to the right-hand object
+        if (this == &other) //this → points to the object that called the function
+            return *this; 
 
         delete radius;
         radius = new int(*other.radius);
@@ -1525,7 +1529,7 @@ int main(){
   c2.Area();
   c3.Area();
   
-  c3=c1; //c2.operator=(c1);  // Copy assignment operator called
+  c3=c1; //c3.operator=(c1);  // Copy assignment operator called
   c3.Area();
 
   return 0;
