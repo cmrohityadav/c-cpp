@@ -824,8 +824,8 @@ arr        == &arr[0] == 0x1000
 - [this](#this)
 - [Static](#static-in-class)
 - [Inheritance](#inheritance)
-- []()
-- []()
+- [Compile vs Run Time Binding](#compile-vs-run-time-binding)
+- [Virtual function](#virtual-function)
 - []()
 - []()
 
@@ -2060,7 +2060,67 @@ int main() {
 }
 
 ```
+- **Constructors:** When a `derived class object is created`, the `base class constructor` is called `first`, followed by the derived class constructor
 
+- **Destructors:** When a `derived class object is destroyed`, the `derived class destructor is called first`, followed by the base class destructor
+- C++ always calls constructors in the order of declaration and destructors in reverse
+```cpp
+#include <iostream>
+using namespace std;
+
+// Base classes
+class A {
+public:
+    A() { cout << "A constructor\n"; }
+    ~A() { cout << "A destructor\n"; }
+};
+
+class B {
+public:
+    B() { cout << "B constructor\n"; }
+    ~B() { cout << "B destructor\n"; }
+};
+
+class C {
+public:
+    C() { cout << "C constructor\n"; }
+    ~C() { cout << "C destructor\n"; }
+};
+
+// Derived class inheriting from multiple bases
+class D : public A, public B, public C {
+public:
+    D() { cout << "D constructor\n"; }
+    ~D() { cout << "D destructor\n"; }
+};
+
+int main() {
+    D obj;
+    return 0;
+}
+
+/*
+A constructor
+B constructor
+C constructor
+D constructor
+D destructor
+C destructor
+B destructor
+A destructor
+
+*/
+```
+
+```bash
+| Situation                                                  | What happens                                      |
+| ---------------------------------------------------------- | ------------------------------------------------- |
+| Object created on stack                                    | Destructors called automatically in reverse order |
+| Object created on heap, deleted via derived pointer        | Derived → Base destructors called automatically   |
+| Object deleted via base pointer without virtual destructor | Only base destructor called → Undefined behavior  |
+
+
+```
 ### Access Modifiers
 ```bash
 | Access specifier | Same class | Derived class | Outside class |
@@ -2148,6 +2208,13 @@ int main(){
 
 ```
 
+
+### Compile vs Run Time Binding
+- assume derived class me X function hai, same function Parent class me bhi hai to konsa excute hoga 
+#### Compile Time Binding
+- Compiler can decide at compile time itself which function to excecute
+- Early binding
+- 
 ```cpp
 #include<iostream>
 
@@ -2193,22 +2260,72 @@ int main(){
 }
 ```
 
-### Compile vs Run Time Binding
-- assume derived class me X function hai, same function Parent class me bhi hai to konsa excute hoga
-#### Compile Time Binding
-- Compiler can decide at compile time itself which function to excecute
-- Early binding
-- 
-
 
 #### Run Time Binding
 - Compiler decides at runtime which function to execute
 - Late binding
 - It take extra time so we avoid for latency application
 - 
+```cpp
+#include <iostream>
+using namespace std;
+
+class Animal {
+public:
+    virtual void Speak() {   // virtual lagaya
+        cout << "Speak" << endl;
+    }
+    virtual ~Animal(){} // Destructor ko bhi virtual karna best practice hai
+};
+
+class Dog : public Animal {
+public:
+    void Speak() override {  // override optional but good practice
+        cout << "Bhowwwwwwwwwwwwww" << endl;
+    }
+};
+
+class Cat : public Animal {
+public:
+    void Speak() override {
+        cout << "Meowwwwwwwwwwwww" << endl;
+    }
+};
+
+int main() {
+    Animal a;
+    a.Speak(); // Speak
+
+    Dog d;
+    d.Speak(); // Bhowwwwwwwwwwwwww
+
+    Cat c;
+    c.Speak(); // Meowwwwwwwwwwwww
+
+    Animal* pA = new Animal();
+    pA->Speak(); // Speak
+
+    Animal* pAD = new Dog();
+    pAD->Speak(); // Bhowwwwwwwwwwwwww ✅ runtime polymorphism
+
+    Dog* pDD = new Dog();
+    pDD->Speak(); // Bhowwwwwwwwwwwwww
+
+    delete pA;
+    delete pAD;
+    
+    return 0;
+}
+
+```
 
 ### Virtual function
-- STORY
+- A virtual function is a `function in a base class` that can be `overridden in` a `derived class`
+- Its key feature: C++ decides at runtime which `function to call` based on the `actual object type`, `not the pointer type`
+- This is called runtime polymorphism
+- In C++, member variables depend on the pointer (or reference) type, not the actual object type
+- In C++, member functions (if declared virtual) depend on the actual object type at runtime, not the pointer or reference type
+- **STORY**
 ```bash
 
 class Animal {
@@ -2233,6 +2350,11 @@ public:
 };
 
 //Compile time pe kya banta hai?
+
+Jab koi class me virtual function hota hai, compiler us class ke liye ek vtable (virtual table) banata hai.
+
+Vtable me function pointers hote hain, jo actual function addresses store karte hain.
+
 Vtables banti hain
 Animal vtable:
 [ Animal::sound ]
