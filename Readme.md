@@ -2324,7 +2324,9 @@ int main() {
 - Its key feature: C++ decides at runtime which `function to call` based on the `actual object type`, `not the pointer type`
 - This is called runtime polymorphism
 - In C++, member variables depend on the pointer (or reference) type, not the actual object type
+- Non-virtual function → pointer type hi decide karta hai
 - In C++, member functions (if declared virtual) depend on the actual object type at runtime, not the pointer or reference type
+- Agar derived class ne override nahi kiya, base class ka function call hoga
 - **STORY**
 ```bash
 
