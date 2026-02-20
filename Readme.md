@@ -832,7 +832,8 @@ arr        == &arr[0] == 0x1000
 - [Abstract class](#abstract-class)
 - [Interface](#Interface)
 - [Inline](#inline)
-- []()
+- [Diamond Problem](#diamond-problem)
+- [Virtual Base Classes](#virtual-base-classes)
 
 
 ### Class
@@ -2706,6 +2707,56 @@ inline return_type function_name(parameters) {
 - Har baar inline ho ye jaruri nahi (compiler decide karta hai)
 
 ### Diamond Problem
+```bash
+class A {
+public:
+    int x;
+};
+
+class B : public A {};
+
+class C : public A {};
+
+class D : public B, public C {};
+
+/////////////////////////////////
+
+        A
+       / \
+      B   C
+       \  /
+         D
+```
+- Diamond problem tab hota hai jab multiple inheritance me ek hi base class do baar inherit ho jati hai
+- Solution is `Virtual Base Classes`
+### Virtual Base Classes
+- Wo base class jo multiple inheritance me ek hi copy share karne ke liye virtual keyword ke saath inherit hoti hai
+- Jo class multiple inheritance me virtual keyword ke saath inherit hoti hai, wahi virtual base class ban jaati hai
+- Virtual base: Constructor sirf most derived class call karti hai
+- Jo class final object banata hai, wahi most derived
+- Virtual base constructor → Intermediate base constructors → Most derived constructor
+- Virtual base class ka constructor sabse derived object (most derived class) se call hota hai, intermediate base classes nahi
+- Yaha A virtual base class hai
+```cpp
+class A { };
+
+//B aur C → intermediate bases
+class B : virtual public A { };
+class C : virtual public A { };
+class D : public B, public C { }; //D → most derived
+```
+```bash
+    D
+   / \
+  B   C
+   \ /
+    A  <- single shared instance
+
+```
+- Virtual base class ka constructor pehle call hota hai (A)
+- Fir normal base classes (B → C)
+- Fir most derived class (D)
+
 ### Misc
 #### Why do we use const keyword after function declaration
 ```cpp

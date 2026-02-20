@@ -1,17 +1,19 @@
 #include<iostream>
-using namespace std;
-class Base {
-public:
-    virtual void f() { cout << "Base\n"; }
+class A{
+    public:
+    int x;
+    A(int a=64):x(a){}
 };
 
-class Derived : public Base {
-    void f(){
-      cout << "Derived\n";
-    }
-};
+class B:public A{};
+// class C: public A{};
 
-int main() {
-    Base* ptr = new Derived();
-    ptr->f(); // ✅ Output: Base
+class D: public B{};
+int main(){
+
+    D d1;
+    std::cout<<d1.x<<std::endl;
+    
+
+    return 0;
 }
