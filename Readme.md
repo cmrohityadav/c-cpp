@@ -827,6 +827,11 @@ arr        == &arr[0] == 0x1000
 - [Compile vs Run Time Binding](#compile-vs-run-time-binding)
 - [Virtual function](#virtual-function)
 - []()
+- [Polymorphism](#Polymorphism)
+- [Pure Virtual Function](#pure-virtual-function)
+- [Abstract class](#abstract-class)
+- [Interface](#Interface)
+- [Inline](#inline)
 - []()
 
 
@@ -1838,6 +1843,14 @@ int main(){
 - A `derived class` (also called a child class or subclass) is a class that
 inherits from a base class. It can add new properties and behaviors or override
 existing ones
+
+[Single Inheritance](#Single-Inheritance)
+[Multiple  Inheritance](#multiple--inheritance)
+[Multilevel Inheritance](#multilevel-inheritance)
+[Hierarchical Inheritance](#hierarchical-inheritance)
+[Hybrid Inheritance](#hybrid-inheritance)
+[]()
+
 ```cpp
  class DerivedClass : access-specifier BaseClass {
 // Derived class members
@@ -2629,7 +2642,8 @@ int main() {
 ```
 
 ### Pure Virtual Function
-- A pure virtual function ek aisa virtual function hota hai jiska base class me implementation nahi hota, aur derived class ko usko implement karna hi padta hai
+- A pure virtual function ek aisa virtual function hota hai `jiska base class me implementation nahi hota`, aur derived class ko usko implement karna hi padta hai
+-  `virtual ReturnType FunctionName(Parameters) = 0;`
 ```cpp
 class Base {
 public:
@@ -2642,7 +2656,7 @@ public:
 - Mandatory override in Derived class
 
 ### Abstract class
-- Aisi class jisme at `least ek pure virtual function` ho
+- Aisi class jisme `at least ek pure virtual function` ho
 - Abstract class = Interface + Some implementation
 - Data members ho sakte hain 
 - Constructors ho sakte hain 
@@ -2665,13 +2679,13 @@ public:
 ```
 
 ### Interface
-- Sirf pure virtual functions hote hain
+- `Sirf pure virtual functions` hote hain
 - Koi data member nahi hota (design practice),Usually avoided
 - Usually virtual destructor hota hai,Usually avoided
 - Partial implementation NO(no logic)
 - Interface = Only rules, no logic
 ```cpp
-class IDriveable {
+class Driveable {
 public:
     virtual void drive() = 0;
     virtual void stop() = 0;
@@ -2691,6 +2705,7 @@ inline return_type function_name(parameters) {
 - Agar function bada ho to code size badh sakta hai
 - Har baar inline ho ye jaruri nahi (compiler decide karta hai)
 
+### Diamond Problem
 ### Misc
 #### Why do we use const keyword after function declaration
 ```cpp
