@@ -827,6 +827,8 @@ arr        == &arr[0] == 0x1000
 - [Compile vs Run Time Binding](#compile-vs-run-time-binding)
 - [Virtual function](#virtual-function)
 - []()
+- [Override](#Override)
+- [final ](#final)
 - [Polymorphism](#Polymorphism)
 - [Pure Virtual Function](#pure-virtual-function)
 - [Abstract class](#abstract-class)
@@ -2475,10 +2477,48 @@ Compiler bolega:
 
 #### Override
 - override ek `compile-time check` hai jo ensure karta hai ki derived class ka function exactly base class ke virtual function ko override kar raha ho
-- Ye function base class ke virtual function ko override kar raha hai
+- Ye function base class ke virtual function ko override kar raha hai, base class me function jarur virtaul rhna chahiye hai
 - Agar match nahi hua → compile-time error do
 - Signature mismatch se bachne ke liye
+```cpp
+class Derived : public Base {
+public:
+    void show() override {   // Compiler verify karega
+        cout << "Derived class show function" << endl;
+    }
+};
 
+```
+
+#### final 
+##### final with Function
+- Agar aap chahte hain ki `koi derived class` kisi function ko override na kar sake, to final use karte hain.
+- final ka real matlab tab hota hai jab function virtual ho base class me
+```cpp
+class Base {
+public:
+    virtual void show() final {
+        cout << "Base show function" << endl;
+    }
+};
+
+class Derived : public Base {
+public:
+    void show() override {  // ❌ Error // derived function override nhi kr skta ab
+        cout << "Derived show function" << endl;
+    }
+};
+```
+##### final with Class
+- Agar aap chahte hain ki koi class inherit na ho sake, to class ke sath final lagate hain.
+- Yaha virtual ki koi zarurat nahi
+```cpp
+class Base final { //Is class ko inherit nahi kiya ja sakta
+};
+
+class Derived : public Base {  // ❌ Error koi class ab derive nhi kr skta
+};
+```
 ### Polymorphism
 ```bash
 
