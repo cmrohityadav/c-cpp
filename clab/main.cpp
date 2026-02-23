@@ -1,19 +1,23 @@
 #include<iostream>
-class A{
-    public:
-    int x;
-    A(int a=64):x(a){}
+
+class Number{
+public:
+    int value;
+
+    Number(int n):value(n){}
+
+    // 😈 Masti assignment
+    Number& operator=(const Number &obj){
+        this->value = obj.value * 2;   // double kar diya
+        return *this;
+    }
 };
 
-class B:public A{};
-// class C: public A{};
-
-class D: public B{};
 int main(){
+    Number num1(10);
+    Number num2(20);
 
-    D d1;
-    std::cout<<d1.x<<std::endl;
-    
+    num1 = num2;
 
-    return 0;
+    std::cout<<num1.value<<std::endl;
 }

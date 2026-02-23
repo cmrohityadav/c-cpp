@@ -826,17 +826,22 @@ arr        == &arr[0] == 0x1000
 - [Inheritance](#inheritance)
 - [Compile vs Run Time Binding](#compile-vs-run-time-binding)
 - [Virtual function](#virtual-function)
-- []()
+- [Operator Overloading](#operator-overloading)
 - [Override](#Override)
 - [final ](#final)
 - [Polymorphism](#Polymorphism)
+- [Function Overloading](#function-overloading)
+- []()
 - [Pure Virtual Function](#pure-virtual-function)
 - [Abstract class](#abstract-class)
 - [Interface](#Interface)
 - [Inline](#inline)
 - [Diamond Problem](#diamond-problem)
 - [Virtual Base Classes](#virtual-base-classes)
-
+- []()
+- []()
+- []()
+- [Misc](#misc)
 
 ### Class
 - A class is nothing, but a blue print that is used to create Object
@@ -2546,6 +2551,63 @@ Polymorphism
 ```
 #### Function Overloading
 - Same function name butdiffer in parameters
+#### Operator Overloading
+- Existing operator ko custom meaning dena for `user-defined data types` (classes).
+```cpp
+return_type operator symbol (parameters) {
+    // logic
+}```
+
+```cpp
+#include <iostream>
+using namespace std;
+
+class Complex {
+public:
+    int real, imag;
+
+    Complex(int r, int i) {
+        real = r;
+        imag = i;
+    }
+
+    // Operator Overloading 
+    Complex operator + (Complex objArgument) { 
+        Complex temp(0,0);
+        //this = c1
+        //objArgument=c2
+        temp.real = this->real + objArgument.real;
+        temp.imag = this->imag + objArgument.imag;
+        return temp;
+    }
+
+    void display() {
+        cout << real << " + " << imag << "i" << endl;
+    }
+};
+
+int main() {
+    Complex c1(3,4);
+    Complex c2(2,5);
+
+    Complex c3 = c1 + c2;   //c1.operator+(c2);
+    c3.display();
+}
+```
+- c1 → calling object
+- c2 → argument object
+- `Complex operator + (const Complex &objArgument)`
+- `Complex operator+(const Complex &objArgument) const`
+
+- friend function
+```cpp
+return_type operator+(const Complex &c1, const Complex &c2) {
+    Complex temp(0,0);
+    temp.real = c1.real + c2.real;
+    temp.imag = c1.imag + c2.imag;
+    return temp;
+}
+```
 
 #### Why to use virtual destructor in c++?
 - Agar destructor virtual nahi hoga, to sirf base class ka destructor call hoga — derived class ka nahi
@@ -2796,6 +2858,8 @@ class D : public B, public C { }; //D → most derived
 - Virtual base class ka constructor pehle call hota hai (A)
 - Fir normal base classes (B → C)
 - Fir most derived class (D)
+
+### 
 
 ### Misc
 #### Why do we use const keyword after function declaration
