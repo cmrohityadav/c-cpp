@@ -1094,7 +1094,39 @@ int main(){
 }
 
 ```
+#### friend class
+- Friend class wo class hoti hai jise kisi dusri class ke
+ private aur protected members ko access karne ki special permission di jaati hai
+- Normally: Private data ko sirf wahi class access kar sakti hai, Bahar ki koi class access nahi kar sakti
+```cpp
+#include <iostream>
+using namespace std;
 
+class Mechanic;  // forward declaration
+
+class Car {
+private:
+    int engineNumber;
+
+public:
+    Car(int num) : engineNumber(num) {}
+
+    friend class Mechanic;  // Mechanic class ko special access
+};
+
+class Mechanic {
+public:
+    void inspectCar(Car c) {
+        cout << "Engine Number: " << c.engineNumber << endl;
+    }
+};
+
+int main() {
+    Car myCar(12345);
+    Mechanic m;
+    m.inspectCar(myCar);
+}
+```
 ### Constructor
 - This is an special function that is used to `initilize the member variables` during object creation
 - Constructors have the `same name as the class `and

@@ -1,34 +1,27 @@
-#include<iostream>
+#include <iostream>
+using namespace std;
 
-class Student{
-    private:
-    std::string student_name;
-    int mark;
+class Mechanic;  // forward declaration
 
-    public:
-    Student(std::string name,int mark):student_name(name),mark(mark){}
+class Car {
+private:
+    int engineNumber;
 
-    friend void checkAndVerifyResult(const Student& s);
+public:
+    Car(int num) : engineNumber(num) {}
+
+    friend class Mechanic;  // Mechanic class ko special access
 };
 
-void checkAndVerifyResult(const Student& student){
-    std::cout<<"Student Name: "<<student.student_name<<std::endl;
-    std::cout<<"Marks: "<<student.mark<<std::endl;
-
-    if(student.mark>=35){
-            std::cout<<"Status: Pass"<<std::endl;
-    }else{
-            std::cout<<"Status: Fail"<<std::endl;
+class Mechanic {
+public:
+    void inspectCar(Car c) {
+        cout << "Engine Number: " << c.engineNumber << endl;
     }
+};
 
-}
-
-int main(){
-    Student rohit("rohit",78);
-    checkAndVerifyResult(rohit);
-
-    Student rahul("rahul",34);
-    checkAndVerifyResult(rahul);
-
-    return 0;
+int main() {
+    Car myCar(12345);
+    Mechanic m;
+    m.inspectCar(myCar);
 }
