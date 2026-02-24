@@ -820,6 +820,7 @@ arr        == &arr[0] == 0x1000
 - [class](#class)
 - [Object](#object)
 - [Access Modifiers](#access-modifiers)
+- [friend](#friend)
 - [Constructor](#constructor)
 - [this](#this)
 - [Static](#static-in-class)
@@ -1041,6 +1042,58 @@ s1.setOrderQty(100);   // ✅ correct
 // s1.orderQty = 100;  ❌ error (private)
 ```
 - `Protected` :Member class ke andar aur uske derived (child) classes ke andar accessible hoga, lekin outside world se direct access nahi hoga
+### friend
+#### friend function
+- C++ mein normally: Class ke private aur protected members ko, Sirf class ke member functions hi access kar sakte hain
+- Lekin agar hum kisi external function ko class ke andar friend declare kar dein
+- toh wo function class ke private data ko access kar sakta hai
+- Friend function class ka member nahi hota, lekin usse class ke private members tak access milta hai
+```cpp
+class ClassName {
+private:
+    int data;
+
+public:
+    friend void functionName(ClassName obj);
+};
+```
+```cpp
+#include<iostream>
+
+class Student{
+    private:
+    std::string student_name;
+    int mark;
+
+    public:
+    Student(std::string name,int mark):student_name(name),mark(mark){}
+
+    friend void checkAndVerifyResult(const Student& s);
+};
+
+void checkAndVerifyResult(const Student& student){
+    std::cout<<"Student Name: "<<student.student_name<<std::endl;
+    std::cout<<"Marks: "<<student.mark<<std::endl;
+
+    if(student.mark>=35){
+            std::cout<<"Status: Pass"<<std::endl;
+    }else{
+            std::cout<<"Status: Fail"<<std::endl;
+    }
+
+}
+
+int main(){
+    Student rohit("rohit",78);
+    checkAndVerifyResult(rohit);
+
+    Student rahul("rahul",34);
+    checkAndVerifyResult(rahul);
+
+    return 0;
+}
+
+```
 
 ### Constructor
 - This is an special function that is used to `initilize the member variables` during object creation

@@ -1,23 +1,34 @@
 #include<iostream>
 
-class Number{
-public:
-    int value;
+class Student{
+    private:
+    std::string student_name;
+    int mark;
 
-    Number(int n):value(n){}
+    public:
+    Student(std::string name,int mark):student_name(name),mark(mark){}
 
-    // 😈 Masti assignment
-    Number& operator=(const Number &obj){
-        this->value = obj.value * 2;   // double kar diya
-        return *this;
-    }
+    friend void checkAndVerifyResult(const Student& s);
 };
 
+void checkAndVerifyResult(const Student& student){
+    std::cout<<"Student Name: "<<student.student_name<<std::endl;
+    std::cout<<"Marks: "<<student.mark<<std::endl;
+
+    if(student.mark>=35){
+            std::cout<<"Status: Pass"<<std::endl;
+    }else{
+            std::cout<<"Status: Fail"<<std::endl;
+    }
+
+}
+
 int main(){
-    Number num1(10);
-    Number num2(20);
+    Student rohit("rohit",78);
+    checkAndVerifyResult(rohit);
 
-    num1 = num2;
+    Student rahul("rahul",34);
+    checkAndVerifyResult(rahul);
 
-    std::cout<<num1.value<<std::endl;
+    return 0;
 }
