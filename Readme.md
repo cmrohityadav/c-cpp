@@ -21,6 +21,7 @@
 - [Comments](#comments)
 - [Comments](#comments)
 - [OOP](#oop)
+- [Scope Resolution Operator](#Scope-Resolution-Operator)
 - [Comments](#comments)
 
 ## Why C++
@@ -2965,6 +2966,51 @@ void function(int a) const {
     a = a + 10;  // ✅ Allowed
 }
 ```
+
+## Scope Resolution Operator
+- gar 2 log ka naam same ho (maan lo dono ka naam "x") — to C++ ko kaise pata chale kaunsa x?
+- Mujhe exact batao tum kis scope ka naam use karna chahte ho
+- Yahi problem solve karta hai --> Scope Resolution Operator ::
+### Global Scope Resolution
+```cpp
+#include <iostream>
+using namespace std;
+
+int x = 100;   // Global variable
+
+int main() {
+    int x = 10;  // Local variable
+    
+    cout << x << endl;     // 10 (local)
+    cout << ::x << endl;   // 100 (global)
+}
+```
+### Class Scope Resolution
+
+### Static Member Access
+
+### Namespace Scope Resolution
+
+### Nested Namespace
+
+### Enum Scope Resolution (Scoped Enum)
+
+### Inheritance me Scope Resolution
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
