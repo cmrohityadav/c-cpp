@@ -1,27 +1,20 @@
-#include <iostream>
-using namespace std;
+#include<iostream>
+#include"stock.hpp"
+int main(){
 
-class Mechanic;  // forward declaration
+    Stock s1("TCS",1250.30,30);
 
-class Car {
-private:
-    int engineNumber;
+    s1.buy(100);
+    s1.sell(50);
+    s1.showInfo();
 
-public:
-    Car(int num) : engineNumber(num) {}
+    Stock s2("JSW",150.30,100);
+    s2.sell(50);
+    s2.showInfo();
 
-    friend class Mechanic;  // Mechanic class ko special access
-};
 
-class Mechanic {
-public:
-    void inspectCar(Car c) {
-        cout << "Engine Number: " << c.engineNumber << endl;
-    }
-};
-
-int main() {
-    Car myCar(12345);
-    Mechanic m;
-    m.inspectCar(myCar);
+    Stock s3("JPP",14,10);
+    s3.sell(500);
+    s3.showInfo();
+    return 0;
 }
