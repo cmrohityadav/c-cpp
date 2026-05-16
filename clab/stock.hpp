@@ -1,21 +1,16 @@
+
 #ifndef STOCK_HPP
 #define STOCK_HPP
 
-#include <string>
-
-class Stock {
-private:
-    std::string name;
-    float price;
-    int quantity;
+class Stock{
+    char scrip[10];
+    double price;
+    char buysell[2];
 
 public:
-    Stock(std::string n, float p, int q);
+    Stock(const char* scrip_name,double price_,const char* bs);
 
-    void buy(int qty);
-    void sell(int qty);
-    void updatePrice(double newPrice);
-    void showInfo() const;
+    void display() const;
 };
 
 #endif

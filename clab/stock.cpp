@@ -1,29 +1,40 @@
 #include "stock.hpp"
+#include <cstring>
+#include<iomanip>
 #include<iostream>
-
-Stock::Stock(std::string scrip,float prc,int qty){
-    name=scrip;
-    price=prc;
-    this->quantity=qty;
+Stock::Stock(const char* scrip_name,double price_,const char* bs):price(price_){
+    std::strncpy(scrip,scrip_name,sizeof(scrip)-1);
+   std::strncpy(buysell,bs,sizeof(buysell)-1);
+   buysell[sizeof(buysell) - 1] = '\0';
 }
 
-void Stock::buy(int qty){
-    std::cout<<"Buying : "<<this->name<<" Qty: "<<this->quantity<<" @"<<this->price<<std::endl;
-    this->quantity+=qty;
-}
+void Stock::display() const
+{
+    std::cout << "====================================\n";
 
+    std::cout << "  STOCK INFORMATION\n";
 
-void Stock::sell(int qty){
-    std::cout<<"Selling : "<<this->name<<" Qty: "<<this->quantity<<" @"<<this->price<<std::endl;
-    if(this->quantity<qty){
-        std::cout<<"Check your qty"<<std::endl;
-        return;
-    }
-    this->quantity-=qty;
-}
+    std::cout << "====================================\n";
 
-void Stock::showInfo() const {
-    std::cout << "Stock: " << name
-              << " | Price: " << price
-              << " | Quantity: " << quantity << std::endl;
+    std::cout << std::left;
+
+    std::cout << std::setw(15)
+              << "Symbol"
+              << ": "
+              << scrip
+              << '\n';
+
+    std::cout << std::setw(15)
+              << "Price"
+              << ": "
+              << price
+              << '\n';
+
+    std::cout << std::setw(15)
+              << "Side"
+              << ": "
+              << buysell
+              << '\n';
+
+    std::cout << "====================================\n";
 }
