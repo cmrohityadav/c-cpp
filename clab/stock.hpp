@@ -11,6 +11,8 @@ private:
 public:
     Stock(const char* scrip_name,double price_,const char* bs);
 
+    Stock();
+    
     void display() const;
     friend void indicator(const Stock& obj);
 

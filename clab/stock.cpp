@@ -8,6 +8,12 @@ Stock::Stock(const char* scrip_name,double price_,const char* bs):price(price_){
    buysell[sizeof(buysell) - 1] = '\0';
 }
 
+Stock::Stock(){
+    std::strncpy(this->scrip, "No", sizeof(this->scrip));
+    this->price=0;
+    std::strncpy(this->buysell,"N",sizeof(this->buysell));
+}
+
 void Stock::display() const
 {
     std::cout << "====================================\n";

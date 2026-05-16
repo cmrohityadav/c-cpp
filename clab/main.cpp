@@ -19,5 +19,9 @@ int main(){
     Basket basketObj;
     basketObj.checkBasketStockPrice(jswObj);
 
+
+    Stock adani;
+    adani.display();
+
     return 0;
 }

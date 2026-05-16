@@ -1165,6 +1165,9 @@ class Strategy{
     }
 
 };
+// main
+Strategy  basket;
+
 ```
 #### Parameterized Constructor
 - A Special constructor that accepts one or more parameter during Object creation
