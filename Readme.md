@@ -1552,6 +1552,7 @@ int main()
     obj2 = obj3;            // Copy assignment operator called
 }
 ```
+- Compiler k pass default bhi hota hai, hum custom Copy assigment operator banate hai for Deep copy
 - Strategy obj2 = obj1;
 - Copy constructor is called (object creation + initialization)
 - obj2 = obj3;
@@ -1941,11 +1942,11 @@ int main(){
 inherits from a base class. It can add new properties and behaviors or override
 existing ones
 
-[Single Inheritance](#Single-Inheritance)
-[Multiple  Inheritance](#multiple--inheritance)
-[Multilevel Inheritance](#multilevel-inheritance)
-[Hierarchical Inheritance](#hierarchical-inheritance)
-[Hybrid Inheritance](#hybrid-inheritance)
+- [Single Inheritance](#Single-Inheritance)
+- [Multiple  Inheritance](#multiple--inheritance)
+- [Multilevel Inheritance](#multilevel-inheritance)
+- [Hierarchical Inheritance](#hierarchical-inheritance)
+- [Hybrid Inheritance](#hybrid-inheritance)
 []()
 
 ```cpp

@@ -10,7 +10,7 @@ void indicator(const Stock& stockObj){
 }
 int main(){
 
-    Stock  jswObj("7774",142.52,"S");
+    Stock  jswObj("JSW",142.52,"S");
 
     jswObj.display();
 
@@ -22,6 +22,20 @@ int main(){
 
     Stock adani;
     adani.display();
+
+    Stock jswPower=jswObj;
+    jswPower.display();
+
+    Stock tcsPower("tcsPower",25.01,"S");
+    Stock tcs("tcs",2225.02,"S");
+
+    tcsPower=tcs;
+
+    tcsPower.display();
+
+
+
+
 
     return 0;
 }

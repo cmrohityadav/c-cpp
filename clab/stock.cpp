@@ -14,6 +14,17 @@ Stock::Stock(){
     std::strncpy(this->buysell,"N",sizeof(this->buysell));
 }
 
+Stock::Stock(const Stock& other){
+    this->price=other.price;
+    
+    std::strncpy(this->scrip, other.scrip, sizeof(this->scrip) - 1);
+    this->scrip[sizeof(this->scrip) - 1] = '\0';
+
+    std::strncpy(this->buysell, other.buysell, sizeof(this->buysell) - 1);
+    this->buysell[sizeof(this->buysell) - 1] = '\0';
+
+}
+
 void Stock::display() const
 {
     std::cout << "====================================\n";
