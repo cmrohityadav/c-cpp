@@ -2175,6 +2175,8 @@ int main() {
 
 - **Destructors:** When a `derived class object is destroyed`, the `derived class destructor is called first`, followed by the base class destructor
 - C++ always calls constructors in the order of declaration and destructors in reverse
+- Because derived class may depend on base resources.
+
 ```cpp
 #include <iostream>
 using namespace std;
@@ -2223,7 +2225,7 @@ A destructor
 */
 ```
 
-```bash
+
 | Situation                                                  | What happens                                      |
 | ---------------------------------------------------------- | ------------------------------------------------- |
 | Object created on stack                                    | Destructors called automatically in reverse order |
@@ -2231,9 +2233,8 @@ A destructor
 | Object deleted via base pointer without virtual destructor | Only base destructor called → Undefined behavior  |
 
 
-```
 ### Access Modifiers
-```bash
+
 | Access specifier | Same class | Derived class | Outside class |
 | ---------------- | ---------- | ------------- | ------------- |
 | **public**       | ✔️ Yes     | ✔️ Yes        | ✔️ Yes        |
@@ -2241,7 +2242,6 @@ A destructor
 | **private**      | ✔️ Yes     | ❌ No          | ❌ No          |
 
 
-```
 - Inheritance of class using access modifiers
 ```cpp
 #include<iostream>
