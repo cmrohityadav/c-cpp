@@ -3,6 +3,7 @@
 #define STOCK_HPP
 
 class Stock{
+private:
     char scrip[10];
     double price;
     char buysell[2];
@@ -12,6 +13,8 @@ public:
 
     void display() const;
     friend void indicator(const Stock& obj);
+
+    friend class Basket;
 };
 
 #endif

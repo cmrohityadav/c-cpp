@@ -1,4 +1,5 @@
 #include"stock.hpp"
+#include "basket.hpp"
 #include<iostream>
 void indicator(const Stock& stockObj){
     if(stockObj.price>73){
@@ -14,6 +15,9 @@ int main(){
     jswObj.display();
 
     indicator(jswObj);
+
+    Basket basketObj;
+    basketObj.checkBasketStockPrice(jswObj);
 
     return 0;
 }
