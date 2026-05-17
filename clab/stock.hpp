@@ -14,8 +14,12 @@ public:
     Stock();
 
     Stock(const Stock& other);
+    Stock& operator=(const Stock& rightHandSide);
+
+    Stock operator+(const Stock& rightSideValue)const;
 
     void display() const;
+    
     friend void indicator(const Stock& obj);
 
     friend class Basket;

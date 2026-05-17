@@ -33,6 +33,13 @@ int main(){
 
     tcsPower.display();
 
+    Stock groww("groww",100,"B");
+    Stock grow2("groww",200,"B");
+
+    Stock axy=grow2+groww;
+
+    axy.display();
+
 
 
 

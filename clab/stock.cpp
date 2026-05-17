@@ -25,6 +25,34 @@ Stock::Stock(const Stock& other){
 
 }
 
+Stock& Stock::operator=(const Stock& other)
+{
+    if (this == &other)
+        return *this;
+
+    this->price = other.price;
+
+    std::strncpy(this->scrip, other.scrip, sizeof(this->scrip) - 1);
+    this->scrip[sizeof(this->scrip) - 1] = '\0';
+
+    std::strncpy(this->buysell, other.buysell, sizeof(this->buysell) - 1);
+    this->buysell[sizeof(this->buysell) - 1] = '\0';
+
+    return *this;
+}
+
+Stock Stock::operator+(const Stock& rhs) const
+{
+    Stock temp = *this;
+
+    if (std::strcmp(this->scrip, rhs.scrip) == 0)
+    {
+        temp.price = (this->price + rhs.price) / 2; // average price
+    }
+
+    return temp;
+}
+
 void Stock::display() const
 {
     std::cout << "====================================\n";
