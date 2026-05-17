@@ -2233,7 +2233,7 @@ A destructor
 | Object deleted via base pointer without virtual destructor | Only base destructor called → Undefined behavior  |
 
 
-### Access Modifiers
+#### Access Modifiers
 
 | Access specifier | Same class | Derived class | Outside class |
 | ---------------- | ---------- | ------------- | ------------- |
@@ -2310,14 +2310,16 @@ int main(){
 - Different modes of inheritance
 - Parent class member → How it appears in Child class
 - Dabadaba: Private> Protected> Public
-```bash
+
+
 | **Inheritance Mode** | **Public member** | **Protected member** | **Private member** |
 | -------------------- | ----------------- | -------------------- | ------------------ |
 | **Public**           | Public            | Protected            | ❌ Not accessible   |
 | **Protected**        | Protected         | Protected            | ❌ Not accessible   |
 | **Private**          | Private           | Private              | ❌ Not accessible   |
 
-```
+
+
 
 
 ### Compile vs Run Time Binding
@@ -2403,6 +2405,11 @@ public:
     }
 };
 
+
+void makeSound(Animal* a) {
+    a->sound();   // runtime decision
+}
+
 int main() {
     Animal a;
     a.Speak(); // Speak
@@ -2422,6 +2429,8 @@ int main() {
     Dog* pDD = new Dog();
     pDD->Speak(); // Bhowwwwwwwwwwwwww
 
+    makeSound(pAD);
+
     delete pA;
     delete pAD;
     
@@ -2438,6 +2447,8 @@ int main() {
 - Non-virtual function → pointer type hi decide karta hai
 - In C++, member functions (if declared virtual) depend on the actual object type at runtime, not the pointer or reference type
 - Agar derived class ne override nahi kiya, base class ka function call hoga
+- If function is virtual, compiler uses vptr to perform dynamic dispatch via vtable.
+- If function is non-virtual, compiler directly binds call at compile time using pointer type.
 - **STORY**
 ```bash
 
@@ -2494,9 +2505,11 @@ Dog constructor chalta hai
 Constructor vptr set karta hai
 
 Dog object memory:
-+-------+------------+
-| vptr  | Dog data   |
-+-------+------------+
++--------+
+| vptr   | -----> Dog vtable
++--------+
+| data   |
++--------+
 
 vptr → Dog vtable
 
@@ -2540,6 +2553,50 @@ Compiler bolega:
 - Runtime: object banta hai → vptr set hota hai
 - Call time: vptr decide karta hai kaunsa function chalega
 
+- Good Example
+```cpp
+#include <iostream>
+using namespace std;
+
+class Animal {
+public:
+    virtual void sound() {
+        cout << "Animal sound\n";
+    }
+};
+
+class Dog : public Animal {
+public:
+    void sound() override {
+        cout << "Dog barks 🐶\n";
+    }
+};
+
+class Cat : public Animal {
+public:
+    void sound() override {
+        cout << "Cat meows 🐱\n";
+    }
+};
+
+int main() {
+    Animal* a = nullptr;
+    int choice;
+
+    cout << "Choose Animal (1=Dog, 2=Cat): ";
+    cin >> choice;
+
+    if (choice == 1) {
+        a = new Dog();
+    }
+    else if (choice == 2) {
+        a = new Cat();
+    }
+
+    a->sound();   // 🔥 runtime polymorphism
+}
+
+```
 
 
 #### Properties of Virtual function
@@ -2731,6 +2788,9 @@ int main() {
 
 
 - Agar class me koi bhi virtual function hai, to destructor ko bhi virtual bana do
+- Agar base class me destructor virtual hai to, 
+derived destructor automatically virtual chain ka part ban jata hai
+- agar base class ka destructor virtual hai, to poori derived class chain me destructor “virtual mechanism” ke through call hota hai, but technically derived destructors ko explicitly virtual likhne ki zarurat nahi hoti.
 
 
 
