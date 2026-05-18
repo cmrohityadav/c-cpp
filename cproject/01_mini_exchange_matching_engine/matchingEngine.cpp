@@ -14,6 +14,7 @@ void MatchingEngine::placeOrder(int clientId,int buySell,double price,int qty){
 
     std::cout << "\n[SYSTEM] Processing Order " << newOrderObj.orderId << "...\n";
 
+
     if(buySell==1){ 
         //BUY
         while(newOrderObj.quantity>0 && !asksMap.empty()){
@@ -53,6 +54,46 @@ void MatchingEngine::placeOrder(int clientId,int buySell,double price,int qty){
 
     }else{
         //SELL
+        while(!bidsMap.empty() && newOrderObj.quantity>0){
+            auto itr_bestBidsMap=bidsMap.begin();
+            
+            if(newOrderObj.price<=itr_bestBidsMap->first){
+                auto& bestBidsListAtPrice=itr_bestBidsMap->second;
+                while(newOrderObj.quantity>0 && !bestBidsListAtPrice.empty()){
+                    auto& passiveOrder=bestBidsListAtPrice.front();
+
+                    int fillQty=std::min(newOrderObj.quantity,passiveOrder.quantity);
+
+                    newOrderObj.quantity-=fillQty;
+                    passiveOrder.quantity-=fillQty;
+
+                    TradeLog tradeLogObj={};
+                    tradeLogObj.buyerId=passiveOrder.clientId;
+                    tradeLogObj.sellerId=newOrderObj.clientId;
+                    tradeLogObj.price=passiveOrder.price;
+                    tradeLogObj.quantity=fillQty;
+
+                    tradeHistory.push_back(tradeLogObj);
+
+                    std::cout << ">> [ALERT] TRADE MATCHED! " << fillQty << " Qty @ " << passiveOrder.price<< " (" << passiveOrder.clientId << " sold to " << newOrderObj.clientId << ")\n";
+
+                    if(passiveOrder.quantity==0){
+                        bestBidsListAtPrice.pop_front();
+                    }
+                
+                }
+                if(bestBidsListAtPrice.empty()){
+                    bidsMap.erase(itr_bestBidsMap);
+                }
+
+            }else{
+                break;
+            }
+        }
+        if(newOrderObj.quantity>0){
+            asksMap[newOrderObj.price].push_back(newOrderObj);
+        }
+        
 
     }
 

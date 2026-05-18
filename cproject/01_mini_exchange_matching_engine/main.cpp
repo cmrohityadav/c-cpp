@@ -29,6 +29,10 @@ int main(){
 
                 std::cout << "Enter Client UserID: "; std::cin >> iClientId;
                 std::cout << "Enter Side (BUY- 1/SELL- 2): "; std::cin >> iBuySell;
+                if(iBuySell>2 and iBuySell<1){
+                    std::cout<<"Choose proper Option (BUY- 1/SELL- 2) !!!\n";
+                    break;
+                }
                 std::cout << "Enter Quantity: "; std::cin >> qty;
                 std::cout << "Enter Price: "; std::cin >> price;
                 
