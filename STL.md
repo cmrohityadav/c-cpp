@@ -81,6 +81,7 @@ std::sort(arr.begin(), arr.end());
 
 // Compile-Time Size
 arr.size();
+arr.empty();
 
 // Copy Semantics
 int a[3];
