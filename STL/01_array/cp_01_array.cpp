@@ -42,8 +42,10 @@ int main(){
     }
 
     std::cout<<"\nIteration using create iterator"<<std::endl;
+
     std::array<int,5>::iterator p_itr;
     p_itr=strikePrice.begin();
+    
 
     while(p_itr!=strikePrice.end()){
         std::cout<<*p_itr<<" ";

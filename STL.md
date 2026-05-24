@@ -71,6 +71,7 @@ arr.front();
 arr.back();
 
 // Iterators
+std::array<int,5>::iterator p_itr;
 begin()
 end()
 rbegin()
