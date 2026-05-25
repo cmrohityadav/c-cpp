@@ -1,7 +1,7 @@
 # STL
 ## Content
 - [array](#array)
-- []()
+- [Vector](#vector)
 - []()
 - []()
 - []()
@@ -131,8 +131,96 @@ NUMA basics
 
 ```
 
+## Vector
+- std::vector = `contiguous dynamic array`
+
+```cpp
+std::vector<int> v = {10,20,30};
+
+```
+### Most Important Internal Structure
+```cpp
+T* data_;
+size_t size_;
+size_t capacity_;
+```
+- size() : Actual elements
+- capacity() : Allocated memory slots
+
+### Push_back internally kya karta hai?
+```bash
+v.push_back(10)
+
+case 1: capacity available -> Simple insert O(1)
+
+case 2: capacity full 
+size = 4
+capacity = 4
+# Now push_back
+1. new bigger memory allocate karega
+2. old elements copy/move karega
+3. old memory free karega
+4. new element insert karega
+- Yeh expensive hai.
+```
+
+### Reallocation ka dangerous part
+- Sab iterators/pointers/reference invalid ho sakte hain.
+```cpp
+std::vector<int> v;
+
+v.push_back(1);
+
+int* p = &v[0];
+
+v.push_back(2); // may reallocate
+
+std::cout << *p; // UB possible
+```
+
+### reserve()
+```cpp
+std::vector<int> v;
+v.reserve(100000);
+```
+- Ab repeated reallocations nahi hongi
+
+### resize()
+```cpp
+v.resize(100);
+```
+### emplace_back()
 
 
+
+<!-- TODO -->
+memory layout
+cache locality
+allocator
+iterator invalidation
+growth strategy
+latency impact
+move vs copy
+reallocation cost
+thread-safety
+false assumptions in interviews
+production use-cases
+
+Companies ask:
+
+Why vector contiguous?
+Why amortized O(1)?
+Difference between reserve and resize?
+Iterator invalidation?
+Why vector faster than list?
+When vector bad?
+How vector grows internally?
+Why noexcept move important?
+What happens during reallocation?
+Difference between emplace_back and push_back?
+Thread safety?
+Can vector store polymorphic objects?
+Why vector<bool> special?
 
 ##  Best Way To Study (Realistic HFT Path)
 Phase 1
