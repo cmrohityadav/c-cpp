@@ -1,0 +1,464 @@
+# Computer Memory
+
+## Decimal Number
+- Har ek position Represents a Power of 10
+```txt
+eg. 352
+- Right side se position denge 0,1,2,3...
+2 × 10⁰ = 2
+5 × 10¹ = 50
+3 × 10² = 300
+
+final sum = 300 + 50 + 2 = 352
+
+```
+## Binary Number
+- Har ek position Represents a Power of 2
+- Binary Number System uses only 2 digits: 1 and 0
+```txt
+eg. 11001
+
+- right side se position denge 0,1,2,3...
+
+1 × 2⁰ = 1
+0 × 2¹ = 0
+0 × 2² = 0
+1 × 2³ = 8
+1 × 2⁴ = 16
+
+final sum = 16 + 8 + 0 + 0 + 1 = 25
+```
+## Bits and Bytes
+### What is a Bit?
+- A bit (Binary Digit) is the smallest unit of data in a computer.
+- A bit can have only two possible values:
+- 1 = ON (high voltage)
+- 0 = OFF (low voltage)
+- 0 or 1 = a bit
+
+### What is a Byte?
+- A single bit can store only one of two values: 0 or 1
+- To store more information, bits are grouped together
+- It's combination of 8 bit = 1 byte
+- Example: 10101100= 8 bits = 1 byte
+
+- `Every piece of data inside a computer is ultimately stored as bits`
+
+## Decimal to Binary Conversion
+- Step 1: Repeatedly divide the decimal number by 2.
+- Step 2: Store the remainder after each division.
+
+- Step 3:Read all remainders from `bottom to top`
+```txt
+25 ÷ 2 = 12 remainder 1
+12 ÷ 2 = 6  remainder 0
+6  ÷ 2 = 3  remainder 0
+3  ÷ 2 = 1  remainder 1
+1  ÷ 2 = 0  remainder 1
+
+Read remainders from bottom to top: 11001
+
+Therefore:
+
+25₁₀ = 11001₂
+```
+- Read remainders from `bottom to top`: `11001`
+
+# Binary  to  Decimal Conversion
+- Step 1: Start from the `rightmost` bit.
+- Step 2: Assign powers of 2.
+- Step 3: Multiply each bit by its power of 2.
+- Step 4: Add all results.
+```txt
+11001₂ = ?
+
+Step 1: Assign Powers of 2
+
+Binary Bit : 1   1   0   0   1
+Power      : 2⁴  2³  2²  2¹  2⁰
+
+Step 2: Multiply Each Bit
+
+1 × 2⁰ = 1
+0 × 2¹ = 0
+0 × 2² = 0
+1 × 2³ = 8
+1 × 2⁴ = 16
+
+Step 3: Add All Values
+16 + 8 + 0 + 0 + 1
+= 25
+Final Answer
+11001₂ = 25₁₀
+```
+## Unsigned Integers
+### What is an Unsigned Integer?
+- An unsigned integer stores only non-negative values.
+- eg.: 0,1,2,3,4,....
+- There is no negative sign.
+
+### How Many Values Can n Bits Store?
+```txt
+Each bit has two possible values:
+0
+1
+
+Therefore:
+Total Values = 2ⁿ
+
+where:
+n = number of bits
+```
+```txt
+Example: 1 Bit
+0
+1
+
+Total:
+2¹ = 2 values
+------------------------
+Example: 2 Bits
+00 = 0
+01 = 1
+10 = 2
+11 = 3
+
+Total:
+
+2² = 4 values
+
+Range:
+
+0 to 3
+------------------------
+Example: 3 Bits
+000 = 0
+001 = 1
+010 = 2
+011 = 3
+100 = 4
+101 = 5
+110 = 6
+111 = 7
+
+Total:
+
+2³ = 8 values
+
+Range:
+
+0 to 7
+------------------------
+Example: 8 Bits
+00000000 = 0
+...
+11111111 = 255
+
+Total values:
+
+2⁸ = 256
+
+Range:
+
+0 to 255
+
+------------------------
+
+```
+- 2^8=256 different values(number of combination)
+```txt
+Number of possible combinations = 2ⁿ
+
+2⁸ = 256 combinations
+they are:
+00000000
+00000001
+00000010
+...
+...
+11111111
+
+There are exactly 256 different bit patterns
+
+```
+- each unique bit pattern represents one value
+```txt
+For an 8-bit unsigned integer:
+
+00000000 = 0
+00000001 = 1
+00000010 = 2
+...
+...
+11111111 = 255
+
+256 combinations = 256 representable values
+2⁸ = 256 possible bit combinations
+```
+
+## Unsigned Integers
+n bits (unsigned)
+
+Minimum = 0
+Maximum = 2ⁿ - 1
+
+```txt
+Examples
+
+8 Bits
+
+Minimum = 0
+
+Maximum = 2⁸ - 1 = 256 - 1 = 255
+
+Range:
+
+0 to 255
+```
+
+| Bits | Range           |
+| ---- | --------------- |
+| 8    | 0 to 255        |
+| 16   | 0 to 65535      |
+| 32   | 0 to 4294967295 |
+
+## Signed Integers
+### What is a Signed Integer?
+- A signed integer can store: Negative Numbers, Zero, Positive Numbers
+
+- Example:-5,-1,0,1,2,5
+
+```txt
+8 bits
+
+Range: -128 to 127
+
+Same 256 combinations exist.
+
+But now some combinations represent negative numbers
+-------------------
+Total Combinations Do Not Change
+
+For 8 bits:
+
+2⁸ = 256 combinations
+
+This never changes.
+
+Whether the number is signed or unsigned:
+
+Total combinations = 256
+
+Only the interpretation changes
+----------------------
+```
+### General Formula
+- Minimum = -2ⁿ⁻¹
+- Maximum = 2ⁿ⁻¹ - 1
+
+Example: 8-bit signed integer
+
+Minimum =-2⁷= -128
+Maximum = 2⁷-1= 127
+
+```txt
+DIVIDE By Half
+256 / 2 = 128
+
+Negative side: 128 values
+(-128 ... -1)
+
+Non-negative side: 128 values
+(0 ... 127)
+```
+## Two's Complement
+```txt
+Problem??
+
+We know that an 8-bit signed integer can store: -128 to 127
+
+But how does the computer store a negative number?
+
+Example:-1,-5,-10,-128
+
+Memory can store only:
+0
+1
+
+So how are negative numbers represented?
+
+The answer is: Two's Complement
+
+```
+### What is Two's Complement?
+- Two's Complement is the standard method used by modern computers to represent negative numbers
+- Almost every CPU uses Two's Complement
+```txt
+How to Find Two's Complement?
+Step 1
+
+Write the positive number in binary.
+
+Example:
+
+5
+
+00000101
+Step 2
+
+Invert all bits (0→1, 1→0)
+
+00000101
+
+↓
+
+11111010
+Step 3
+
+Add 1
+
+11111010
++       1
+---------
+11111011
+
+Result:
+
+11111011
+
+Therefore:
+
+-5 = 11111011
+
+in an 8-bit signed integer.
+--------------------------------
+Example: -1
+Positive 1
+00000001
+Invert Bits
+11111110
+Add 1
+11111111
+
+Therefore:
+
+-1 = 11111111
+-----------------------------
+In signed integers:
+
+Most Significant Bit (MSB)
+
+acts as the sign indicator.
+
+0xxxxxxx → Positive
+
+1xxxxxxx → Negative
+```
+```txt
+Suppose memory contains:
+11111011
+
+Memory only stores bits
+It does NOT store:
+positive
+negative
+char
+int
+float
+
+Memory simply stores:
+
+11111011
+
+If Interpreted as Unsigned
+11111011
+
+Convert to decimal:
+
+128 + 64 + 32 + 16 + 8 + 2 + 1
+= 251
+
+Result:
+
+251
+---------------------------------
+If Interpreted as Signed (Two's Complement)
+
+11111011
+
+MSB (leftmost bit) is:
+
+1
+
+In signed integers:
+
+MSB = 1 → Negative
+MSB = 0 → Positive
+
+Now apply Two's Complement rules:
+
+11111011
+
+Invert:
+00000100
+
+Add 1:
+00000101
+
+= 5
+
+Therefore:
+
+-5
+
+Same bits:
+
+11111011
+
+can mean:
+
+251   (unsigned)
+-5    (signed)
+```
+
+////
+# CHAR
+
+Everything is Bits in Memory
+
+char ch = 'A';
+Inside memory, the computer does not store "A".
+It stores a number.
+
+For the character 'A', the ASCII code is:
+
+A = 65
+
+And 65 in binary is:
+
+01000001
+
+So memory contains:
+
+Address     Data
+1000        01000001
+
+
+|||||||||||||||||||||||||||||
+char ch = 'A';
+int x = 65;
+
+Both represent the number 65.
+
+The difference is how your program interprets the bits
+
+||||||||||||||||||||||||||||||||||||||||
+Where Does 'A' Come From?
+
+The operating system, terminal, or console knows a character encoding such as ASCII or UTF-8.
+
+
+||||||||
+
+
+
