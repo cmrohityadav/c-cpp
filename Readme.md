@@ -518,6 +518,48 @@ Interpret those bytes as a signed integer.
 
 Use integer arithmetic rules when performing operations.
 ```
+
+### Fundamental Data Types
+---
+
+#### Integer Types
+
+| Type | Size | Signed/Unsigned | Range |
+|--------|--------|--------|--------|
+| bool | 1 byte | N/A | `false` or `true` |
+| char | 1 byte | Implementation-defined | `-128 to 127` or `0 to 255` |
+| signed char | 1 byte | Signed | `-128 to 127` |
+| unsigned char | 1 byte | Unsigned | `0 to 255` |
+| short | 2 bytes | Signed | `-32,768 to 32,767` |
+| unsigned short | 2 bytes | Unsigned | `0 to 65,535` |
+| int | 4 bytes | Signed | `-2,147,483,648 to 2,147,483,647` |
+| unsigned int | 4 bytes | Unsigned | `0 to 4,294,967,295` |
+| long | 8 bytes (Linux/macOS)<br>4 bytes (Windows) | Signed | Usually `-9,223,372,036,854,775,808 to 9,223,372,036,854,775,807` |
+| unsigned long | 8 bytes (Linux/macOS)<br>4 bytes (Windows) | Unsigned | Usually `0 to 18,446,744,073,709,551,615` |
+| long long | 8 bytes | Signed | `-9,223,372,036,854,775,808 to 9,223,372,036,854,775,807` |
+| unsigned long long | 8 bytes | Unsigned | `0 to 18,446,744,073,709,551,615` |
+
+---
+#### Floating-Point Types
+
+| Type | Size | Approximate Precision | Approximate Range |
+|--------|--------|--------|--------|
+| float | 4 bytes | ~6-7 decimal digits | ±3.4 × 10³⁸ |
+| double | 8 bytes | ~15-16 decimal digits | ±1.7 × 10³⁰⁸ |
+| long double | 16 bytes (commonly) | ~18-21+ decimal digits | Implementation-defined |
+
+---
+#### Character Types
+
+| Type | Size | Purpose |
+|--------|--------|--------|
+| char | 1 byte | Character storage |
+| wchar_t | 2 or 4 bytes | Wide character |
+| char8_t | 1 byte | UTF-8 character |
+| char16_t | 2 bytes | UTF-16 character |
+| char32_t | 4 bytes | UTF-32 character |
+
+---
 ## Erros and Warnings
 When we write a C/C++ program, it passes through multiple stages
 - Preprocessing → Compilation → Assembling → Linking → Execution
