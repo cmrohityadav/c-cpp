@@ -9,11 +9,13 @@
 - [Why C++](#why-c)
 - [C++ Dev Tools](#c-dev-tools)
 - [compilation-](#cc-compilation-pipeline)
+- [First Program](#first-program)
 - [Comments](#comments)
 - [Erros and Warnings](#Erros-and-Warnings)
 - [Statements](#Statements)
 - [Data input and output](#Data-input-and-output)
 - [C++ core language Vs Standard library Vs STL](#C-core-language-Vs-Standard-library-Vs-STL)
+- [Computer Memory](./Computer_Memroy.md)
 - [Pointers](#pointers)
 - [Reference](#reference)
 - [Type Conversion](#type-conversion)
@@ -156,6 +158,121 @@ Loader (dynamic loader at runtime, e.g. ld-linux.so) — loads the executable in
 gcc file.o -o a.out
 # or compile & link in one step:
 g++ file.cpp -o a.out
+```
+## First Program
+```cpp
+#include<iostream>
+
+int main(){
+    std::cout<<"Hello World"<<std::endl;
+    return 0;
+}
+```
+### Preprocessor
+- #include is a preprocessor directive in C++
+- Compile hone se pahale yeh <iostream> ka sara header  file ka content laa dega
+- < > standard header search krta hai system mese
+- " "  look in current project directory,then in system include directories
+
+### Namespace
+- Namespace C++ ka ek feature hai jo variables, functions, classes, objects, etc. ko ek logical scope (container) ke andar organize karta hai aur name conflicts ko avoid karta hai
+
+```cpp
+namespace First {
+    void print() {
+        cout << "Hello from First";
+    }
+}
+
+namespace Second {
+    void print() {
+        cout << "Hello from Second";
+    }
+}
+
+int main() {
+    First::print();
+    Second::print();
+}
+
+```
+- Bar-bar std:: likhne se bachne ke liye
+
+```cpp
+using namespace std;
+int main() {
+    cout << "Hello";
+}
+```
+- Large projects mein conflicts aa sakte hain
+- Poora namespace import karne ki jagah
+```cpp
+#include <iostream>
+
+using std::cout;
+
+int main() {
+    cout << "Hello";
+}
+```
+### Command-Line Arguments
+- Command-line arguments woh values hoti hain jo program ko run karte waqt command prompt/terminal se pass ki jati hain
+- `argc` ka matlab hai Argument Count.
+- Yeh batata hai ki command line se kitne arguments pass kiye gaye hain
+- Isme program ka naam bhi count hota hai
+- `argv` ek array hai jo command-line arguments store karta hai.
+- Har argument ek C-style string ke roop me store hota hai.
+- Har element ek pointer hai jo string ke first character ko point karta hai
+```cpp
+#include <iostream>
+#include <cstring>
+
+int main(int argc, char* argv[])
+{
+    if (argc < 4)
+    {
+        std::cout << "Not enough arguments!\n";
+        return 1;
+    }
+
+    std::cout << "Total Arguments: " << argc << std::endl;
+
+    for (int i = 0; i < 4; i++)
+    {
+        if (i == 0)
+        {
+            std::cout << "Welcome to " << argv[i] << std::endl;
+        }
+        else if (i == 1)
+        {
+            std::cout << "Hello Dear " << argv[i] << std::endl;
+        }
+        else if (i == 2)
+        {
+            if (strcmp(argv[i], "1") == 0)
+            {
+                std::cout << "WELCOME TO NSE" << std::endl;
+            }
+            else if (strcmp(argv[i], "2") == 0)
+            {
+                std::cout << "WELCOME TO BSE" << std::endl;
+            }
+        }
+        else if (i == 3)
+        {
+            if (strcmp(argv[i], "1") == 0)
+            {
+                std::cout << "WELCOME TO EQ Market" << std::endl;
+            }
+            else if (strcmp(argv[i], "2") == 0)
+            {
+                std::cout << "WELCOME TO FO Market" << std::endl;
+            }
+        }
+    }
+
+    return 0;
+}
 ```
 
 ## Comments

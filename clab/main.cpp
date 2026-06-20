@@ -1,48 +1,49 @@
-#include"stock.hpp"
-#include "basket.hpp"
-#include<iostream>
-void indicator(const Stock& stockObj){
-    if(stockObj.price>73){
-        std::cout<<"Buy at ur risk"<<std::endl;
-    }else{
-        std::cout<<"Dont buy now"<<std::endl;
+#include <iostream>
+#include <cstring>
+
+int main(int argc, char* argv[])
+{
+    if (argc < 4)
+    {
+        std::cout << "Not enough arguments!\n";
+        return 1;
     }
-}
-int main(){
 
-    Stock  jswObj("JSW",142.52,"S");
+    std::cout << "Total Arguments: " << argc << std::endl;
 
-    jswObj.display();
-
-    indicator(jswObj);
-
-    Basket basketObj;
-    basketObj.checkBasketStockPrice(jswObj);
-
-
-    Stock adani;
-    adani.display();
-
-    Stock jswPower=jswObj;
-    jswPower.display();
-
-    Stock tcsPower("tcsPower",25.01,"S");
-    Stock tcs("tcs",2225.02,"S");
-
-    tcsPower=tcs;
-
-    tcsPower.display();
-
-    Stock groww("groww",100,"B");
-    Stock grow2("groww",200,"B");
-
-    Stock axy=grow2+groww;
-
-    axy.display();
-
-
-
-
+    for (int i = 0; i < 4; i++)
+    {
+        if (i == 0)
+        {
+            std::cout << "Welcome to " << argv[i] << std::endl;
+        }
+        else if (i == 1)
+        {
+            std::cout << "Hello Dear " << argv[i] << std::endl;
+        }
+        else if (i == 2)
+        {
+            if (strcmp(argv[i], "1") == 0)
+            {
+                std::cout << "WELCOME TO NSE" << std::endl;
+            }
+            else if (strcmp(argv[i], "2") == 0)
+            {
+                std::cout << "WELCOME TO BSE" << std::endl;
+            }
+        }
+        else if (i == 3)
+        {
+            if (strcmp(argv[i], "1") == 0)
+            {
+                std::cout << "WELCOME TO EQ Market" << std::endl;
+            }
+            else if (strcmp(argv[i], "2") == 0)
+            {
+                std::cout << "WELCOME TO FO Market" << std::endl;
+            }
+        }
+    }
 
     return 0;
 }
