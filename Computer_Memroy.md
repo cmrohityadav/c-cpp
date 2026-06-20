@@ -422,8 +422,27 @@ can mean:
 ```
 
 ////
-# CHAR
+## ASCII and Character Encoding
+```txt
+ASCII stands for:
+American Standard Code for Information Interchange
 
+ASCII assigns a number to every character.
+
+Character Decimal Value 
+A 65 
+B 66 
+C 67 
+
+a 97 
+b 98 
+c 99 
+
+0 48 
+1 49 
+2 50
+```
+```txt
 Everything is Bits in Memory
 
 char ch = 'A';
@@ -444,7 +463,7 @@ Address     Data
 1000        01000001
 
 
-|||||||||||||||||||||||||||||
+-------------------------
 char ch = 'A';
 int x = 65;
 
@@ -452,13 +471,174 @@ Both represent the number 65.
 
 The difference is how your program interprets the bits
 
-||||||||||||||||||||||||||||||||||||||||
+---------------------------------
 Where Does 'A' Come From?
 
 The operating system, terminal, or console knows a character encoding such as ASCII or UTF-8.
 
+```
+```txt
+Problem with ASCII
 
-||||||||
+ASCII assigns a number to each character.
+
+Example:
+
+A = 65
+B = 66
+C = 67
+
+ASCII works well for English.
+
+But what about:
+
+नमस्ते
+你好
+こんにちは
+😀
+€
+₹
+
+ASCII cannot represent these characters.
+
+ASCII supports only about 128 standard characters.
+
+
+Unicode
+
+Unicode is a universal character standard.
+
+Goal:
+
+Every character in every language
+gets a unique number.
+
+Examples:
+
+A        → U+0041
+₹        → U+20B9
+😀       → U+1F600
+न        → U+0928
+
+These values are called:
+
+Unicode Code Points
+
+
+What is a Code Point?
+
+A code point is a unique number assigned to a character.
+
+Examples:
+
+Character      Code Point
+
+A              U+0041
+B              U+0042
+₹              U+20B9
+😀             U+1F600
+
+Think of it as:
+
+Character ID
+
+Unicode is NOT Storage
+
+Unicode only defines:
+
+Character → Number
+
+Example:
+
+A → U+0041
+
+But it does not define:
+
+How bytes are stored in memory.
+
+For that we need an encoding.
+
+
+
+UTF-8
+
+UTF-8 is the most popular Unicode encoding.
+
+It converts Unicode characters into bytes.
+
+Almost all modern systems use UTF-8.
+
+Examples:
+
+Web Browsers
+Linux
+Windows
+Databases
+REST APIs
+JSON
+
+UTF-8 Storage
+Character: A
+
+Unicode:
+
+U+0041
+
+UTF-8 bytes:
+
+41
+
+Binary:
+
+01000001
+
+Storage:
+
+1 byte
+Character: ₹
+
+Unicode:
+
+U+20B9
+
+UTF-8 bytes:
+
+E2 82 B9
+
+Storage:
+
+3 bytes
+Character: 😀
+
+Unicode:
+
+U+1F600
+
+UTF-8 bytes:
+
+F0 9F 98 80
+
+Storage:
+
+4 bytes
+
+
+
+ASCII
+│
+├─ Character Set
+├─ 128 Characters
+└─ 1 Byte
+Unicode
+│
+├─ Universal Character Standard
+└─ Defines Code Points
+UTF-8
+│
+├─ Encoding for Unicode
+├─ 1 to 4 Bytes
+└─ Most Widely Used
+```
 
 
 
