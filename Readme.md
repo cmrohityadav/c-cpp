@@ -290,6 +290,234 @@ int b=2;
 */
 ```
 
+## Variable
+```txt
+Sabse pehle ek galatfahmi hata dete hain
+
+Variable = value store karne ka box
+
+Reality me:
+
+Variable ek naam (label) hai jo memory ke kisi location ko diya jata hai
+
+int age = 5;
+
+Humne compiler ko bola:
+Mujhe memory me jagah do aur us jagah ko "age" naam se bulaunga
+
+Variable Name     Address      Data
+age               1000         00000101
+
+Variable memory nahi hai.
+Variable value bhi nahi hai.
+Variable actually: Name -> Memory Address
+
+Jab Age Use Karte Ho
+cout << age;
+
+Compiler:
+
+age
+ ↓
+1000
+
+Address 1000 pe jao.
+
+Waha se bits lao.
+
+00000101
+
+Int ki tarah interpret karo.
+Output: 5
+```
+- `Variable Type = Interpretation Rule`
+```txt
+
+
+```
+## Data Type
+### Kitne Bytes Reserve Karne Hain koi bhi variable k liye
+- The compiler must know how much memory should be allocated for a variable
+```cpp
+char grade = 'A';
+int age = 25;
+double pi = 3.14;
+```
+Typical sizes:
+
+| Data Type | Size (Usually) |
+|------------|------------|
+| char | 1 byte |
+| int | 4 bytes |
+| double | 8 bytes |
+
+Example:
+
+```cpp
+int age = 25;
+```
+
+Compiler reserves 4 bytes of memory for `age`.
+
+```txt
+Address      Data
+
+1000         ????????
+1001         ????????
+1002         ????????
+1003         ????????
+```
+
+### Un Bytes Ko Kaise Interpret Karna Hai
+Memory stores only bits.
+
+Example:
+
+```txt
+01000001
+```
+
+Memory does not know whether these bits represent:
+
+```txt
+'A'
+65
+true
+something else
+```
+
+The data type provides the interpretation.
+
+Example:
+
+```cpp
+char ch = 'A';
+```
+
+Memory:
+
+```txt
+01000001
+```
+
+Interpretation:
+
+```txt
+ASCII 65 → 'A'
+```
+
+Output:
+
+```txt
+A
+```
+
+---
+
+Example:
+
+```cpp
+unsigned char x = 65;
+```
+
+Same bits:
+
+```txt
+01000001
+```
+
+Interpretation:
+
+```txt
+65
+```
+
+Output:
+
+```txt
+65
+```
+
+The bits are identical.
+
+Only the interpretation changes.
+
+---
+
+### Un Bytes Par Operations Kaise Karne Hain
+The data type tells the compiler how calculations should be performed.
+
+### Integer Division
+
+```cpp
+int a = 5;
+int b = 2;
+
+a / b
+```
+
+Result:
+
+```txt
+2
+```
+
+Because integer division discards the fractional part.
+
+---
+
+
+
+```cpp
+double a = 5;
+double b = 2;
+
+a / b
+```
+
+Result:
+
+```txt
+2.5
+```
+
+Because floating-point arithmetic is used.
+
+---
+
+Same numbers.
+
+Different data types.
+
+Different operations.
+
+---
+
+## Summary
+
+A data type tells the compiler:
+
+1. How many bytes of memory to reserve.
+2. How the stored bits should be interpreted.
+3. What rules and operations should be used on those bits.
+
+Example:
+
+```cpp
+int age = 25;
+```
+
+Meaning:
+
+```txt
+Reserve 4 bytes.
+
+Store the value 25.
+
+Interpret those bytes as a signed integer.
+
+Use integer arithmetic rules when performing operations.
+```
 ## Erros and Warnings
 When we write a C/C++ program, it passes through multiple stages
 - Preprocessing → Compilation → Assembling → Linking → Execution
