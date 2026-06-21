@@ -652,6 +652,50 @@ cin >> a >> b;   // input like: 10 20
 std::string fullname;
 std::getline(std::cin,fullname);
 ```
+### Handling Input Errors
+- `std::cin.fail()` : Check karta hai ki previous input operation successful tha ya fail
+- agar fail hua to: cin = FAIL state
+- `std::cin.clear()` : cin ki error state ko remove karta hai
+- fir cin = NORMAL state
+- Ye sirf error flag hatata hai
+- Buffer me pada hua invalid data delete nahi karta
+- `std::cin.ignore()` : Input buffer me pada hua invalid data hata deta hai
+```cpp
+cin.ignore(count, delimiter);
+
+// Parameter 1 : count
+std::numeric_limits<std::streamsize>::max() //Maximum possible characters
+
+// Parameter 2 : delimiter
+// '\n'
+// New line character (Enter key)
+
+```
+```cpp
+#include<iostream>
+#include <limits>
+int main(){
+
+    int qty;
+    while(true){
+        std::cout<<"Enter Quantity to BUY: ";
+        std::cin>>qty;
+
+        if(std::cin.fail()){
+            std::cin.clear();
+            std::cin.ignore(
+               std::numeric_limits<std::streamsize>::max(), 
+               '\n'
+            );
+            std::cout<<"Please Enter a valid number"<<std::endl;
+        }else{
+            break;
+        }
+    }
+    std::cout<<"Qty: "<<qty<<std::endl;
+}
+```
+
 ### stdout
 - Standard output stream (terminal / screen)
 ```cpp
