@@ -712,6 +712,135 @@ int main(){
 - Buffered — output may be delayed until flushed or newline
 - `std::endl` = end line + flush buffer (forces immediate output, unlike \n)
 
+### Formatted Output
+- `setprecision()` : Floating Point Number ki Precision Control Karna
+- Total Kitne digits dikhana hai decimal ko leke
+- `setprecision()` ka effect ek baar lagane ke baad future ke sab floating-point outputs par rehta hai, jab tak naya precision set na karo
+- Agar aap exactly decimal ke baad digits chahte ho to fixed use karo
+- `cout << fixed << setprecision(4) << num;`
+- fixed bhi future ke sab floating-point outputs par apply hota hai
+```cpp
+#include <iostream>
+#include <iomanip>
+int main()
+{
+
+    double num = 1.2345;
+
+    std::cout << std::setprecision(3) << num << std::endl; //1.23
+
+    double num2 = 3.1425;
+
+    std::cout << num2 << std::endl; // 3.14
+    
+    float num3=1234.123;
+    std::cout<<num3<<std::endl; //1.23e+03
+
+    std::cout<<std::fixed<<std::setprecision(2)<<1234.1234<<std::endl; //1234.12
+
+    std::cout<<987.987<<std::endl; //987.99
+
+
+}
+```
+- `setw()` ka use output field ki width set karne ke liye hota hai
+- Ye sirf NEXT output item par apply hota hai
+- default setw() right alignment karta hai
+- Next output item ke liye minimum width n set karta hai
+- Agar item ki length n se kam hai to remaining jagah spaces (ya setfill character) se fill hoti hai
+- Agar item ki length n se zyada hai to item poora print hota hai
+- `cout << left << setw(10) << "Hi";`
+- `cout << right << setw(10) << "Hi";`
+- Yeh effect permanent type hai
+- `setfill(ch)`: Empty spaces ko kisi character se fill karta hai
+- Jahan width mein extra spaces bachi hain, unhe kisi character se fill karta hai
+- Default fill character: ' ' //space
+- - Yeh effect permanent type hai
+
+```cpp
+#include <iostream>
+#include <iomanip>
+using namespace std;
+int main()
+{
+   std::cout<<std::setfill('-');
+
+   std::cout<<std::setw(10)<<"Hello"<<std::endl;
+   std::cout<<std::setw(10)<<"hey"<<std::endl;
+
+   std::cout<<std::setfill('=');
+
+   std::cout<<std::setw(10)<<"R"<<std::endl;
+   std::cout<<std::setw(10)<<"1234567890"<<std::endl;
+   std::cout<<std::setw(10)<<"12345678901112"<<std::endl;
+/*
+-----Hello
+-------hey
+=========R
+1234567890
+12345678901112
+*/
+
+    // -------------------------
+    // right alignment
+    // -------------------------
+    cout << "===== RIGHT ALIGNMENT =====\n";
+
+    cout << setfill('-');
+
+    cout << "|" << setw(10) << "Hi" << "|\n";
+    cout << "|" << setw(10) << "Hello" << "|\n";
+    cout << "|" << setw(10) << "Welcome" << "|\n";
+
+    cout << endl;
+
+    // -------------------------
+    // left alignment
+    // -------------------------
+    cout << "===== LEFT ALIGNMENT =====\n";
+
+    cout << left;
+
+    cout << "|" << setw(10) << "Hi" << "|\n";
+    cout << "|" << setw(10) << "Hello" << "|\n";
+    cout << "|" << setw(10) << "Welcome" << "|\n";
+
+    cout << endl;
+
+    // -------------------------
+    // right alignment again
+    // -------------------------
+    cout << "===== RIGHT AGAIN =====\n";
+
+    cout << right;
+
+    cout << "|" << setw(10) << "Hi" << "|\n";
+    cout << "|" << setw(10) << "Hello" << "|\n";
+
+    cout << endl;
+
+    // -------------------------
+    // setfill change
+    // -------------------------
+    cout << "===== setfill('*') =====\n";
+
+    cout << setfill('*');
+
+    cout << "|" << setw(10) << "A" << "|\n";
+    cout << "|" << setw(10) << "ABC" << "|\n";
+
+    cout << endl;
+
+    // -------------------------
+    // width equal and greater
+    // -------------------------
+    cout << "===== WIDTH TEST =====\n";
+
+    cout << "|" << setw(10) << "1234567890" << "|\n";
+    cout << "|" << setw(10) << "123456789012345" << "|\n";
+
+}
+```
 
 ### clog (log stream)
 
