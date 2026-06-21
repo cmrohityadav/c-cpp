@@ -16,8 +16,12 @@
 - [Data input and output](#Data-input-and-output)
 - [C++ core language Vs Standard library Vs STL](#C-core-language-Vs-Standard-library-Vs-STL)
 - [Computer Memory](./Computer_Memroy.md)
+- [Variable](#variable)
+- [Data Type](#data-type)
+- [Auto keyword](#Auto-keyword)
 - [Pointers](#pointers)
 - [Reference](#reference)
+- [Constant]()
 - [Type Conversion](#type-conversion)
 - [Arrays](#Arrays)
 - [Comments](#comments)
@@ -560,6 +564,13 @@ Use integer arithmetic rules when performing operations.
 | char32_t | 4 bytes | UTF-32 character |
 
 ---
+
+
+## Auto keyword
+-  Introduced in C++11
+- [Auto](/CPP11.md#auto-keyword)
+
+
 ## Erros and Warnings
 When we write a C/C++ program, it passes through multiple stages
 - Preprocessing → Compilation → Assembling → Linking → Execution
