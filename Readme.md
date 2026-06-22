@@ -23,6 +23,7 @@
 - [Reference](#reference)
 - [Constant]()
 - [Type Conversion](#type-conversion)
+- [Loop](#loop)
 - [Arrays](#Arrays)
 - [Comments](#comments)
 - [Comments](#comments)
@@ -1267,6 +1268,11 @@ int a=10;
 - pass by reference/pointer is faster than pass by value in function Parameter
 - `void function(const int x)` : Do NOT allow modification of x inside this function
 
+## Loop
+
+### Range Based Loop
+- C++11 introduced the range-based for loop
+- [Range Based Loop](./CPP11.md#range-based-loop)
 ## Arrays
 - An array is a collection of elements of the **same type**, **stored contiguously in memory**.
 - It’s like ek rail coach — sab compartments (elements) ek ke baad ek lagte hain.

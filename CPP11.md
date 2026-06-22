@@ -28,3 +28,66 @@ std::vector<int>::iterator it = v.begin();
 // With auto
 auto it = v.begin();
 ```
+
+
+## Range based loop
+- Its simplifies iterating over coolections like arrays, vectors and other containers(array,vector,list,set,map,unordered_map,string,custom containers)
+```cpp
+
+for(element_declaration:collection){
+    //Codetoexecute
+}
+
+vector<int> v = {1, 2, 3, 4};
+
+for (int x : v) { //Here x is copy
+    cout << x << " ";
+}
+
+//Compiler roughly isko convert karta hai bus samjhne k liye
+auto begin = v.begin();
+auto end = v.end();
+
+for (; begin != end; ++begin) {
+    int x = *begin;
+}
+```
+- Copy Hoti Hai
+```cpp
+#include <iostream>
+#include<vector>
+int main()
+{
+    std::vector<int>ltp={1,2,3,4,5};
+    for(int x:ltp){
+          x+=10;
+    }
+
+    for(int x:ltp){
+         std::cout<<x<<std::endl;
+    }
+    return 0;
+}
+```
+- Reference Use Karo Agar Modify Karna Hai
+```cpp
+#include <iostream>
+#include<vector>
+int main()
+{
+    std::vector<int>ltp={1,2,3,4,5};
+    for(int& x:ltp){
+          x+=10;
+    }
+
+    for(int x:ltp){
+         std::cout<<x<<std::endl;
+    }
+    return 0;
+}
+
+// Most Used in Production)
+for (const int &x : ltp) { //Agar sirf read karna hai
+    cout << x << " ";
+}
+```
