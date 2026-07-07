@@ -23,6 +23,7 @@
 - [Reference](#reference)
 - [Constant]()
 - [Type Conversion](#type-conversion)
+- [Control Flow](#control-flow)
 - [Loop](#loop)
 - [Arrays](#Arrays)
 - [Comments](#comments)
@@ -1268,7 +1269,79 @@ int a=10;
 - pass by reference/pointer is faster than pass by value in function Parameter
 - `void function(const int x)` : Do NOT allow modification of x inside this function
 
+## Control Flow
+### if else
+
+### Switch
+```cpp
+switch (expression)
+{
+    case constant1:
+        // code
+        break;
+
+    case constant2:
+        // code
+        break;
+
+    case constant3:
+        // code
+        break;
+
+    default:
+        // code if no case matches
+}
+
+```
+- Although usually placed last, default can appear anywhere
+
+#### Fall-through
+```cpp
+
+char grade = 'B';
+
+switch(grade)
+{
+    case 'A':
+    case 'B':
+    case 'C':
+        cout << "Pass";
+        break;
+
+    case 'D':
+    case 'F':
+        cout << "Fail";
+        break;
+}
+```
+- Always use break unless you intentionally want fall-through
+#### Data Types Allowed
+```cpp
+int
+char
+short
+long
+unsigned int
+bool
+enum
+
+//Data Types Not Allowed
+float
+double
+string
+arrays
+objects
+```
+
+
+
 ## Loop
+
+### for Loop
+
+### while Loop
+
+### do while Loop
 
 ### Range Based Loop
 - C++11 introduced the range-based for loop
