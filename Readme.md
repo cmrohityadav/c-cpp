@@ -1075,6 +1075,228 @@ r = b;       // ❌ doesn't rebind, just assigns value
 
 int& r = nullptr;  // ❌ Not allowed
 ```
+## Function
+- Function ek reusable code block hai [f(x)-> y]
+```c++
+return_type function_name(parameters)
+{
+    // body : logic
+
+    return value; //optional: depending on return_type
+}
+
+// Example:
+int add(int a, int b)
+{
+    return a + b;
+}
+
+double average(int a,int b,int c)
+{
+    return (a+b+c)/3.0;
+}
+
+void printHello()
+{
+    cout<<"Hello";
+}
+
+int main(){
+
+    printHello(); // Calling function
+    cout<<average(1,2,5) // Passing Argument while calling function
+}
+
+```
+- Function Lifecycle
+```txt
+// Declaration (.h)
+
+1. Sirf function ka prototype.
+2. Compiler ko batata hai ki function exist karta hai
+// math.h
+int add(int a, int b);
+
+
+// Definition (.cpp)
+
+1.Function ka actual implementation
+// math.cpp
+int add(int a, int b)
+{
+    return a + b;
+}
+```
+### Pass by value
+- Paramters `Default me Pass by value` hota hai, means jo bhi argument hum pass krege uska copy banega function me
+```c++
+void change(int x)
+{
+    x = 100;
+}
+
+int main()
+{
+    int a = 10;
+
+    change(a); 
+
+    cout<<a;
+}
+// 10
+// Internally aisa hua hoga: int x=a
+```
+
+### Pass by Reference
+```cpp
+void change(int &x)
+{
+    x = 100;
+}
+
+int main()
+{
+    int a = 10;
+
+    change(a);
+
+    cout<<a;
+}
+//// 100
+// Internally aisa hua hoga: int &x=a
+```
+### Pass by Pointer
+- Pass by pointer me hum variable ki address function ko dete hain
+```cpp
+void change(int *x)
+{
+    *x = 100;
+}
+
+int main()
+{
+    int a = 10;
+
+    change(&a);
+
+    cout << a;
+}
+
+// 100
+```
+---
+|Method| Function Call | Function Parameter | Original Changes?|
+|------|---------------|--------------------|----|
+|Value | `change(a)`     | `change(int x)`      |  NO  |
+|Reference | `change(a)`     | `change(int& x)`      |  YES  |
+|Pointer | `change(&a)`     | `change(int* x)`      |  YES |
+---
+
+### Return by Reference
+```cpp
+int& get(int arr[],int i)
+{
+    return arr[i];
+}
+
+int main(){
+    int arr[3] = {10, 20, 30};
+
+    get(arr,0)=100;
+
+    cout<<arr[0];
+
+}
+// 100
+// Yahan get(arr,0) khud arr[0] ka alias ban jata hai.
+```
+
+### Return by Pointer
+```cpp
+#include <iostream>
+using namespace std;
+
+int* get(int arr[], int i)
+{
+    return &arr[i];   // address return
+}
+
+int main()
+{
+    int arr[3] = {10, 20, 30};
+
+    *get(arr, 0) = 100;   // pointer dereference karke value change
+
+    cout << arr[0];
+}
+
+// 100
+// Yahan function address return karta hai, isliye value access karne ke liye * lagana padta hai
+```
+### Default Arguments - Rules
+- Default argument hamesha declaration (.h) me likho
+```cpp
+// math.h
+int add(int a, int b = 10);
+
+// math.cpp
+int add(int a, int b)
+{
+    return a + b;
+}
+// Definition me dobara default value mat do
+```
+- Default arguments right se start hote hain
+- `void fun(int a, int b = 10, int c = 20);` ✔ Correct
+- `void fun(int a = 10, int b, int c);` ❌ Wrong
+
+### Inline Function
+- Compiler ko hint diya jata hai ki function call ki jagah function ka code directly insert kar de, taaki function call ka overhead kam ho
+- Compiler chahe to inline kare, chahe na kare
+- Agar function bahut bada hai ya recursion use karta hai, compiler inline ignore kar sakta hai
+```cpp
+inline int square(int x)
+{
+    return x * x;
+}
+
+int main()
+{
+    cout << square(5);
+}
+```
+
+### Function Overloading
+- Ek hi naam ke multiple functions bana sakte hain, bas unke parameters alag hone chahiye
+- Sirf return type alag → Overloading nahi hogi
+```cpp
+int add(int a, int b)
+{
+    return a + b;
+}
+
+double add(double a, double b)
+{
+    return a + b;
+}
+
+int add(int a, int b, int c)
+{
+    return a + b + c;
+}
+
+int main()
+{
+    cout << add(2, 3) << endl;
+    cout << add(2.5, 3.5) << endl;
+    cout << add(1, 2, 3);
+}
+
+```
+
+
+
+
 
 ## Type Conversion
 - ek data type ko dusre data type me convert krna
