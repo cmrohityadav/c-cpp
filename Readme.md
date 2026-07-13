@@ -1250,22 +1250,6 @@ int add(int a, int b)
 - `void fun(int a, int b = 10, int c = 20);` ✔ Correct
 - `void fun(int a = 10, int b, int c);` ❌ Wrong
 
-### Inline Function
-- Compiler ko hint diya jata hai ki function call ki jagah function ka code directly insert kar de, taaki function call ka overhead kam ho
-- Compiler chahe to inline kare, chahe na kare
-- Agar function bahut bada hai ya recursion use karta hai, compiler inline ignore kar sakta hai
-```cpp
-inline int square(int x)
-{
-    return x * x;
-}
-
-int main()
-{
-    cout << square(5);
-}
-```
-
 ### Function Overloading
 - Ek hi naam ke multiple functions bana sakte hain, bas unke parameters alag hone chahiye
 - Sirf return type alag → Overloading nahi hogi
@@ -1293,6 +1277,70 @@ int main()
 }
 
 ```
+
+### Inline Function
+- Compiler ko hint diya jata hai ki function call ki jagah function ka code directly insert kar de, taaki function call ka overhead kam ho
+- Compiler chahe to inline kare, chahe na kare
+- Agar function bahut bada hai ya recursion use karta hai, compiler inline ignore kar sakta hai
+```cpp
+inline int square(int x)
+{
+    return x * x;
+}
+
+int main()
+{
+    cout << square(5);
+}
+```
+
+### constexpr functions
+- Agar tumhare paas saari information compile time pe hai, to mera function abhi hi execute kar do. Program run hone ka wait mat karo
+- Compile-time execution me sirf wohi kaam allowed hain jo compiler khud calculate kar sake
+```cpp
+// Normal
+
+#include <iostream>
+int square(int x){
+    return x*x;
+}
+int main()
+{
+    int num=square(5);
+    std::cout<<num<<std::endl;
+
+    return 0;
+}
+/*
+Compile Time
+--------------
+Function ban gaya
+
+Run Time
+--------------
+square(5)
+25
+*/
+
+
+// constexpr
+#include <iostream>
+constexpr int square(int x){
+    return x*x;
+}
+int main()
+{
+    constexpr int num=square(5);
+    std::cout<<num<<std::endl;
+
+    return 0;
+}
+
+```
+- Rule for Compile-time evaluation
+1. Function compile-time executable hona chahiye
+2. Arguments compile-time known hone chahiye
+3. Agar context compile-time demand karta hai, to compiler ko compile time pe evaluate karna hi padega
 
 
 

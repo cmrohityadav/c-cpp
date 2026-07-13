@@ -1,14 +1,11 @@
 #include <iostream>
-#include<vector>
+constexpr int square(int x){
+    return x*x;
+}
 int main()
 {
-    std::vector<int>ltp={1,2,3,4,5};
-    for(int& x:ltp){
-          x+=10;
-    }
+    constexpr int num=square(5);
+    std::cout<<num<<std::endl;
 
-    for(int x:ltp){
-         std::cout<<x<<std::endl;
-    }
     return 0;
 }
