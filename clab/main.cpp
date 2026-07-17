@@ -1,21 +1,9 @@
-#include <iostream>
-using namespace std;
-void fun(int)
-{
-    cout << "int";
-}
+#include<iostream>
 
-void fun(char*)
-{
-    cout << "pointer";
-}
+auto add=[](int a ,int b){
+    return a+b;
+};
 
-// int main()
-// {
-//     fun(nullptr);
-// }
-int main()
-{
-        fun(0);
-        fun(nullptr);
+int main(){
+    std::cout<<"\n"<<add(10,50);
 }

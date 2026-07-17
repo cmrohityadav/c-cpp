@@ -1,4 +1,6 @@
 
+# Content
+
 ## auto keyword
 - compiler  variable ka type khud determine (deduce) karta hai
 - auto use karne par compiler initializer dekhkar type decide karta hai
@@ -158,4 +160,177 @@ int x=nullptr; //Error: cannot convert null ptr to int
 - nullptr ka apna alag type hota hai jiska naam hai: `std::nullptr_t`
 - Ye har pointer type (int*, char*, double*, void*, etc.) me automatically convert ho sakta hai
 - Ye integers ya floating-point types me convert nahi hota, isliye type-safe hai
-- 
+
+
+## Uniform Initialization
+- Uniform Initialization, also known as brace initialization or list initialization, was introduced in C++11 to provide a single, consistent, and intuitive way to initialize objects
+- Using curly braces ({}), programmers can initialize a wide variety of data types, including: Variables,Arrays,Structures (struct),Classes,Standard Library containers (such as std::vector, std::array, and std::map)
+
+- `type variable{value};`
+```cpp
+int x{10};
+double pi{3.14159};
+char grade{'A'};
+bool flag{true};
+std::string s{"Hello"};
+Point p{1,2};
+std::vector<int> v{1,2,3,4};
+int arr[]{1,2,3};
+int* ptr = new int{42};
+auto x{42};
+```
+### Why we need Uniform Initialization
+1. Too many initialization syntaxes(IN OLD C++)
+```cpp
+int a = 5;
+int b(5);
+
+std::string s("abc");
+
+Point p(1,2);
+
+int arr[] = {1,2,3};
+```
+2. Prevent narrowing conversions
+```cpp
+int x = 3.9;
+// x = 3
+// The decimal part disappears : No warning is required
+
+// With Braces
+int x{3.9};
+// Compiler error!
+
+```
+3. Initialize everything the same way
+
+```cpp
+class Student
+{
+public:
+    Student(std::string name,int age)
+    {
+    }
+};
+
+Student s{"Bob",20};
+```
+- The constructor is still called
+- Braces don't remove constructors
+- They just change the syntax
+-  std::initializer_list
+
+
+## constexpr
+- It is a powerful feature that enables compile-time evaluation of expressions, functions, and objects
+- By marking variables,functions, and objects as constexpr, you instruct the compiler to evaluate them at
+compile time, leading to potential performance improvements, reduced runtime
+overhead, and enhanced code safety
+### constexpr Variables
+```cpp
+// constexpr T variable = value;
+constexpr int x = 42; // x is a compile-time constant
+```
+
+### function
+- Agar tumhare paas saari information compile time pe hai, to mera function abhi hi execute kar do. Program run hone ka wait mat karo
+- Compile-time execution me sirf wohi kaam allowed hain jo compiler khud calculate kar sake
+```cpp
+constexpr T function_name(parameters) {
+// Function body
+}
+
+```
+```cpp
+// Normal
+
+#include <iostream>
+int square(int x){
+    return x*x;
+}
+int main()
+{
+    int num=square(5);
+    std::cout<<num<<std::endl;
+
+    return 0;
+}
+/*
+Compile Time
+--------------
+Function ban gaya
+
+Run Time
+--------------
+square(5)
+25
+*/
+
+
+// constexpr
+#include <iostream>
+constexpr int square(int x){
+    return x*x;
+}
+int main()
+{
+    constexpr int num=square(5);
+    std::cout<<num<<std::endl;
+
+    return 0;
+}
+
+```
+- Rule for Compile-time evaluation
+1. Function compile-time executable hona chahiye
+2. Arguments compile-time known hone chahiye
+3. Agar context compile-time demand karta hai, to compiler ko compile time pe evaluate karna hi padega
+
+## Lambda Expressions
+- Ek chhota anonymous (naam bina) function jo wahi par bana aur wahi use ho gaya
+```cpp
+
+[capture](parameters)->returnType{
+    body
+}
+
+auto sum = [](int a,int b){
+    return a+b;
+};
+
+```
+### capture [] 
+- Outside ke kaunse variables andar laane hain?
+- Default  bahar ka kuchh bhi access nhi
+#### Capture by Value [=]
+```cpp
+int x=10;
+
+auto f=[=](){ //Sabki photocopy lao
+    cout<<x;
+};
+```
+- sab dedo par copy
+
+#### Capture by Reference [&]
+```cpp
+int x=10;
+
+auto f=[&](){ //Sab original lao
+    x++;
+};
+```
+- sab dedo par  by reference 
+
+#### Specific Capture
+- [a,&b]
+- a ki copy dedo
+- b original dedo
+
+### Mixed Capture
+- [=,&b]
+- Sabki copy
+- Except b
+- b original
+### Parameters 
+- bilkul normal function jaise
