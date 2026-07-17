@@ -105,3 +105,57 @@ for (const int &x : ltp) { //Agar sirf read karna hai
 - Avoid Modifying During Range Based Loop Iteration
 - Modifying the range (e.g., adding or removing elements) while iterating can lead
 to undefined behavior
+
+
+## nullptr
+### 0
+- Purane C++ me 0 ko null pointer ke liye bhi use kiya jata tha
+```cpp
+int* ptr = 0;
+```
+- Pointer kisi valid memory ko point nahi kar raha
+- Lekin 0 asal me integer literal hai
+- `int x=0;`
+- Yahan bhi 0 integer hai
+- To compiler ko context dekhna padta tha
+### NULL
+- Above confusion ko kam karne ke liye C/C++ me NULL introduce hua
+- `int *ptr = NULL;`
+```txt
+Kai compilers me:
+
+#define NULL 0
+
+int *ptr = NULL; means  int *ptr = 0;
+
+// Problem
+void fun(int)
+{
+    cout << "int";
+}
+
+void fun(char*)
+{
+    cout << "pointer";
+}
+
+int main()
+{
+    fun(NULL);
+}
+```
+
+### nullptr
+- `T* ptr = nullptr;` // ptr is a null pointer of type T*
+```cpp
+int* ptr = nullptr;
+
+int x=nullptr; //Error: cannot convert null ptr to int
+```
+- Its new keyword `nullptr`
+- Ye integer nahi hai
+- Ye ek special null pointer literal hai
+- nullptr ka apna alag type hota hai jiska naam hai: `std::nullptr_t`
+- Ye har pointer type (int*, char*, double*, void*, etc.) me automatically convert ho sakta hai
+- Ye integers ya floating-point types me convert nahi hota, isliye type-safe hai
+- 
