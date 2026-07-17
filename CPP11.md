@@ -29,6 +29,16 @@ std::vector<int>::iterator it = v.begin();
 auto it = v.begin();
 ```
 
+- `decltype` C++ ka keyword hai jo kisi expression ka type nikalta hai
+```cpp
+template <typename T, typename U>
+auto multiply(T a, U b) -> decltype(a * b) {
+    return a * b;
+}
+```
+
+- [C++ 14 ](/CPP14.md#auto)
+
 
 ## Range based loop
 - Its simplifies iterating over coolections like arrays, vectors and other containers(array,vector,list,set,map,unordered_map,string,custom containers)
@@ -91,3 +101,7 @@ for (const int &x : ltp) { //Agar sirf read karna hai
     cout << x << " ";
 }
 ```
+### NOTES
+- Avoid Modifying During Range Based Loop Iteration
+- Modifying the range (e.g., adding or removing elements) while iterating can lead
+to undefined behavior

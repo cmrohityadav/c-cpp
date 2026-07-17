@@ -918,6 +918,15 @@ int main() {
 - STL ne C++ ko “powerful but elegant” banaya, kyunki ab tum reusable aur efficient code likh sakte ho bina wheel dubara banaye.
 
 ## Pointers
+- Pointer ek variable hai jo address store karta hai (book)
+- Pointer ek integer hai jiska meaning compiler alag treat karta hai
+```txt
+RAM me pointer aur int dono bits hi hain.
+CPU ko koi farak nahi padta.
+
+Difference compiler banata hai
+
+```
 
 ### unique_ptr
 - Ek object ka single owner hota hai.
