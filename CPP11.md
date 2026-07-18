@@ -288,6 +288,8 @@ int main()
 
 ## Lambda Expressions
 - Ek chhota anonymous (naam bina) function jo wahi par bana aur wahi use ho gaya
+- Compiler lambdas ko mostly inline kar deta hai
+- Overuse mat karo
 ```cpp
 
 [capture](parameters)->returnType{
@@ -303,6 +305,8 @@ auto sum = [](int a,int b){
 - Outside ke kaunse variables andar laane hain?
 - Default  bahar ka kuchh bhi access nhi
 #### Capture by Value [=]
+- Captures all variables by value. The lambda creates a copy of each variable.
+- sab de do par by Value(copy)
 ```cpp
 int x=10;
 
@@ -310,9 +314,10 @@ auto f=[=](){ //Sabki photocopy lao
     cout<<x;
 };
 ```
-- sab dedo par copy
 
 #### Capture by Reference [&]
+- Captures all variables by reference. The lambda accesses the original variables
+- sab dedo par  by reference 
 ```cpp
 int x=10;
 
@@ -320,17 +325,71 @@ auto f=[&](){ //Sab original lao
     x++;
 };
 ```
-- sab dedo par  by reference 
 
 #### Specific Capture
+- Captures specific variables by value or reference
 - [a,&b]
 - a ki copy dedo
 - b original dedo
 
-### Mixed Capture
+#### Mixed Capture
+- Combines capture by value and capture by reference
 - [=,&b]
 - Sabki copy
 - Except b
 - b original
+#### Capture `this`
+- Captures the this pointer to access member variables and functions of the enclosing class.
+```cpp
+class MyClass {
+    int value = 42;
+    public:
+    void print() {
+        auto lambda = [this]() { std::cout << value; };
+        lambda();
+    }
+};
+```
 ### Parameters 
 - bilkul normal function jaise
+### return
+```cpp
+auto add=[](int a ,int b) -> int{
+    return a+b;
+};
+```
+
+### Uses of Lambda Expressions
+#### Passing Behavior to Algorithms
+- Algorithms (sort, for_each, transform, count_if) ko behavior dene ke liye sabse zyada use hota hai
+```cpp
+std::vector<int> vec={3,1,4,1,5};
+
+std::sort(vec.begin(),vec.end(),[](int a,int b){return a>b;});
+```
+#### Event Handling and Callbacks
+```cpp
+button.onClick([](){
+    cout<<"Button clicked";
+});
+```
+- Callback = Ek function jo tum kisi dusre function ko dete ho, taaki woh us function ko baad me jab zarurat ho tab call kare
+- Abhi function mat chalao. Main (system/library) jab sahi time samjhu, tab ise call karunga
+```cpp
+#include <iostream>
+
+void execute(void (*func)()) {
+    std::cout << "Before callback\n";
+
+    func();
+
+    std::cout << "After callback\n";
+}
+
+int main() {
+    execute([]() {
+        std::cout << "I am callback\n";
+    });
+}
+```
+

@@ -1,6 +1,6 @@
 #include<iostream>
 
-auto add=[](int a ,int b){
+auto add=[](int a ,int b) -> int{
     return a+b;
 };
 
