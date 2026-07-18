@@ -1,6 +1,10 @@
 
 # Content
-
+- []()
+- []()
+- []()
+- []()
+- [Move Semantic](#move-semantic)
 ## auto keyword
 - compiler  variable ka type khud determine (deduce) karta hai
 - auto use karne par compiler initializer dekhkar type decide karta hai
@@ -392,4 +396,291 @@ int main() {
     });
 }
 ```
+## Move Semantic
+- Copy Nah kro, Ownership transfer kar do
+```txt
+Lvalue
+↓
+Naam wala object
+↓
+Copy hota hai
+
+-------------------------
+
+Rvalue
+↓
+Temporary object
+↓
+Move ho sakta hai
+
+-------------------------
+
+&&
+↓
+Rvalue Reference
+
+-------------------------
+
+std::move()
+↓
+Object ko rvalue ki tarah treat karo
+(copy nahi, move constructor ko chance do)
+
+-------------------------
+
+Move Constructor
+↓
+Pointer/Resource transfer
+↓
+Old object -> nullptr
+
+-------------------------
+
+std::forward()
+↓
+Template mein original nature preserve karta hai
+Lvalue -> Lvalue
+Rvalue -> Rvalue
+```
+### Lvalue
+```txt
+Jiska naam ho
+
+int x = 10;
+
+Yahaan: x
+ek lvalue hai
+
+Kyun?
+
+Dobara use kar sakte ho
+Kyuki iska naam hai.
+Memory location hai
+
+```
+
+### Rvalue
+```txt
+Temporary value.
+
+10
+
+Ya
+
+5 + 3
+
+Ya
+
+x + 2
+
+Ye sab temporary values hain.
+Inka koi naam nahi hota
+Memory permanently nahi
+
+```
+```cpp
+int a = 5;
+
+a            // lvalue
+
+20           // rvalue
+
+a+5          // rvalue
+
+a*2          // rvalue
+
+std::string("Hello")   // rvalue
+```
+
+### Lvalue reference
+### Rvalue reference
+```cpp
+int &&r = 5 + 3;
+```
+### move constructor and destructure
+```cpp
+#include<iostream>
+#include<cstring>
+class RString{
+    char* data;
+    public:
+
+    // move constructor
+    RString(RString&& righthHandVar){
+        std::cout<<"Move constructor Called \n"<<std::endl;
+
+        data=righthHandVar.data;  // Pointer transfer
+
+        righthHandVar.data=nullptr; // Old object empty
+
+    }
+
+    //Move Assigment
+    RString& operator=(RString&& rightHandVar){
+        std::cout<<"Move Assigment Called \n"<<std::endl;
+
+         if (this != &rightHandVar)
+        {
+            delete[] data;       // Purani memory hatao
+
+            data = rightHandVar.data;   // Ownership transfer
+
+            rightHandVar.data = nullptr;
+        }
+
+        return *this;
+    }
+
+    public:
+    RString(const char* str){
+        std::cout<<"Constructor Called \n"<<std::endl;
+        
+        data=new char[strlen(str)+1];
+        strcpy(data,str);
+
+    }
+
+    ~RString(){
+        std::cout<<"Destructor called"<<std::endl;
+        delete[] data;
+    }
+
+    RString(const RString& other)
+    {
+        std::cout << "Copy Constructor Called\n";
+
+        data = new char[strlen(other.data) + 1];
+        strcpy(data, other.data);
+    }
+
+    RString& operator=(const RString& other)
+    {
+        std::cout << "Copy Assignment Called\n";
+
+        if (this != &other)
+        {
+            delete[] data;
+
+            data = new char[strlen(other.data) + 1];
+            strcpy(data, other.data);
+        }
+
+        return *this;
+    }
+
+    void Print(){
+        if(data){
+            std::cout<<data<<std::endl;
+        }else{
+            std::cout<<"Empty Object"<<std::endl;
+        }
+    }
+};
+int main(){
+    
+    RString myname("Rohit");
+
+    std::cout << "\nBefore Move\n";
+    myname.Print();
+
+    std::cout << "\nMove Constructor\n";
+
+    RString s2 = std::move(myname);
+
+    myname.Print();
+    s2.Print();
+
+    std::cout << "\nMove Assignment\n";
+
+    RString s3("Programming");
+
+    s3 = std::move(s2);
+
+    s2.Print();
+    s3.Print();
+
+    return 0;
+}
+```
+### std::move
+- yeh compiler ko bolta hai: Is object ko ab temporary (rvalue) ki tarah treat karo
+- Kyunki isi wajah se compiler copy constructor ki jagah move constructor choose karta hai
+- Agar possible ho to is object ko copy mat karo, move kar lo
+- std::move kuch move nahi karta. Ye sirf object ko rvalue bana kar compiler ko batata hai ki "is object ko agar type support karta hai, to copy ki jagah move constructor/assignment use kar lo." Actual data ya ownership transfer std::move nahi, balki us type ka move constructor ya move assignment operator karta hai
+- std::move internally kya hai?
+```cpp
+template<typename T>
+T&& move(T& obj)
+{
+    return static_cast<T&&>(obj);
+}
+```
+- Data move tab hota hai jab move constructor ya move assignment operator call hota hai
+- Kab std::move use kare?
+- Jab tum object ko aage use nahi karna chahte
+- Example: dost ko bag dena hai
+```txt
+Option 1: Copy
+
+Tum bag ki saari books ki photocopy karwao.
+
+Tum
+ |
+Bag
+ |
+Books
+Laptop
+Notebook
+
+↓
+
+Copy
+
+Tum                  Dost
+ |                     |
+Bag                  Bag
+ |                     |
+Books               Books
+Laptop              Laptop
+Notebook            Notebook
+
+Sab kuch duplicate ho gaya.
+
+Ye expensive hai.
+
+Time bhi laga.
+Memory bhi lagi.
+
+
+
+Option 2: Move
+
+Tum seedha bag usko de do.
+
+Before
+
+Tum
+ |
+Bag
+
+↓
+
+Move
+
+Tum         Dost
+ |            |
+Empty       Bag
+
+Na copy hui.
+Na memory lagi.
+
+Sirf ownership transfer hui.
+
+Yehi Move Semantics hai.
+
+```
+
+
+
+### std::forward
 
