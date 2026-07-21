@@ -640,5 +640,362 @@ UTF-8
 └─ Most Widely Used
 ```
 
+## Memory Layout
+```txt
+main.cpp
+      ↓
+
+Compiler
+
+      ↓
+
+Executable (.exe / a.out)
+
+      ↓
+
+Run
+
+```
+- Jab OS executable run karta hai...
+- OS process create karta hai
+- Har process ko apna virtual memory space milta hai
+- Imagine karo ek 64-bit process
+- Uske andar memory kuch aisi dikhti hai
+- Ye hi process memory layout hai
+```txt
+Higher Address
++----------------------+
+|        Stack         |
+|                      |
+|                      |
+|----------------------|
+|                      |
+|                      |
+|        Heap          |
+|                      |
+|----------------------|
+|        (empty)       |
+|----------------------|
+|        BSS           |
+|----------------------|
+|       Data           |
+|----------------------|
+|       Text           |
++----------------------+
+
+Lower Address
+```
+### Text Segment (Code Segment)
+```txt
++----------------------+
+| main()               |
+| printf()             |
+| functions            |
+| instructions         |
++----------------------+
+```
+- Isme Machine code hota hai, Compiler ne jo assembly generate ki thi...
+- Ye sirf instructions hain
+```bash
+mov
+add
+call
+ret
+```
+- Ye CPU execute karta hai
+### Data Segment
+- Yaha initialized global variables rehte hain.
+```c++
+int age = 22;
+int g = 100;
+
+double pi = 3.14;
+
+char c = 'A';
+```
+- Sab initialized hai
+- `Age` program start hone se pehle hi memory me aa jata hai, Kab??  Executable load hote hi
+#### Lifetime
+```txt
+Program Start
+
+↓
+
+exists
+
+↓
+
+exists
+
+↓
+
+exists
+
+↓
+
+Program End
+```
+- Kabhi destroy nahi hota beech me
+### BSS Segment
+- Block Started by Symbol
+- Uninitialized globals
+```bash
+int x;
+
+char buffer[1000];
+
+static int cnt;
+```
+- Compiler auto matically 0 initize kr deta hai
+#### Static Storage
+Ab confusion hota hai.
+
+Log bolte
+
+Static Segment
+
+Actually
+
+Static storage me
+
+Global variables
+
+Static variables
+
+Data
+
+BSS
+
+sab included hote hain.
+
+Example
+
+void fun()
+{
+    static int count = 0;
+
+    count++;
+}
+
+count stack pe nahi hai.
+
+Heap pe bhi nahi.
+
+Ye static storage me hai.
+
+### Stack
+```cpp
+main()
+{
+    int a;
+
+    int b;
+}
+```
+- Run Hua
+- CPU bolta 
+```txt
+main call hua.
+
+Stack frame banao.
+```
+```bash
+Stack
+
+--------------
+
+return address
+
+saved registers
+
+a
+
+b
+
+```
+- Ye pura  `Stack Frame` Kehlata hai
+#### Function call
+```cpp
+void fun()
+{
+    int x;
+}
+```
+```txt
+Main
+
+↓
+
+fun()
+
+Ab stack
+
++------------+
+
+fun()
+
+x
+
+-------------
+
+main()
+
+a
+
+b
+
+-------------
+
+
+
+Jab
+
+fun return
+
+hua
+
+poora frame remove.
+
+main()
+
+a
+
+b
+
+Bas.
+
+Isliye
+
+Automatic Storage.
+```
+### Heap
+```txt
+int* p = new int(50);
+Step 1
+
+Pointer
+
+p
+
+Stack pe.
+
+Stack
+
+p
+
+Step 2
+
+Memory
+
+50
+
+Heap pe.
+
+Heap
+
+50
+
+Step 3
+
+p
+
+ke andar
+
+heap ka address.
+
+Example
+
+Stack
+
+p = 0x5000
+
+↓
+
+Heap
+
+0x5000
+
+50
+
+Difference
+
+Stack
+
+Automatic
+
+Heap
+
+Manual
+
+Tumko
+
+delete
+
+karna padega.
+
+```
+### Complete Memory Layout 
+
+Higher Address
+```
++---------------------+
+|       Stack         |
+|                     |
+| int a               |
+| int b               |
+| pointer p           |
++---------------------+
+|                     |
+|                     |
+|        Heap         |
+|                     |
+| new int             |
+| vector              |
+| string data         |
++---------------------+
+|                     |
+|                     |
+|     Free Space      |
++---------------------+
+|        BSS          |
+| int x;              |
+| static int cnt;     |
++---------------------+
+|       Data          |
+| int g=10;           |
+| pi=3.14             |
++---------------------+
+|       Text          |
+| main()              |
+| fun()               |
+| machine code        |
++---------------------+
+
+Lower Address
+```
+---
+| Memory Area           | Created         | Destroyed            | Example                       |
+| --------------------- | --------------- | -------------------- | ----------------------------- |
+| Text                  | Program load    | Program end          | Functions, machine code       |
+| Data                  | Program load    | Program end          | `int g = 10;`                 |
+| BSS                   | Program load    | Program end          | `int x;`                      |
+| Static (local/global) | Program load    | Program end          | `static int count;`           |
+| Stack                 | Function call   | Function return      | Local variables, parameters   |
+| Heap                  | `new`/allocator | `delete`/deallocator | Dynamically allocated objects |
+
+---
+```txt
+TEXT   → Code (CPU kya execute karega)
+DATA   → Initialized globals/statics
+BSS    → Uninitialized globals/statics (zero-initialized)
+HEAP   → Dynamic memory (new/delete, malloc/free)
+STACK  → Function calls, local variables, parameters
+```
+- Agar variable ki storage duration static hai (global ya static local), to:
+- Initialized → Data Segment (.data)
+- Uninitialized ya zero-initialized → BSS Segment (.bss)
+
+
+
 
 
