@@ -918,15 +918,155 @@ int main() {
 - STL ne C++ ko “powerful but elegant” banaya, kyunki ab tum reusable aur efficient code likh sakte ho bina wheel dubara banaye.
 
 ## Pointers
-- Pointer ek variable hai jo address store karta hai (book)
-- Pointer ek integer hai jiska meaning compiler alag treat karta hai
+- Pointer ek variable hai jo kisi doosre variable ka address store karta hai.
+- Pointer khud bhi ek memory object/variable hota hai. 
+- Uske andar bits store hoti hain. Ye bits kisi memory address ko represent karti hain. 
+- Compiler:  Pointer k Type k wajah Wo bits ko wo type k hisab se interpret krti hai.
+```cpp
+int number = 10; 
+int* ptr = &number;
+```
 ```txt
-RAM me pointer aur int dono bits hi hain.
-CPU ko koi farak nahi padta.
+0x1000 sirf hexadecimal notation hai
+Decimal:       4096
+Hexadecimal:   0x1000
+Binary:        1000000000000
 
-Difference compiler banata hai
+CPU:
+"Address 0x1000 par jao"
+
+Actually hardware level:
+"Address = 1000000000000"
+
+RAM:
+"Okay, is address ki location select karta hoon"
+
+Data:
+10101010
+```
+
+- RAM me data aur addresses ko hardware level par binary electrical signals ke form me handle kiya jata hai
+- 0x1000 sirf hum humans ke liye likhne ka convenient format hai
+- `int number = 10`
+```txt
+int number = 10;
+
+Assume: sizeof(int) = 4 bytes
+
+Aur runtime par: number ka starting address = 0x1000
+
+10 ka 32-bit binary:
+
+10 decimal = 00000000 00000000 00000000 00001010
+             MSB                          LSB
+Agar system little-endian hai(Least Significant Byte pehle memory me store hota hai), to bytes memory me roughly:
+
+Address        Stored Byte
+────────────────────────────
+0x1000         00001010
+0x1001         00000000
+0x1002         00000000
+0x1003         00000000
+
+number
+   ↓
+Memory starting at 0x1000
+   ↓
+4 bytes
+   ↓
+Value = 10
 
 ```
+- `&number`
+```txt
+&number meaning: number kis memory location se start ho raha hai?
+Answer: &number = 0x1000
+
+int* ptr = &number;
+
+Suppose:
+
+number ka address = 0x1000
+ptr ka address    = 0x99000
+
+To memory ka conceptual view:
+
+┌───────────────────────────────────┐
+│              MEMORY               │
+│                                   │
+│  Address: 0x1000                  │
+│  ┌─────────────────────────────┐  │
+│  │             10              │  │
+│  └─────────────────────────────┘  │
+│              ▲                    │
+│              │                    │
+│           number                  │
+│                                   │
+│                                   │
+│  Address: 0x99000                  │
+│  ┌─────────────────────────────┐  │
+│  │           0x1000            │  │
+│  └─────────────────────────────┘  │
+│              ▲                    │
+│              │                    │
+│             ptr                   │
+│                                   │
+└───────────────────────────────────┘
+
+Mathematically:
+
+number  = 10
+
+&number = 0x1000 = 0001 0000 0000 0000
+
+ptr     = 0x1000
+
+&ptr    = 0x99000
+
+*ptr    = 10
+```
+- Pointer apni value ko bits ke form me store karta hai, jo memory address ko represent karti hain. 64-bit system par pointer generally 8 bytes ka hota hai.
+- int* ka matlab: Is pointer ke andar ek address hai, aur compiler expect karta hai ki us address par int object hai
+```txt
+Pointer ka Type
+      │
+      ▼
+Compiler ko batata hai
+      │
+      ├──► Dereference (*p) par:
+      │        │
+      │        ├──► Object ko kis Type ka samajhna hai
+      │        │
+      │        └──► Kitne Bytes Read / Write karne hain
+      │
+      └──► Pointer Arithmetic par:
+               │
+               └──► Next Element tak
+                    kitne Bytes Jump karne hain
+```
+### Pointer Arithmetic Valid Operation
+| Operation | Valid? | Meaning                   |
+| --------- | -----: | ------------------------- |
+| `p + n`   |      ✅ | `n` elements forward      |
+| `p - n`   |      ✅ | `n` elements backward     |
+| `p++`     |      ✅ | next element              |
+| `p--`     |      ✅ | previous element          |
+| `p1 - p2` |      ✅ | elements ka distance      |
+| `p1 + p2` |      ❌ | address + address invalid |
+| `p1 * p2` |      ❌ | invalid                   |
+| `p1 / p2` |      ❌ | invalid                   |
+
+
+
+
+
+
+
+
+
+
+
+
 
 ### unique_ptr
 - Ek object ka single owner hota hai.
