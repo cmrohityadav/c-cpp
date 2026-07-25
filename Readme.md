@@ -21,7 +21,8 @@
 - [Auto keyword](#Auto-keyword)
 - [Pointers](#pointers)
 - [Reference](#reference)
-- [Constant]()
+- [Constant](#constant)
+- [Characters aur Strings](#characters-aur-strings)
 - [Type Conversion](#type-conversion)
 - [Control Flow](#control-flow)
 - [Loop](#loop)
@@ -1178,6 +1179,68 @@ function ko access
      └── mutate nahi
 ```
 
+## Characters aur Strings
+- `char` = ek dabba jo ek character rakh sakta hai
+- `char[]` = characters ke dabbon ki line.
+- `char*` = kisi character ke address ka pointer.
+- `const` = jisko modify karne ki permission nahi
+
+### char
+```cpp
+char a='A'; //ek character
+char a="A"; //ek string // Wrong hai
+```
+
+### char name[]
+- characters ki array
+- C-style string ka rule: String ke end mein null character '\0' hona zaroori hai.
+- agar hum `char name[]="Rohit"`
+- Compiler internally approximately banata hai
+- `char name[]={'R','o','h','i','t','\0'}`
+
+### char* pointer to a character
+```cpp
+char a='A';
+char* ptr=&a;   
+cout<<*ptr<<endl;
+
+```
+
+### const char*
+```cpp
+int main(){
+
+    const char* name="rohit";
+    
+    cout<<name<<endl;
+
+    // name[0]='P'; // Note allowed bcz wo const char* hai, data locked hai, but pointer change kr skte hai 
+
+    name="rahul"; // Valid: pointer ko reassign kar sakte ho
+
+    cout<<name<<endl;
+}
+``
+
+### char* const p
+- "rohit"  // const char[6]
+```cpp
+int main(){
+
+    char p[]="rohit";
+
+    char* const name=p;
+    cout<<name<<endl;
+
+    name[0]='P';
+
+    cout<<name<<endl;
+
+    // p = other; // Error
+
+
+}
+```
 
 ## Function
 - Function ek reusable code block hai [f(x)-> y]
