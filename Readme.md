@@ -1057,159 +1057,6 @@ Compiler ko batata hai
 | `p1 / p2` |      ❌ | invalid                   |
 
 
-
-
-
-
-
-
-
-
-
-
-
-### unique_ptr
-- Ek object ka single owner hota hai.
-- Ek ghar ka ek hi malik
-- new → owner fixed → scope khatam → delete automatic
-- `unique_ptr` almost hamesha heap (dynamic memory) ke object ko manage karta hai.
-- unique_ptr sirf heap allocated object ke liye use karo.
-- unique_ptr ka kaam memory banana nahi hai ->Ownership manage karta hai
-- Memory create hoti hai : `make_unique` se
-- make_unique → heap me object create karta hai
--  unique_ptr generally heap objects manage karta hai
--  unique_ptr khud stack pe ho sakta hai
-```bash
-std::unique_ptr<Type> ptr = std::make_unique<Type>(constructor_arguments);
-```
-
-#### Properties of unique pointer
-##### const unique_ptr can't be copied
-
-##### We cannot create the copy of unique_ptr
-```cpp
-std::unique_ptr<int> p1 = std::make_unique<int>(20);
-
-// std::unique_ptr<int> p2(p1);   // ❌ Error
-
- std::unique_ptr<int> p3 = p1;   // ❌ Error: copy not allowed
-```
-##### We can pass the ownership using std::move()
-```cpp
-#include <iostream>
-#include <memory>
-
-int main() {
-    std::unique_ptr<int> p1 = std::make_unique<int>(30);
-
-    std::unique_ptr<int> p2 = std::move(p1);  // Ownership transferred
-
-    if (!p1)
-        std::cout << "p1 is now null\n";
-
-    std::cout << "p2 value: " << *p2 << "\n";
-}
-```
-##### Memory deletion is guaranteed in normal exit and exception exit
-```cpp
-#include <memory>
-
-void func() {
-    std::unique_ptr<int> ptr = std::make_unique<int>(100);
-}  // Memory automatically deleted here
-
-void funcException() {
-    std::unique_ptr<int> ptr = std::make_unique<int>(200);
-    throw std::runtime_error("Error occurred");
-}
-
-int main() {
-    try {
-        funcException();
-    } catch (...) {
-        std::cout << "Exception caught\n";
-    }
-}
-```
-
-### shared_ptr
-- Ek object ke multiple owners ho sakte hain.
-- Ek ghar ke kai malik (joint ownership).
-- new → reference count start = 1
-- Har copy → reference count ++
-- Jab last owner scope se bahar → delete automatic
-- shared_ptr bhi generally heap (dynamic memory) ke object ko manage karta hai.
-- shared_ptr sirf heap allocated object ke liye use karo.
-- shared_ptr ka kaam memory banana nahi hai → Ownership manage karta hai
-- Memory create hoti hai: make_shared se
-- make_shared → heap me object create karta hai
-- shared_ptr generally heap objects manage karta hai
-- shared_ptr khud stack pe ho sakta hai
-```cpp
-std::shared_ptr<Type> ptr = std::make_shared<Type>(constructor_arguments);
-```
-#### Properties of shared_ptr
-##### shared_ptr can be copied
-✔ Copy allowed
-✔ Reference count increase hota hai
-```cpp
-#include <iostream>
-#include <memory>
-
-int main() {
-    std::shared_ptr<int> p1 = std::make_shared<int>(20);
-
-    std::shared_ptr<int> p2 = p1;   // ✅ Copy allowed
-
-    std::cout << "p1 count: " << p1.use_count() << "\n";
-    std::cout << "p2 count: " << p2.use_count() << "\n";
-}
-
-```
-- use_count() object ka hota hai, pointer ka nahi.
-
-##### Ownership shared hota hai (Reference Counting)
-```cpp
-#include <iostream>
-#include <memory>
-
-int main() {
-    std::shared_ptr<int> p1 = std::make_shared<int>(50);
-
-    {
-        std::shared_ptr<int> p2 = p1;
-        std::cout << "Inside block count: " << p1.use_count() << "\n";
-    } // p2 destroyed here
-
-    std::cout << "Outside block count: " << p1.use_count() << "\n";
-}
-
-```
-
-##### Memory deletion is automatic (Normal + Exception)
-```cpp
-void func() {
-    std::shared_ptr<int> ptr = std::make_shared<int>(100);
-}  // Memory deleted when ref count becomes 0
-
-/////////////////
-#include <iostream>
-#include <memory>
-
-void funcException() {
-    std::shared_ptr<int> ptr = std::make_shared<int>(200);
-    throw std::runtime_error("Error occurred");
-}
-
-int main() {
-    try {
-        funcException();
-    } catch (...) {
-        std::cout << "Exception caught\n";
-    }
-}
-
-```
 ## Reference
 - A reference is an alias (another name) for an existing variable
 ```c++
@@ -1224,6 +1071,82 @@ r = b;       // ❌ doesn't rebind, just assigns value
 
 int& r = nullptr;  // ❌ Not allowed
 ```
+
+## Constant
+```cpp
+const int x = 10;
+x = 20;  // Error
+// C++ compiler, ish variable x ko ish naam/access path ke through modify karne ki permission mat do
+
+// Access path ka matlab hai: jis tareeke se tum object tak pahunch rahe ho
+
+// Actually C++ ka const primarily compiler-level rule hai
+// const hardware ko memory lock karne ka command nahi hai
+```
+### Pointer to const
+```txt
+int x = 10;
+
+const int* p = &x;
+
+Isko right-to-left padho: p is a pointer to const int
+p is a pointer → to const int
+
+p ek aisa pointer hai jo const int ko point karta hai
+
+p ───────────────► x
+                   10
+
+p ke paas x ka address hai
+
+Lekin p ke through tumhe kaha gaya hai: "Bhai, is raaste se data ko modify mat karna."
+
+*p = 20;   // ❌ Not allowed
+
+p bolta hai:
+"Main is value ko READ karunga,
+WRITE nahi."
+
+
+Const kis cheez ke paas hai?
+
+const int* p
+        ↑
+    int/data
+
+const int ke saath laga hai
+Isliye:
+DATA = const through p
+POINTER = changeable
+
+const int* p
+     ↑
+  DATA locked
+
+Pointer khud change ho sakta hai
+int y = 50;
+p = &y;     // ✅
+```
+
+int* const p
+    ↑
+ POINTER locked
+const int* const p
+     ↑       ↑
+   DATA    POINTER
+  locked   locked
+
+### Const pointer
+```txt
+int x = 10;
+int y = 50;
+
+int* const p = &x;
+
+
+```
+
+
 ## Function
 - Function ek reusable code block hai [f(x)-> y]
 ```c++
