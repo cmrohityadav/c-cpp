@@ -1128,14 +1128,6 @@ int y = 50;
 p = &y;     // ✅
 ```
 
-int* const p
-    ↑
- POINTER locked
-const int* const p
-     ↑       ↑
-   DATA    POINTER
-  locked   locked
-
 ### Const pointer
 ```txt
 int x = 10;
@@ -1143,7 +1135,47 @@ int y = 50;
 
 int* const p = &x;
 
+Isko right-to-left padho: p is a const pointer to int.
 
+p khud ek constant pointer hai, jo int ko point karta hai.
+
+int* const p
+    ↑
+ POINTER locked
+
+p ka address permanent hai, wo hamesha x ko hi point krega
+p = &y;  ❌ Not allowed
+
+Lekin data change kar sakte ho
+*p = 20;   // ✅
+
+```
+### Const pointer to const data
+```txt
+const int* const p = &x;
+
+const int* const p
+     ↑       ↑
+   DATA    POINTER
+  locked   locked
+
+
+Isko right-to-left padho: p is a const pointer to a const int.
+
+p ka address bhi fix hai, aur p ke through data bhi change nahi kar sakte
+
+```
+### const reference
+```txt
+void sendResponse(const Response& response);
+
+Response object
+     │
+     ▼
+function ko access
+     │
+     ├── copy nahi
+     └── mutate nahi
 ```
 
 
