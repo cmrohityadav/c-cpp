@@ -1057,6 +1057,57 @@ Compiler ko batata hai
 | `p1 * p2` |      ❌ | invalid                   |
 | `p1 / p2` |      ❌ | invalid                   |
 
+---
+### memcpy
+- Source ke `X bytes` uthao aur destination ke `X bytes` par copy kar do
+- `void* memcpy(void* destination,const void* source,size_t num);`
+- Just like Xerox machine
+```cpp
+char source[] = "Hello";
+char destination[6];
+
+memcpy(destination, source, 6);
+```
+```cpp
+#include<iostream>
+#include<cstring>
+int main(){
+
+    char name[]="rohit";
+
+    char temp[6];
+
+    std::memcpy(&temp,&name,2); //sirf 2 byte copy hoga
+
+    std::cout<<temp<<std::endl;
+}
+
+```
+
+### memset
+- Memory ke har byte ko ek given byte-value se bhar do
+- `void* memset(void* ptr, int value, size_t num);`
+- `memset(address, value, number_of_bytes)`
+- memset byte-by-byte kaam karta hai, ek ek byte ki value set krta hai
+```cpp
+#include <iostream>
+#include <cstring>
+
+int main() {
+    char buffer[5];
+
+    memset(buffer, 'A', sizeof(buffer));
+
+    for (int i = 0; i < 5; i++) {
+        std::cout << buffer[i] << " ";
+    }
+}
+
+// A A A A A
+// buffer ke starting address se
+// 5 bytes lo
+// har byte ko 'A' se fill karo
+```
 
 ## Reference
 - A reference is an alias (another name) for an existing variable
@@ -1178,6 +1229,7 @@ function ko access
      ├── copy nahi
      └── mutate nahi
 ```
+
 
 ## Characters aur Strings
 - `char` = ek dabba jo ek character rakh sakta hai
