@@ -5,10 +5,19 @@ enum class ORDER{
     PENDING
 };
 
+enum Rohit{
+    SUCESS
+};
+
+enum Rahul{
+    FAILED,
+    SUCESS
+};
+
 int main(){
      
     ORDER orderfail=ORDER::FAILED;
-
+    Rohit my=SUCESS;
     
 
     if(orderfail==ORDER::FAILED){
