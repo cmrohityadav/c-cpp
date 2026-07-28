@@ -29,6 +29,8 @@
 - [Arrays](#Arrays)
 - [Comments](#comments)
 - [Comments](#comments)
+- [Enum](#enum)
+- [Struct](#Struct)
 - [OOP](#oop)
 - [Scope Resolution Operator](#Scope-Resolution-Operator)
 - [Comments](#comments)
@@ -1968,6 +1970,199 @@ arr        == &arr[0] == 0x1000
 ### Arrays of characters
 
 
+
+
+## Enum
+- An enum represents a fixed set of named choices
+```cpp
+enum class Color {
+    Red,
+    Green,
+    Blue
+};
+```
+### Prefer enum class
+```cpp
+// Modern C++ mein generally
+enum class Color {
+    Red,
+    Blue
+};
+
+// Prefer this over:
+enum Color {
+    Red,
+    Blue
+};
+
+// why??
+// Because enum class is strongly typed and its values are scoped
+```
+### Access values using
+```cpp
+// EnumName::Value
+Color color = Color::Red;
+
+// Access:
+Color::Red
+Color::Blue
+
+// Old enum (can cause collision)
+enum Color {
+    Red,
+    Blue
+};
+
+Color c = Red;
+// Red directly global scope mein aa gaya.
+
+enum TrafficLight {
+    Green,
+    Red      // ❌ Error: 'Red' already defined
+};
+
+// Why?
+// Both enums put their members into the global scope:
+//
+// Global Scope
+// ├── Red   (from Color)
+// ├── Blue
+// └── Green
+//
+// Second 'Red' conflicts with the first one.
+
+Color c = Red;   // Works because Red is in global scope
+
+// enum class
+enum class Color {
+    Red,
+    Blue
+};
+
+Color c = Color::Red;
+
+// Red automatically global scope mein nahi aata.
+
+enum class Color
+       │
+       └── Color::Red
+
+// This avoids name collisions:
+
+enum class TrafficLight {
+    Red
+};
+
+enum class Color {
+    Red
+};
+
+// No problem:
+
+TrafficLight::Red
+Color::Red
+
+```
+
+### Use enum when choices are fixed
+```cpp
+enum class Side {
+    Buy,
+    Sell
+};
+Side side = Side::Buy;
+```
+
+### Use switch for different behavior
+```cpp
+enum class PaymentStatus {
+    Pending,
+    Paid,
+    Failed
+};
+
+PaymentStatus status = PaymentStatus::Paid;
+
+switch (status) {
+    case PaymentStatus::Pending:
+        std::cout << "Payment is pending";
+        break;
+
+    case PaymentStatus::Paid:
+        std::cout << "Payment successful";
+        break;
+
+    case PaymentStatus::Failed:
+        std::cout << "Payment failed";
+        break;
+}
+```
+
+### Underlying value
+```cpp
+enum class Color {
+    Red,
+    Green,
+    Blue
+};
+
+//  by default
+// Red   → 0
+// Green → 1
+// Blue  → 2
+
+// explicitly assign values
+enum class PaymentStatus {
+    Pending = 10,
+    Paid    = 20,
+    Failed  = 30
+};
+```
+### Converting enum to integer
+- With enum class, implicit conversion is not allowed
+```cpp
+enum class Color {
+    Red,
+    Green,
+    Blue
+};
+
+Color color = Color::Red;
+
+// int value = color;  // ❌ Error
+
+// USE
+int value = static_cast<int>(Color::Red);
+std::cout << value;
+```
+
+- The enum's underlying storage type can be an integral type such as
+```txt
+char
+signed char
+unsigned char
+short
+unsigned short
+int
+unsigned int
+long
+unsigned long
+long long
+unsigned long long
+```
+### Specifying the underlying type
+```cpp
+// You can explicitly write:
+
+enum class Color : int {
+    Red,
+    Green,
+    Blue
+};
+
+// Can enum use float, double, or string?
+// Because enum values are based on integral values
+```
 
 
 

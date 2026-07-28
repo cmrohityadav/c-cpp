@@ -1,12 +1,18 @@
 #include<iostream>
-#include<cstring>
+enum class ORDER{
+    SUCESS,
+    FAILED,
+    PENDING
+};
+
 int main(){
+     
+    ORDER orderfail=ORDER::FAILED;
 
-    char name[]="rohit";
+    
 
-    char temp[6];
-
-    std::memcpy(&temp,&name,2); //sirf 2 byte copy hoga
-
-    std::cout<<temp<<std::endl;
+    if(orderfail==ORDER::FAILED){
+        std::cout<<"Order Status: fail"<<std::endl;
+    }
+    
 }
