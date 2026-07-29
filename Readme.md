@@ -2164,6 +2164,100 @@ enum class Color : int {
 // Because enum values are based on integral values
 ```
 
+## Struct
+- [Memory layout](#memory-layout)
+Padding
+Alignment
+Cache line
+Binary serialization
+Network packet
+File format
+mmap()
+DMA
+Shared memory
+CPU alignment
+- [ABI (Application Binary Interface)]()
+
+- grouping of variables 
+- Compiler ko memory ka blueprint dene ka tarika
+```cpp
+struct Employee
+{
+    int id;
+    double salary;
+    char grade;
+};
+```
+- Compiler ke liye matlab hai
+- Future me agar koi Employee banega
+- to uski memory aisi hogi
+
++------------+
+| id         |
++------------+
+| salary     |
++------------+
+| grade      |
++------------+
+
+- Yaani struct ek memory blueprint hai
+- Compiler sirf map bana raha hai
+- Struct khud memory nahi leta
+- Ye sirf type define karta hai
+- Memory tab allocate hoti jab object banta hai
+- Compiler har member ka offset calculate karta hai
+### Memory layout
+```txt
+struct Student
+{
+    int roll;
+    char grade;
+    double marks;
+};
+
+normally aisa soch hogi:
+int 4
+
+char 1
+
+double 8
+
+Total 13
+
+Lekin output: 24
+why?? Yahi se Padding start hoti hai
+```
+### Alignment
+- CPU ko aligned memory pasand hai
+```txt
+double
+8 byte hota hai
+
+CPU chahta hai
+Address
+0
+8
+16
+24
+32
+40
+Yaani 8 ke multiple
+
+agar, double 1013 se start ho
+To CPU ko extra kaam karna pad sakta hai (architecture dependent). Bahut modern CPUs misaligned access handle kar lete hain, lekin aligned access generally fast aur simpler hota hai
+
+Isliye compiler bolta hai,
+ruk ja,
+pahale gap daal,
+Isi gap ko padding bolte hain.
+
+
+```
+
+
+
+
+
 
 
 
