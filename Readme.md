@@ -2166,8 +2166,8 @@ enum class Color : int {
 
 ## Struct
 - [Memory layout](#memory-layout)
-Padding
-Alignment
+- [Padding](#padding)
+- [Alignment](#alignment)
 Cache line
 Binary serialization
 Network packet
@@ -2229,32 +2229,719 @@ why?? Yahi se Padding start hoti hai
 ```
 ### Alignment
 - CPU ko aligned memory pasand hai
+- `Decision/Rule` : Har variable ko uske size ke multiple wale address par store kiya jata hai.
 ```txt
-double
-8 byte hota hai
+Agar CPU 32-bit (4 bytes) ka hai, to wo ek memory access(cycle) me 4 bytes read/write kar sakta hai.
 
-CPU chahta hai
-Address
-0
-8
-16
-24
-32
-40
-Yaani 8 ke multiple
+Isliye agar variable apne alignment (size ke multiple address) par pada hai,
+to CPU use efficiently fetch kar sakta hai, aksar ek hi memory access me.
 
-agar, double 1013 se start ho
-To CPU ko extra kaam karna pad sakta hai (architecture dependent). Bahut modern CPUs misaligned access handle kar lete hain, lekin aligned access generally fast aur simpler hota hai
+Agar variable misaligned address par ho, to CPU ko data ko multiple memory
+accesses me fetch karna pad sakta hai ya extra instructions chalani pad sakti
+hain, jisse performance kam ho jati hai.
 
-Isliye compiler bolta hai,
-ruk ja,
-pahale gap daal,
-Isi gap ko padding bolte hain.
+Yahi concept 64-bit CPU ke liye bhi apply hota hai, bas wahan memory access
+size 8 bytes hota hai.
+```
+- Struct ka Alignment size sabse bada variable ka size hota hai
+- Rule: Struct ka alignment = largest member ka alignment, aur struct ka total size hamesha struct alignment ka multiple hota hai.
+- Isliye generally **bade-size wale members ko pehle** aur **chhote-size wale members ko baad me** rakhna chahiye.
+- Isse compiler ko kam **padding** add karni padti hai, aur struct ka total size chhota ho sakta hai.
 
+### Padding
+- Padding wo extra (unused) bytes hote hain jo compiler variables ke beech ya structure ke end me add karta hai, taki Alignment Rule follow ho sake.
+- In bytes me koi useful data nahi hota; ye sirf memory alignment aur performance ke liye hote hain.
 
+### Nested Struct
+- Ek struct ke andar dusra struct member ke roop me use kiya ja sakta hai. Isse **Nested Struct** kehte hain.
+
+```cpp
+struct Address
+{
+    int pin;
+    int area;
+};
+
+struct Employee
+{
+    int id;
+    Address addr;
+};
 ```
 
+#### Memory Layout
 
+`Address`
+
+```txt
++---------+---------+
+|   pin   |  area   |
++---------+---------+
+    4B        4B
+
+Size = 8 bytes
+Alignment = 4 bytes
+```
+
+`Employee`
+
+```txt
++---------+-------------------+
+|   id    |       addr        |
++---------+-------------------+
+            +---------+-------+
+            |   pin   | area  |
+            +---------+-------+
+
+id   -> 4 bytes
+addr -> 8 bytes
+```
+
+```txt
+Offset
+
+0   4   8   12
++---+---+---+---+
+| id| pin| area |
++---+---+---+---+
+
+Total Size = 12 bytes
+Alignment = 4 bytes
+```
+
+#### Important Points
+
+- `Address` struct, `Employee` ke andar **poori ki poori embed** hoti hai.
+- `addr` koi pointer nahi hai; uski memory `Employee` ke andar hi allocate hoti hai.
+- `Employee` ka size = `id (4)` + `Address (8)` = **12 bytes**.
+- `Employee` ka alignment = uske sabse bade member ka alignment = **4 bytes**.
+
+### Nested Struct with Pointer
+
+```cpp
+struct Address
+{
+    int pin;
+    int area;
+};
+
+struct Employee
+{
+    int id;
+    Address* addr;
+};
+```
+
+#### Memory Layout (64-bit System)
+
+```txt
+Offset
+
+0        4    8        16
++--------+----+--------+
+|   id   |PPPP|  addr  |
++--------+----+--------+
+
+id   = 4 bytes
+PPPP = Padding (4 bytes)
+addr = 8-byte pointer
+```
+
+- `Employee` ke andar **Address object store nahi hota**.
+- Sirf uska **memory address (pointer)** store hota hai.
+- Actual `Address` object heap ya kisi aur memory location par ho sakta hai.
+
+Example:
+
+```txt
+Employee Object
+
++--------+------------------+
+|  id=1  | 0x1000 (pointer) |
++--------+------------------+
+                 |
+                 v
+           Address Object
+           +-------+-------+
+           |  pin  | area  |
+           +-------+-------+
+```
+
+#### Size Comparison
+
+| Declaration | 32-bit System | 64-bit System |
+|-------------|--------------:|--------------:|
+| `Address addr;` | 12 bytes | 12 bytes |
+| `Address* addr;` | 8 bytes | 16 bytes |
+
+#### Difference
+
+- `Address addr;`
+  - ✅ Object directly struct ke andar hota hai.
+  - ✅ Alag memory allocation ki zarurat nahi.
+
+- `Address* addr;`
+  - ✅ Sirf address store hota hai.
+  - ✅ Actual object kahin aur hota hai.
+  - ✅ Dynamic memory allocation aur memory management (`new/delete` ya `malloc/free`) ki zarurat pad sakti hai.
+
+- Object member ⇒ Data andar hi hota hai
+- Pointer member ⇒ Sirf address andar hota hai, data bahar hota hai.
+#### Object Member
+```cpp
+#include <iostream>
+using namespace std;
+
+struct Address
+{
+    int pin;
+    int area;
+};
+
+struct Employee
+{
+    int id;
+    Address* addr;   // Pointer
+};
+
+int main()
+{
+    Address a = {110001, 25};
+
+    Employee e;
+
+    e.id = 101;
+    e.addr = &a;     // Address object ka address store kiya
+
+    cout << "Employee ID : " << e.id << endl;
+    cout << "Pin         : " << e.addr->pin << endl;
+    cout << "Area        : " << e.addr->area << endl;
+
+    return 0;
+}
+```
+#### Pointer Member
+```cpp
+Employee e;
+
+e.id = 101;
+e.addr = new Address;
+
+e.addr->pin = 110001;
+e.addr->area = 25;
+
+cout << e.addr->pin << endl;
+cout << e.addr->area << endl;
+
+delete e.addr;   // Memory free
+```
+### Constructor in Struct
+
+Struct me **constructor** banana bilkul valid hai. C++ me `struct` aur `class` lagbhag same hote hain; bas default access modifier alag hota hai.
+
+```cpp
+struct Point
+{
+    int x;
+    int y;
+
+    Point(int a, int b)
+    {
+        x = a;
+        y = b;
+    }
+};
+```
+
+#### Object Creation
+
+```cpp
+Point p1(10, 20);
+
+cout << p1.x << " " << p1.y;
+```
+
+**Output:**
+```txt
+10 20
+```
+
+#### Better Way (Initializer List)
+
+Constructor ko initializer list ke saath likhna zyada efficient mana jata hai.
+
+```cpp
+struct Point
+{
+    int x;
+    int y;
+
+    Point(int a, int b) : x(a), y(b)
+    {
+    }
+};
+```
+
+#### Important Points
+
+- ✅ Struct me constructor ho sakta hai.
+- ✅ Constructor object create hote hi automatically call hota hai.
+- ✅ Struct me functions, constructors, destructors aur even inheritance bhi ho sakti hai.
+- ❌ Sirf itna difference hai ki:
+  - `struct` ke members **default `public`** hote hain.
+  - `class` ke members **default `private`** hote hain.
+
+```cpp
+struct A
+{
+    int x;   // public by default
+};
+
+class B
+{
+    int x;   // private by default
+};
+```
+# Constructors & Special Member Functions in `struct`
+
+C++ me `struct` bhi `class` ki tarah **saare special member functions** support karta hai.
+
+```cpp
+#include <iostream>
+using namespace std;
+
+struct Point
+{
+    int x;
+    int y;
+
+    // 1. Default Constructor
+    Point()
+    {
+        x = 0;
+        y = 0;
+        cout << "Default Constructor\n";
+    }
+
+    // 2. Parameterized Constructor
+    Point(int a, int b)
+    {
+        x = a;
+        y = b;
+        cout << "Parameterized Constructor\n";
+    }
+
+    // 3. Copy Constructor
+    Point(const Point& other)
+    {
+        x = other.x;
+        y = other.y;
+        cout << "Copy Constructor\n";
+    }
+
+    // 4. Copy Assignment Operator
+    Point& operator=(const Point& other)
+    {
+        cout << "Copy Assignment\n";
+
+        if (this != &other)
+        {
+            x = other.x;
+            y = other.y;
+        }
+
+        return *this;
+    }
+
+    // 5. Move Constructor
+    Point(Point&& other)
+    {
+        x = other.x;
+        y = other.y;
+
+        other.x = 0;
+        other.y = 0;
+
+        cout << "Move Constructor\n";
+    }
+
+    // 6. Move Assignment Operator
+    Point& operator=(Point&& other)
+    {
+        cout << "Move Assignment\n";
+
+        if (this != &other)
+        {
+            x = other.x;
+            y = other.y;
+
+            other.x = 0;
+            other.y = 0;
+        }
+
+        return *this;
+    }
+
+    // 7. Destructor
+    ~Point()
+    {
+        cout << "Destructor\n";
+    }
+};
+
+int main()
+{
+    Point p1;              // Default Constructor
+
+    Point p2(10, 20);      // Parameterized Constructor
+
+    Point p3 = p2;         // Copy Constructor
+
+    Point p4;
+    p4 = p2;               // Copy Assignment
+
+    Point p5 = std::move(p2); // Move Constructor
+
+    Point p6;
+    p6 = std::move(p5);       // Move Assignment
+
+    return 0;
+}
+```
+
+---
+
+## Output (Approx.)
+
+```txt
+Default Constructor
+Parameterized Constructor
+Copy Constructor
+Default Constructor
+Copy Assignment
+Move Constructor
+Default Constructor
+Move Assignment
+Destructor
+Destructor
+Destructor
+Destructor
+Destructor
+Destructor
+```
+
+> Destructor ka order **reverse order of object creation** hota hai.
+
+---
+
+## Compiler Automatically Kya Banata Hai?
+
+Agar aap kuch bhi define nahi karte:
+
+```cpp
+struct Point
+{
+    int x;
+    int y;
+};
+```
+
+Compiler automatically generate karta hai:
+
+- ✅ Default Constructor
+- ✅ Copy Constructor
+- ✅ Copy Assignment Operator
+- ✅ Destructor
+- ✅ Move Constructor *(agar eligible ho)*
+- ✅ Move Assignment Operator *(agar eligible ho)*
+
+---
+
+## `= default`
+
+Compiler se default implementation explicitly mang sakte ho.
+
+```cpp
+struct Point
+{
+    int x;
+    int y;
+
+    Point() = default;
+    Point(const Point&) = default;
+    Point& operator=(const Point&) = default;
+    Point(Point&&) = default;
+    Point& operator=(Point&&) = default;
+    ~Point() = default;
+};
+```
+
+---
+
+## `= delete`
+Ye function use hi nahi karna hai
+
+Kisi operation ko disable bhi kar sakte ho.
+
+```cpp
+struct Point
+{
+    int x;
+    int y;
+
+    Point() = default;
+
+    Point(const Point&) = delete;
+    Point& operator=(const Point&) = delete;
+};
+```
+
+Ab ye invalid hoga:
+
+```cpp
+Point p1;
+Point p2 = p1;   // ❌ Error
+```
+
+---
+
+## Rule of Five
+
+Agar class/struct kisi resource (heap memory, file, socket, etc.) ko manage karti hai aur aap inme se **ek** function khud likhte ho:
+
+- Destructor
+- Copy Constructor
+- Copy Assignment
+- Move Constructor
+- Move Assignment
+
+to generally baaki bhi define karne chahiye.
+
+Isse **Rule of Five** kehte hain.
+
+---
+
+## Rule of Zero
+
+Agar aapka struct sirf data store karta hai aur koi resource manage nahi karta, to **koi bhi special member function manually mat likho**.
+
+```cpp
+struct Point
+{
+    int x;
+    int y;
+};
+```
+
+Compiler sab kuch automatically aur efficiently generate kar dega.
+
+# Shallow Copy vs Deep Copy
+
+## Shallow Copy
+
+Shallow copy me **sirf data copy hota hai**.
+
+Agar member pointer hai, to **pointer ka address copy hota hai**, data nahi.
+
+```cpp
+struct Student
+{
+    int* marks;
+
+    Student(int m)
+    {
+        marks = new int(m);
+    }
+};
+```
+
+Compiler ka default copy constructor:
+
+```cpp
+Student s1(90);
+
+Student s2 = s1;      // Shallow Copy
+```
+
+Memory:
+
+```txt
+s1
++---------+
+| marks --|------+
++---------+      |
+                 |
+                 v
+               +----+
+               | 90 |
+               +----+
+
+s2
++---------+
+| marks --|------+
++---------+
+```
+
+Dono same memory ko point kar rahe hain.
+
+---
+
+### Problem
+
+```cpp
+*s2.marks = 100;
+
+cout << *s1.marks;
+```
+
+Output:
+
+```txt
+100
+```
+
+Kyuki memory same hai.
+
+Agar destructor likh diya:
+
+```cpp
+~Student()
+{
+    delete marks;
+}
+```
+
+To:
+
+```txt
+s2 destroy -> delete marks
+
+s1 destroy -> delete marks ❌
+```
+
+Double delete ho jayega.
+
+---
+
+# Deep Copy
+
+Deep copy me **nayi memory allocate hoti hai** aur actual data copy hota hai.
+
+```cpp
+struct Student
+{
+    int* marks;
+
+    Student(int m)
+    {
+        marks = new int(m);
+    }
+
+    Student(const Student& other)
+    {
+        marks = new int(*other.marks);
+    }
+
+    ~Student()
+    {
+        delete marks;
+    }
+};
+```
+
+```cpp
+Student s1(90);
+
+Student s2 = s1;
+```
+
+Memory:
+
+```txt
+s1
++---------+
+| marks --|------+
++---------+      |
+                 v
+               +----+
+               | 90 |
+               +----+
+
+s2
++---------+
+| marks --|------+
++---------+      |
+                 v
+               +----+
+               | 90 |
+               +----+
+```
+
+Ab dono ki memory alag hai.
+
+```cpp
+*s2.marks = 100;
+```
+
+Output:
+
+```txt
+s1 = 90
+s2 = 100
+```
+
+---
+
+# Default Copy Constructor
+
+Compiler ka default copy constructor:
+
+```cpp
+Student s2 = s1;
+```
+
+Ye internally aisa karta hai:
+
+```cpp
+marks = other.marks;
+```
+
+Bas address copy hota hai.
+
+Isliye **default copy = shallow copy**.
+
+---
+
+# Deep Copy Kab Karni Padti Hai?
+
+Jab class/struct khud resource own karti ho.
+
+Examples:
+
+- Heap memory (`new`)
+- Dynamic array
+- File handle
+- Socket
+- Database connection
+
+Tab custom:
+
+- Copy Constructor
+- Copy Assignment Operator
+
+likhne padte hain.
+
+---
+
+# Summary
+
+| Shallow Copy | Deep Copy |
+|--------------|-----------|
+| Sirf pointer copy hota hai. | Nayi memory allocate hoti hai. |
+| Data share hota hai. | Data independent hota hai. |
+| Fast | Thoda slow |
+| Double delete ka risk | Safe |
+| Compiler default yahi karta hai | Hume manually implement karna padta hai |
 
 
 
