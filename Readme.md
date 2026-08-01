@@ -35,6 +35,7 @@
 - [Scope Resolution Operator](#Scope-Resolution-Operator)
 - [Comments](#comments)
 - [STL](./STL.md)
+- [Memory Allocation]
 
 ## Why C++
 - Systems programming
@@ -4866,6 +4867,125 @@ int main() {
 
 ### Inheritance me Scope Resolution
 
+
+## Memory Allocation
+- Jab hum program likhte hai Tab memory allocate krte usko `Static Memory Allocation`,Compiler already Janta hai
+- Jab Binary runtime pe memory allocate krte hai to usko `Dyanmic Memory Allocation` 
+### Stack
+- Automatic memory
+- Compiler manage karta hai
+- Automatically free hoti hai
+```cpp
+int sum(int a,int b){
+    int sum=0;
+}
+// Memory automatically free hogi jab function ka excution khatm hoga
+```
+### Heap
+- Manual memory
+- Program khud bolega: Mujhe 100 bytes chahiye.
+- OS / Runtime provide karega
+- Programmer hi Memory Release krta hai
+
+```cpp
+int* ptr = new int;
+// ptr pointer stack me hi 
+//new -> mallaoc -> OS -> Heap -> Address return
+// int object Heap me store hota hai, uska address return krta hai fir usko hum stack me store krte hai, uska reference k liye
+// aur jo object bana hai uski value initialize nhi hui hai to Garbage value hogi
+```
+```cpp
+int* ptr = new int();
+// ya
+int* ptr = new int{};
+// jo object heap memory me hoga uski value zero
+```
+---
+```cpp
+int* ptr = new int(25);
+// Jo object heap memory me hoga uski value 25
+```
+```
+Stack                    Heap
+
++-----------+           Address 0x1000
+| p=0x1000 | ---------> +--------+
++-----------+           |  25    |
+                        +--------+
+
+```
+- `new` sirf memory allocate nahi karta
+1. Allocate memory
+2. Constructor call
+3. Allocated Memory ka address bhi return krta hai
+
+#### delete
+- memory free krta hai
+```txt
+delete ≠ erase data
+
+delete = allocator ko batana: "Ye memory block ab free hai."
+```
+##### Primitive Type
+```cpp
+delete p
+
+↓
+
+operator delete(p)
+
+↓
+
+Heap Allocator
+
+↓
+
+Block marked as FREE
+
+↓
+
+Future new can reuse this memory
+```
+##### Object Type
+```cpp
+delete c;
+c=nullptr;
+```
+```Cpp
+delete c
+
+↓
+
+Destructor (~Car())
+
+↓
+
+operator delete(c)
+
+↓
+
+Heap Allocator
+(malloc/new allocator)
+
+↓
+
+Memory marked as free
+(or returned to the allocator's free list)
+
+↓
+
+Future allocations can reuse it
+```
+##### With array
+```cpp
+int* arr = new int[5];
+// Allocator hidden metadata (Array Cookie) store karta hai
+delete arr; //Wrong 
+delete[] arr; //correct
+
+```
+- delete[] ko array ka size compiler pointer se nahi batata; new[] ke time runtime allocation ke saath implementation-specific hidden metadata (array cookie ya equivalent) store karta hai, jise delete[] baad me padhkar poori array ko sahi tarah free karta hai.
+- Primitive arrays (int[], char[]) ke liye implementation ko array cookie store karne ki zarurat bhi nahi ho sakti, kyunki unke destructors nahi hote
 
 
 
