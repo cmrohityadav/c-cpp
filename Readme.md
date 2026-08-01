@@ -35,7 +35,8 @@
 - [Scope Resolution Operator](#Scope-Resolution-Operator)
 - [Comments](#comments)
 - [STL](./STL.md)
-- [Memory Allocation]
+- [Memory Allocation](#memory-allocation)
+- [RAII](#RAII)
 
 ## Why C++
 - Systems programming
@@ -4986,6 +4987,94 @@ delete[] arr; //correct
 ```
 - delete[] ko array ka size compiler pointer se nahi batata; new[] ke time runtime allocation ke saath implementation-specific hidden metadata (array cookie ya equivalent) store karta hai, jise delete[] baad me padhkar poori array ko sahi tarah free karta hai.
 - Primitive arrays (int[], char[]) ke liye implementation ko array cookie store karne ki zarurat bhi nahi ho sakti, kyunki unke destructors nahi hote
+
+## RAII
+- Resource Acquisition Is Initialization
+- Jis object ne resource liya hai, wahi object us resource ko automatically release bhi karega
+- Sab resource hain
+```txt
+Heap Memory
+File
+Socket
+Mutex
+Database Connection
+GPU Memory
+Network Handle
+Pipe
+Shared Memory
+Semaphore
+```
+- hum resource use krte jaise new int[100], etc
+- bich function me return ya throw exception ho gya
+```txt
+new
+ ↓
+bahut code
+ ↓
+return
+ ↓
+delete kabhi nahi hua
+```
+- Memory leak
+- aise bahot se resource ho skte as above mention
+- sab manually release krna ppadega, bahot bugs
+- fir c++ ne bola: Compiler ko already pata hota hai object kab destroy hoga
+- To release compiler hi kara de
+- Yahi RAII hai
+
+### Life Cycle
+```txt
+Object Created
+      ↓
+Constructor
+      ↓
+Resource Acquire
+      ↓
+Object use
+      ↓
+Scope End
+      ↓
+Destructor
+      ↓
+Release Resource
+```
+### Without RAII
+```cpp
+void work()
+{
+    int* p = new int(10);
+
+    // code
+
+    delete p;
+}
+```
+
+### RAII
+```cpp
+class Memory
+{
+    int* ptr;
+
+public:
+
+    Memory() //Acquire yaha hua resource
+    {
+        ptr = new int(10);
+    }
+
+    ~Memory() //Release yaha hua
+    {
+        delete ptr;
+    }
+};
+
+void work()
+{
+    Memory obj;
+}
+```
+- scope khatm hote hi destructor chalega chahe kuchh bhi ho: return,break,continue,exception etc.
 
 
 
