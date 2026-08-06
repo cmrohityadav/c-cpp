@@ -5050,7 +5050,7 @@ void work()
 }
 ```
 
-### RAII
+### With RAII
 ```cpp
 class Memory
 {
@@ -5076,7 +5076,122 @@ void work()
 ```
 - scope khatm hote hi destructor chalega chahe kuchh bhi ho: return,break,continue,exception etc.
 
+## Template
+- Ek program ek baar likha jata h, Compiler data type ke hisaab se uske alag-alag versions automatically generate kar deta hai
+- Yahi Generic Programming hai
+```cpp
+template<typename DataType>
+DataType max(DataType a,DataType b){
 
+    return (a>b)?a:b;
+}
+
+max(5, 10);          // Compiler DataType = int deduce karega
+max<int>(5, 10);     // Explicitly int bataya
+
+max(2.5, 6.8);       // Compiler DataType = double deduce karega
+max<double>(2.5, 6.8); // Explicitly double bataya
+```
+- `template<typename T1, typename T2, typename T3...>`
+- har function or class k upar likhna jaruri hai
+- Template ek blueprint hota hai jisse compiler different data types ke liye function ya class ka alag version automatically bana deta hai
+- Runtime pe nahi chalta.
+- Function Template → Generic function banane ke liye
+- Class Template → Generic class banane ke liye
+
+```cpp
+template<typename T>
+class Box
+{
+    public:
+
+        T value;
+
+        void set(T v)
+        {
+            value = v;
+        }
+
+        T get()
+        {
+            return value;
+        }
+};
+
+Box<int> b1;
+
+b1.set(10);
+```
+```cpp
+template<typename T1, typename T2>
+class Student
+{
+public:
+
+    T1 roll;
+
+    T2 name;
+};
+
+Student<int,std::string> s;
+```
+```cpp
+template<typename T>
+class Box
+{
+public:
+
+    T value;
+
+    Box(T v)
+    {
+        value = v;
+    }
+
+    void show()
+    {
+        std::cout << value;
+    }
+};
+
+Box<int> b(10);
+Box<double> d(12.5);
+
+// class k bahar define aise krte hai
+template<typename T>
+void Box<T>::show()
+{
+    std::cout << "Hello";
+}
+```
+- Non-Type Template Parameters (NTTP)
+- Value compile-time constant honi chahiye.
+```cpp
+template<typename T, int Size>
+class Array
+{
+public:
+
+    T data[Size];
+};
+
+Array<int,5> arr;
+Array<double,20> arr;
+
+std::cin >> size;
+Array<int,size> a; ❌ Error
+```
+- Default Template Arguments
+```cpp
+template<typename T = int>
+class Box
+{
+public:
+    T value;
+};
+Box<> b;
+Box<double> d;
+```
 
 
 
