@@ -5192,6 +5192,39 @@ public:
 Box<> b;
 Box<double> d;
 ```
+- Inheritance In Template
+```cpp
+template<typename T>
+class Base{
+    public:
+    T baseData;
+
+    Base(T x):baseData(x){}
+
+    void showBase(){
+        cout<<"Base :"<<baseData<<endl;
+    }
+};
+
+template<typename T,typename U>
+class Derived:public Base<T>{
+    public:
+    U derivedData;
+    
+    Derived(T x,U y):Base(x),derivedData(y){}
+    
+    void show(){
+        this->showBase();
+         cout<<"Derived :"<<derivedData<<endl;
+    }
+};
+
+int main(){
+    Derived<int,string>obj(100,"rohit")
+    obj.show();
+}
+
+```
 
 
 
