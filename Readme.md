@@ -37,6 +37,7 @@
 - [STL](./STL.md)
 - [Memory Allocation](#memory-allocation)
 - [RAII](#RAII)
+- [Smart Pointers](#smart-pointers)
 
 ## Why C++
 - Systems programming
@@ -5225,6 +5226,63 @@ int main(){
 }
 
 ```
+
+## Smart Pointers
+### Raw Pointer
+```cpp
+int* p=new int(100);
+// alot of logic and code
+delete p;
+```
+- why need smart pointer?
+- heap memory me object banega and address return hoga
+- p ka koi owner nhi hai,Raw pointer khud ownership express/guarantee nahi karta.
+- jo resource ka address hold kiya hai usko delete bhi krna hoga
+- scope k bich me return hua to memormy leak
+- Exception aaya to leak
+- bich me hi return ho gya
+- bhool gye to leak
+- int* ptr=p, ab 2 log own krte, aise hi n.. log kr skte, koi ek delete kiya fir dusra ki to crash/undefined behaviour
+
+- [Unique_ptr](#unique_ptr)
+### Unique_ptr
+- Ek time par ek owner
+- Lekin ownership transfer kar sakte hain
+- Ownership copy nahi hoti
+- Ownership move hoti hai
+- Scope khatam hone par unique_ptr automatically owned object ko destroy karta hai
+```cpp
+#include <memory>
+
+std::unique_ptr<int> p =std::make_unique<int>(100);
+
+std::unique_ptr<int> q = p;   // ❌ copy nhi hoti
+
+std::unique_ptr<int> q =std::move(p); // ✅ move
+```
+- `std::make_unique<int>(100);`
+- unique_ptr banane ka function
+- Ye **dynamically allocated** ek int object banata hai aur usko 100 se initialize karta hai
+- similar to `new int(100)`, yeh return krta `int*`
+- Lekin difference ye hai ki `make_unique` directly ek `std::unique_ptr<int>` return karta hai
+- ~ return std::unique_ptr<int>(new int(100));
+- `std::make_unique<int>(100) ≈ std::unique_ptr<int>(new int(100))`
+`
+```cpp
+#include<iostream>
+#include<memory>
+int main(){
+
+    // std::unique_ptr<int>ptr(new int(100));
+    std::unique_ptr<int>ptr=std::make_unique<int>(100);
+
+    std::cout<<ptr.get()<<std::endl; // return hai raw pointer ko
+    std::cout<<*ptr<<std::endl;
+    
+    return 0;
+}
+```
+
 
 
 
