@@ -5245,7 +5245,7 @@ delete p;
 - int* ptr=p, ab 2 log own krte, aise hi n.. log kr skte, koi ek delete kiya fir dusra ki to crash/undefined behaviour
 
 - [Unique_ptr](#unique_ptr)
-### Unique_ptr
+### unique_ptr
 - Ek time par ek owner
 - Lekin ownership transfer kar sakte hain
 - Ownership copy nahi hoti
@@ -5283,7 +5283,7 @@ int main(){
 }
 ```
 
-### Shared_ptr
+### shared_ptr
 - Ek object ke multiple owners ho sakte hain
 - Ownership share hoti hai
 - `shared_ptr` ko copy kar sakte hain
@@ -5495,6 +5495,13 @@ int main()
 
 
 ```
+
+### weak_ptr
+
+
+## Concurrency
+- [Threading](./Threading.md)
+## Networking
 
 
 
