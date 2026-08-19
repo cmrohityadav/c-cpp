@@ -5,18 +5,15 @@ int counter=0;
 std::mutex m;
 void inc(){
     for(int i=0;i<1000000;i++){
-        m.lock();
+        std::lock_guard<std::mutex>lg(m);
         counter++;
-
-        m.unlock();
     }
 }
 
 void dec(){
     for(int i=0;i<1000000;i++){
-        m.lock();
+        std::lock_guard<std::mutex> lg(m);
         counter--;
-        m.unlock();
     }
 }
 int main(){
