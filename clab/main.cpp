@@ -1,23 +1,34 @@
 #include<iostream>
 #include <thread>
-void printCounter(){
-    for(int i=0;i<10;i++){
-        std::cout<<i<<std::endl;
+#include <mutex>
+int counter=0;
+std::mutex m;
+void inc(){
+    for(int i=0;i<1000000;i++){
+        m.lock();
+        counter++;
+
+        m.unlock();
+    }
+}
+
+void dec(){
+    for(int i=0;i<1000000;i++){
+        m.lock();
+        counter--;
+        m.unlock();
     }
 }
 int main(){
 
-    std::thread t1(printCounter);
+    std::thread tInc(inc);
 
-    t1.join(); //Current thread wait karega jab tak t1 wala thread finish nahi ho jata
-    std::thread t2(printCounter);
+    std::thread tDec(dec);
 
-    if(t2.joinable()){ //Ye check karta hai ki std::thread object ke paas currently ek active/joinable thread association hai ya nahi.
-        t2.join();
-    }
+    tDec.join();
+    tInc.join();
 
-    
-
+    std::cout<<counter<<std::endl;
 
     return 0;
 }
