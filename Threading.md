@@ -337,7 +337,7 @@ m.unlock();
 
 🔓 m.unlock()      = Gate free karna
 ```
-
+## Locking Mechanisms
 ### std::lock_guard
 
 - kyu lock_guard?? automatic lock/unlock
@@ -429,3 +429,100 @@ int main() {
     std::cout << counter << std::endl;
 }
 ```
+
+### std::uniue_lock 
+- lock_guard ka more powerful version
+- hum bich me .unlock() and .lock() kr skte hai
+- scope khatm hote hi unlock() ho jayega
+```cpp
+#include<iostream>
+#include<thread>
+#include<mutex>
+std::mutex mtx;
+void worker(){
+
+    std::unique_lock<std::mutex>lock(mtx);
+
+    std::cout<<"Doing Critical Section..."<<std::endl;
+
+    lock.unlock();
+
+    std::cout << "Doing Non-critical work...\n";
+
+    lock.lock();
+
+    std::cout << "Doing Critical section again...\n";
+
+}
+
+int main(){
+
+    std::thread t1(worker);
+
+    t1.join();
+
+    return 0;
+}
+```
+
+### std::scoped_lock
+// later
+### try_lock()
+// later
+### shared_lock
+// later
+
+## 7. Mutex Types
+
+### 7.1 `std::mutex`
+
+### 7.2 `std::recursive_mutex`
+### 7.2 `std::shared_mutex`
+
+## 8. Condition Variable
+
+### 8.1 `std::condition_variable`
+
+### 8.2 `wait()`
+
+### 8.3 `notify_one()`
+
+### 8.4 `notify_all()`
+
+## 9. Atomic
+
+### 9.1 `std::atomic`
+
+## 10. Common Problems
+
+### 10.1 Race Condition
+
+### 10.2 Data Race
+
+### 10.3 Deadlock
+
+### 10.4 Starvation
+
+### 10.5 Livelock
+
+## 11. Thread Communication
+
+### 11.1 Producer-Consumer
+
+### 11.2 Future / Promise
+
+### 11.3 `std::async`
+
+## 12. Thread Pool
+
+## 13. Thread-Safe Design
+
+## 14. Real-World Examples
+
+### 14.1 Thread-Safe Counter
+
+### 14.2 Thread-Safe Queue
+
+### 14.3 Producer-Consumer Queue
+
+### 14.4 Thread Pool

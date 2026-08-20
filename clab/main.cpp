@@ -1,31 +1,28 @@
 #include<iostream>
-#include <thread>
-#include <mutex>
-int counter=0;
-std::mutex m;
-void inc(){
-    for(int i=0;i<1000000;i++){
-        std::lock_guard<std::mutex>lg(m);
-        counter++;
-    }
+#include<thread>
+#include<mutex>
+std::mutex mtx;
+void worker(){
+
+    std::unique_lock<std::mutex>lock(mtx);
+
+    std::cout<<"Doing Critical Section..."<<std::endl;
+
+    lock.unlock();
+
+    std::cout << "Doing Non-critical work...\n";
+
+    lock.lock();
+
+    std::cout << "Doing Critical section again...\n";
+
 }
 
-void dec(){
-    for(int i=0;i<1000000;i++){
-        std::lock_guard<std::mutex> lg(m);
-        counter--;
-    }
-}
 int main(){
 
-    std::thread tInc(inc);
+    std::thread t1(worker);
 
-    std::thread tDec(dec);
-
-    tDec.join();
-    tInc.join();
-
-    std::cout<<counter<<std::endl;
+    t1.join();
 
     return 0;
 }
