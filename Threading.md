@@ -479,6 +479,189 @@ int main(){
 ### 7.2 `std::recursive_mutex`
 ### 7.2 `std::shared_mutex`
 
+
+## Condition Variable
+- Threads ko efficiently Wait karana aur Specdific Condition true hone me Notify(jagana)
+```
+🚿 Washroom
+    ↓
+Shared Resource
+
+🚪 Door
+    ↓
+Mutex
+
+🔒 lock_guard / unique_lock
+    ↓
+Door ko automatic lock/unlock handle karte hain
+
+😴 condition_variable
+    ↓
+Thread ko efficiently wait karwata hai
+aur
+condition change hone par notify karta hai
+
+```
+- jab ek thread .lock leke baitha hota hai , to other thread continue check krte rhte hai unlock hua...... unlock hua...
+- Yeh process CPU uses krti hai, CPU 🔥🔥🔥🔥, Ye inefficient hai
+- AB CV ki entry: Agar `condition false` hai, baar-baar check mat kar. So ja 😴. Jab condition change hogi, main tujhe notify karunga
+
+### Producer Consumer Problem
+```
+👨‍🍳 Producer = jo item banata hai
+
+👤 Consumer = jo item use karta / khata hai
+
+📦 Queue = jahan item rakha jata hai
+
+🔒 Mutex = queue ko safely access karne ka lock
+
+😴 Condition Variable = agar item nahi hai to consumer ko sulana
+                       aur item aane par jagana
+
+
+
+
+
+                    📦 QUEUE
+                 Shared Resource
+                        |
+              ┌─────────┴─────────┐
+              |                   |
+              v                   v
+
+        👨‍🍳 PRODUCER          👤 CONSUMER
+        Burger banata          Burger consume karta
+
+
+CONSUMER:
+
+🔒 Lock mutex
+      |
+      v
+📦 Queue empty?
+      |
+      +------ NO -----> 🍔 Consume
+      |
+      +------ YES
+               |
+               v
+         cv.wait(lock)
+               |
+               v
+         🔓 Mutex release
+               |
+               v
+             😴 Sleep
+
+
+PRODUCER:
+
+🍔 Produce item
+      |
+      v
+🔒 Lock mutex
+      |
+      v
+📦 Queue mein add
+      |
+      v
+🔓 Unlock
+      |
+      v
+🔔 cv.notify_one()
+      |
+      v
+👤 Consumer wake up
+
+```
+
+```cpp
+void producer() {
+
+    for (int i = 1; i <= 5; i++) {
+
+        std::unique_lock<std::mutex> lock(m);
+
+        q.push(i);
+
+        std::cout << "Produced: " << i << std::endl;
+
+        lock.unlock();
+
+        cv.notify_one();
+    }
+}
+
+
+void consumer() {
+
+    for (int i = 1; i <= 5; i++) {
+
+        std::unique_lock<std::mutex> lock(m);
+
+        //wait jab krta hai mutex unlock krta hai fir sleep mode me chala jata hai
+        cv.wait(lock, [] {
+            return !q.empty();
+        }); 
+
+        // jab notify aata hai lock le leta hai
+        // ab yaha queue empty nhi hai
+
+        int value = q.front();
+
+        q.pop();
+
+        std::cout << "Consumed: " << value << std::endl;
+    }
+}
+
+// Both Equivalent
+cv.wait(lock, [] {return !q.empty();}); 
+
+while (q.empty()) {
+
+    cv.wait(lock);
+
+}
+
+// Jab tak queue empty hai...Mutex chhodo aur so jao.
+
+```
+
+- cv.wait(lock, condition);
+- Agar mujhe wait karna pada, to is mutex ko temporarily release kar dena
+```
+🔒 lock acquired
+
+        |
+        v
+
+Condition check
+
+        |
+        +---- TRUE → wait nahi,❌ Sleep nahi karega
+        |                      ❌ Mutex unlock nahi karega
+        |                      ➡️ Directly aage continue karega
+        |                       
+        |                       
+        |
+        +---- FALSE
+               |
+               v
+
+        🔓 lock release
+               |
+               v
+
+            😴 sleep
+
+```
+
+
+
+
+
 ## 8. Condition Variable
 
 ### 8.1 `std::condition_variable`
