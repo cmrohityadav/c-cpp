@@ -808,6 +808,7 @@ int main() {
 }
 ```
 ### Starvation
+- ek thread ko CPU ya required resource/lock bahut der tak nahi milta, kyunki doosre threads baar-baar us resource ko le lete hain
 
 
 ## 9. Atomic
