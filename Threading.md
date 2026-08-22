@@ -477,8 +477,10 @@ int main(){
 ### 7.1 `std::mutex`
 
 ### 7.2 `std::recursive_mutex`
+std::timed_mutex
+std::recursive_timed_mutex
 ### 7.2 `std::shared_mutex`
-
+std::shared_timed_mutex
 
 ## Condition Variable
 - Threads ko efficiently Wait karana aur Specdific Condition true hone me Notify(jagana)
@@ -600,7 +602,7 @@ void consumer() {
 
         std::unique_lock<std::mutex> lock(m);
 
-        //wait jab krta hai mutex unlock krta hai fir sleep mode me chala jata hai
+        //cv.wait jab krta hai mutex unlock krta hai fir sleep mode me chala jata hai
         cv.wait(lock, [] {
             return !q.empty();
         }); 
@@ -628,9 +630,12 @@ while (q.empty()) {
 // Jab tak queue empty hai...Mutex chhodo aur so jao.
 
 ```
-
+### cv.wait
 - cv.wait(lock, condition);
 - Agar mujhe wait karna pada, to is mutex ko temporarily release kar dena
+- Contiton: True -> continue
+- Contiton: False -> unlock and sleep
+
 ```
 🔒 lock acquired
 
@@ -657,36 +662,85 @@ Condition check
             😴 sleep
 
 ```
+### cv.notify_all
+- notify_one() → sirf ek waiting thread ko jagata hai.
+- notify_all() → sab waiting threads ko jagata hai.
 
 
+## Common Problems
 
+### Race Condition
 
+### Data Race
 
-## 8. Condition Variable
+### Deadlock
+- jab multiple threads ek dusre ke resources/locks ka wait karte reh jaate hain aur koi bhi aage nahi badhta
+- sab thread wait kr rhe hai
+```cpp
+#include <iostream>
+#include <thread>
+#include <mutex>
+#include <chrono>
 
-### 8.1 `std::condition_variable`
+std::mutex m1;
+std::mutex m2;
 
-### 8.2 `wait()`
+void thread1() {
+    m1.lock();
 
-### 8.3 `notify_one()`
+    std::cout << "Thread 1 locked m1\n";
 
-### 8.4 `notify_all()`
+    // Thread 2 ko m2 lock karne ka chance diya
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+
+    std::cout << "Thread 1 waiting for m2\n";
+
+    m2.lock();  // yahan wait karega
+
+    std::cout << "Thread 1 working\n";
+
+    m2.unlock();
+    m1.unlock();
+}
+
+void thread2() {
+    m2.lock();
+
+    std::cout << "Thread 2 locked m2\n";
+
+    // Thread 1 ko m1 lock karne ka chance diya
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+
+    std::cout << "Thread 2 waiting for m1\n";
+
+    m1.lock();  // yahan wait karega
+
+    std::cout << "Thread 2 working\n";
+
+    m1.unlock();
+    m2.unlock();
+}
+
+int main() {
+    std::thread threadOneObject(thread1);
+    std::thread threadTwoObject(thread2);
+
+    threadOneObject.join();
+    threadTwoObject.join();
+
+    return 0;
+}
+```
+
+### Livelock
+
+### Starvation
+
 
 ## 9. Atomic
 
 ### 9.1 `std::atomic`
 
-## 10. Common Problems
-
-### 10.1 Race Condition
-
-### 10.2 Data Race
-
-### 10.3 Deadlock
-
-### 10.4 Starvation
-
-### 10.5 Livelock
 
 ## 11. Thread Communication
 
