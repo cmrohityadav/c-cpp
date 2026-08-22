@@ -10,6 +10,7 @@
 - [C++ Dev Tools](#c-dev-tools)
 - [compilation-](#cc-compilation-pipeline)
 - [First Program](#first-program)
+- [Namespace](#Namespace)
 - [Comments](#comments)
 - [Erros and Warnings](#Erros-and-Warnings)
 - [Statements](#Statements)
@@ -38,6 +39,9 @@
 - [Memory Allocation](#memory-allocation)
 - [RAII](#RAII)
 - [Smart Pointers](#smart-pointers)
+
+- [Concurrency](#Concurrency)
+- [Threading](./Threading.md)
 
 ## Why C++
 - Systems programming
@@ -211,7 +215,7 @@ int main() {
 - Bar-bar std:: likhne se bachne ke liye
 
 ```cpp
-using namespace std;
+using namespace std; //(std)Is namespace ke names ko directly access karne do
 int main() {
     cout << "Hello";
 }
@@ -227,6 +231,36 @@ int main() {
     cout << "Hello";
 }
 ```
+- tradition and Modern Nested Namespace
+```cpp
+//traditional
+namespace exchange {
+    namespace core {
+        
+    }
+}
+
+//modern
+namespace exchange::core {
+
+}
+
+```
+- `using namespace exchange`; //exchange namepace ka sab kuchh directly access
+- `using exchange::Price;` // Sirf Price ko directly access karne do
+
+- Namespace Alias
+```cpp
+namespace exchange::core::matching {
+    int price = 100;
+}
+
+namespace match = exchange::core::matching;
+
+match::price
+```
+
+
 ### Command-Line Arguments
 - Command-line arguments woh values hoti hain jo program ko run karte waqt command prompt/terminal se pass ki jati hain
 - `argc` ka matlab hai Argument Count.
