@@ -471,8 +471,20 @@ int main(){
 // later
 ### shared_lock
 // later
+###  spin lock
 
-## 7. Mutex Types
+Mutex: Lock busy ho to thread sleep/wait karta hai; unlock hone par waiting thread wake up/ready hota hai aur scheduler usko CPU deta hai.
+
+Spinlock: Lock busy ho to thread sleep nahi karta, continuously check karta rehta hai (spin)
+
+## Mutex Types
+
+### Mutex
+### recursive_mutex
+### timed_mutex
+### recursive_timed_mutex
+### shared_mutex
+### shared_timed_mutex
 
 ### 7.1 `std::mutex`
 
