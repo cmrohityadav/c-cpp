@@ -1,4 +1,10 @@
 # Threading
+# Content
+- []()
+- []()
+- [Mutex Type](#mutex-types)
+- []()
+- []()
 ## Process
 
 ```
@@ -337,6 +343,66 @@ m.unlock();
 
 🔓 m.unlock()      = Gate free karna
 ```
+
+## Mutex Types
+- [recursive_mutex](#recursive_mutex)
+- []()
+### Mutex
+- Hamne thread function ko fir usi function me call kr diya
+- undefined beaviour aayega
+- isliye hame recursive mutex 
+```cpp
+#include<iostream>
+#include<thread>
+#include<mutex>
+using  std::cout;
+
+std::mutex mtx;
+void hello(int i){
+    mtx.lock();
+    cout<<" Hello : "<<i<<std::endl;
+    hello(++i);
+
+    mtx.unlock();
+}
+int main(){
+
+    std::thread t1(hello,1);
+
+    t1.join();
+    return 0;
+}
+```
+### recursive_mutex
+- A recursive_mutex allows the same thread to lock the same mutex multiple times
+```cpp
+#include<iostream>
+#include<thread>
+#include<mutex>
+using  std::cout;
+
+std::recursive_mutex mtx;
+
+void hello(int i){
+    mtx.lock();
+    cout<<" Hello : "<<i<<std::endl;
+    hello(++i);
+
+    mtx.unlock();
+}
+int main(){
+
+    std::thread t1(hello,1);
+
+    t1.join();
+    return 0;
+}
+```
+### timed_mutex
+### recursive_timed_mutex
+### shared_mutex
+### shared_timed_mutex
+
 ## Locking Mechanisms
 ### std::lock_guard
 
@@ -477,22 +543,8 @@ Mutex: Lock busy ho to thread sleep/wait karta hai; unlock hone par waiting thre
 
 Spinlock: Lock busy ho to thread sleep nahi karta, continuously check karta rehta hai (spin)
 
-## Mutex Types
 
-### Mutex
-### recursive_mutex
-### timed_mutex
-### recursive_timed_mutex
-### shared_mutex
-### shared_timed_mutex
 
-### 7.1 `std::mutex`
-
-### 7.2 `std::recursive_mutex`
-std::timed_mutex
-std::recursive_timed_mutex
-### 7.2 `std::shared_mutex`
-std::shared_timed_mutex
 
 ## Condition Variable
 - Threads ko efficiently Wait karana aur Specdific Condition true hone me Notify(jagana)
