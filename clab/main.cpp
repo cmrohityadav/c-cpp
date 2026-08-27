@@ -1,59 +1,73 @@
 #include <iostream>
 #include <thread>
 #include <mutex>
+#include <shared_mutex>
 #include <chrono>
 
-using std::cout;
+int sharedData = 0;
 
-std::recursive_timed_mutex mtx;
+std::shared_mutex mtx;
 
-void hello(int i, int threadId)
+void reader(int id)
 {
-    cout << "Thread " << threadId
-         << " -> Trying to get lock...\n";
+    mtx.lock_shared();
 
-    if (mtx.try_lock_for(std::chrono::seconds(3)))
-    {
-        cout << "Thread " << threadId
-             << " -> 🔒 Lock acquired | Hello : " << i << '\n';
+    std::cout << "Reader " << id
+              << " is reading: "
+              << sharedData << "\n";
 
-        // Same thread recursively locking the same mutex
-        if (i < 5)
-        {
-            hello(i + 1, threadId);
-        }
+    std::this_thread::sleep_for(
+        std::chrono::seconds(2)
+    );
 
-        // Just to make Thread 2 wait and show timed behaviour
-        if (i == 1)
-        {
-            std::this_thread::sleep_for(std::chrono::seconds(5));
-        }
+    mtx.unlock_shared();
 
-        mtx.unlock();
+    std::cout << "Reader " << id
+              << " finished reading\n";
+}
 
-        cout << "Thread " << threadId
-             << " -> 🔓 Lock released\n";
-    }
-    else
-    {
-        cout << "Thread " << threadId
-             << " -> ⏰ Timeout! Could not get lock\n";
-    }
+void writer(int id)
+{
+    mtx.lock();
+
+    std::cout << "\nWriter " << id
+              << " is writing...\n";
+
+    sharedData++;
+
+    std::this_thread::sleep_for(
+        std::chrono::seconds(2)
+    );
+
+    std::cout << "Writer " << id
+              << " updated value to: "
+              << sharedData << "\n\n";
+
+    mtx.unlock();
 }
 
 int main()
 {
-    std::thread t1(hello, 1, 1);
+    std::thread r1(reader, 1);
+    std::thread r2(reader, 2);
+    std::thread w1(writer, 1);
 
-    // Give Thread 1 a small head start
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    std::this_thread::sleep_for(std::chrono::seconds(10));
+    
+    std::thread w2(writer, 2);
+    std::thread r3(reader, 3);
+    std::thread r4(reader, 4);
 
-    std::thread t2(hello, 1, 2);
-    std::thread t3(hello, 1, 3);
 
-    t1.join();
-    t2.join();
-    t3.join();
+
+
+
+    r1.join();
+    r2.join();
+    r3.join();
+    w1.join();
+    r4.join();
+    w2.join();
 
     return 0;
 }
