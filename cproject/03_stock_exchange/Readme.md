@@ -52,7 +52,13 @@ ninja -C build
 - Show Tip,Hide Bulk
 #### POST_ONLY
 - Agar order immediately match ho jayega, exchange usse cancel/reject kar sakta hai, depending on exchange rules
-- 
+
+# TODO
+- study malloc and internal working of new keyword
+- virtual memory
+- when heap full for a program thenn How it call OS , when OS retirn virtual occurs page fault 
+- understand cache line
+
 
 
 
