@@ -838,6 +838,9 @@ Mutex: Lock busy ho to thread sleep/wait karta hai; unlock hone par waiting thre
 
 Spinlock: Lock busy ho to thread sleep nahi karta, continuously check karta rehta hai (spin)
 
+## Thread Affinity
+- Kisi thread ko ek specific CPU core (ya cores ke set) par run karne ke liye bind kar dena
+- Practice of binding /pinning a  software thread to a specific cpu core, so that thread always uses same core during the whole execution instead of operating system scheduler moving this across the cores
 
 
 
