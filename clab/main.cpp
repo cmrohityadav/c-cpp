@@ -1,91 +1,82 @@
 #include <iostream>
 #include <thread>
-#include <shared_mutex>
-#include <chrono>
+#include <mutex>
+#include <condition_variable>
+#include <queue>
+std::mutex mtx_for_result;
+std::condition_variable result_notification;
 
-std::shared_timed_mutex mtx;
-
-int sharedData = 100;
-
-void reader(int id)
+struct Result
 {
-    std::cout << "Reader " << id
-              << " -> Trying to get shared lock...\n";
+    char name[20];
+    int score;
+    int roll;
+};
 
-    if (mtx.try_lock_shared_for(
-            std::chrono::seconds(10)))
+std::queue<Result> result_queue;
+bool isReadyResult = false;
+Result results[7] = {
+    {"rohit", 80, 1},
+    {"rahul", 70, 2},
+    {"piyush", 80, 3},
+    {"kaushal", 90, 4},
+    {"manjit", 80, 5},
+    {"anjali", 70, 6},
+    {"roshani", 80, 7},
+};
+
+void teacher()
+{
+    int i = 0;
+    while (i < 7)
     {
-        std::cout << "Reader " << id
-                  << " -> Shared lock acquired\n";
 
-        std::cout << "Reader " << id
-                  << " -> Reading value: "
-                  << sharedData << "\n";
+        std::unique_lock<std::mutex> lock(mtx_for_result);
+        result_queue.push(results[i]);
+        isReadyResult = true;
 
-        std::this_thread::sleep_for(
-            std::chrono::seconds(2)
-        );
+        mtx_for_result.unlock();
 
-        mtx.unlock_shared();
-
-        std::cout << "Reader " << id
-                  << " -> Shared lock released:Unlock\n";
-    }
-    else
-    {
-        std::cout << "Reader " << id
-                  << " -> Timeout! Could not get shared lock\n";
+        result_notification.notify_one();
+        i++;
+        std::this_thread::sleep_for(std::chrono::seconds(5));
     }
 }
 
-void writer(int id)
+void live_result()
 {
-    std::cout << "Writer " << id
-              << " -> Trying to get exclusive lock...\n";
-
-    if (mtx.try_lock_for(
-            std::chrono::seconds(3)))
+    std::cout << "live Result of coder\n";
+    while (1)
     {
-        std::cout << "Writer " << id
-                  << " -> Exclusive lock acquired\n";
+        std::unique_lock<std::mutex> lock(mtx_for_result);
 
-        sharedData += 10;
+        result_notification.wait(lock, [](){ return isReadyResult; });
 
-        std::this_thread::sleep_for(
-            std::chrono::seconds(5)
-        );
+        Result temp_result = result_queue.front();
+        isReadyResult = false;
+        result_queue.pop();
+        lock.unlock();
 
-        std::cout << "Writer " << id
-                  << " -> Updated value: "
-                  << sharedData << "\n";
+        std::cout << "Student Name: " << temp_result.name << "Mark: " << temp_result.score << "Roll No.: " << temp_result.roll << std::endl;
 
-        mtx.unlock();
-
-        std::cout << "Writer " << id
-                  << " -> Exclusive lock released\n";
-    }
-    else
-    {
-        std::cout << "Writer " << id
-                  << " -> Timeout! Could not get exclusive lock\n";
+        if (temp_result.score > 50)
+        {
+            std::cout << "Status: Pass\n";
+        }
+        else
+        {
+            std::cout << "Status: Fail\n";
+        }
     }
 }
-
 int main()
 {
-    std::thread w1(writer, 1);
-    std::thread r1(reader, 1);
-    std::this_thread::sleep_for(
-        std::chrono::milliseconds(100)
-    );
-    std::thread w2(writer, 2);
 
-    std::thread r2(reader, 2);
+    std::thread t1(teacher);
+    std::thread t2(live_result);
 
-    w1.join();
-    w2.join();
-    r1.join();
-    r2.join();
+    t1.join();
+    t2.join();
 
     return 0;
 }

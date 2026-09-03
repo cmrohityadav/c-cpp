@@ -845,7 +845,8 @@ Spinlock: Lock busy ho to thread sleep nahi karta, continuously check karta reht
 
 
 ## Condition Variable
-- Threads ko efficiently Wait karana aur Specdific Condition true hone me Notify(jagana)
+- Threads ko efficiently Wait karana aur Specific Condition true hone me Notify(jagana)
+- A conditional varaible is synchronization pritimive that allows one or more threads to wait untill another thread notifies them.
 ```
 🚿 Washroom
     ↓
@@ -869,7 +870,15 @@ condition change hone par notify karta hai
 - jab ek thread .lock leke baitha hota hai , to other thread continue check krte rhte hai unlock hua...... unlock hua...
 - Yeh process CPU uses krti hai, CPU 🔥🔥🔥🔥, Ye inefficient hai
 - AB CV ki entry: Agar `condition false` hai, baar-baar check mat kar. So ja 😴. Jab condition change hogi, main tujhe notify karunga
-
+```txt
+Customer                    Consumer thread
+Cook                        Producer thread
+Food counter/queue          Shared queue
+alarm/notification mechanism  cv
+Waiting                     cv.wait()
+"Food ready!"               cv.notify_one()
+Counter ka lock             mutex
+```
 ### Producer Consumer Problem
 ```
 👨‍🍳 Producer = jo item banata hai
