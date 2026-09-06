@@ -53,6 +53,24 @@ ninja -C build
 #### POST_ONLY
 - Agar order immediately match ho jayega, exchange usse cancel/reject kar sakta hai, depending on exchange rules
 
+## Memory Pool
+- O(1) allocation
+- O(1) deallocation
+- no call to malloc or free
+- cache aligned return
+### Intrusive List vs Non-Intrusive List
+- Intrusive list me list ka next/prev pointer actual object ke andar hota hai.
+- head -> [slot 0,next] ->[slot 1,next] ->[slot 3,next] ->NULL
+- Non-intrusive list me list object ke bahar ek separate node hota hai jo object ko point karta hai
+```txt
+- head -> [next] ->[next] ->[next] ->NULL
+           |           |        |
+         slot1     slot2     slot3
+
+```
+- index %n => index & (N-1)
+
+
 # TODO
 - study malloc and internal working of new keyword
 - virtual memory
