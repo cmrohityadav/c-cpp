@@ -1037,6 +1037,35 @@ Condition check
 - notify_one() → sirf ek waiting thread ko jagata hai.
 - notify_all() → sab waiting threads ko jagata hai.
 
+### cv.wait_for()
+- Maximium kitne time tak thread sleep mode me jayega
+- agar condition true hui to wake ho jayega, jaldi hi timeout hone se pahale
+```txt
+             wait_for(5 sec)
+                    |
+             condition true?
+              /          \
+            YES           NO
+             |          timeout
+             |             |
+        continue       handle error
+                           |
+                    +------+------+
+                    |      |      |
+                  retry  fallback return error
+```
+- cv.wait_for(lock,time,condition return callback)
+```cpp
+if (cv.wait_for(lock, std::chrono::seconds(5),[] {return data_ready; })) {
+
+    consume_data();
+
+} else {
+
+    handle_timeout();
+}
+```
+
 
 ## Common Problems
 
