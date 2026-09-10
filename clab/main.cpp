@@ -1,22 +1,54 @@
-#include <iostream>
-#include <future>
+#include<iostream>
 #include<thread>
+#include<queue>
+#include<vector>
 #include<chrono>
-int calculate()
-{ 
-    std::cout<<"Heavy calculation....\n";
-    std::this_thread::sleep_for(std::chrono::seconds(5));
-    return 100;
+#include <functional>
+using namespace std;
+std::queue<std::function<void()>> m_taskQueue;
+
+void addTaskToQueue(std::function<void()>fn){
+    std::cout<<"adding  function to queue "<<std::endl;
+    m_taskQueue.push(fn);
 }
+class Executor{
 
-int main()
-{
-    std::future<int> result =
-        std::async(std::launch::async, calculate);
+    std::vector<std::thread>m_threads;
+    public:
+    Executor(){
+        m_threads.push_back(std::thread(&Executor::executeTask,this));
+    }
 
-    std::cout << "Main thread kuch aur kaam kar raha hai...\n";
+    void executeTask(){
+        while(true){
+            if(!m_taskQueue.empty()){
+                const auto& func=m_taskQueue.front();
+                func();
+                m_taskQueue.pop();
+            }
+        }
+    }
 
-    int value = result.get();
+    void shutdown(){
+        for(auto& thread:m_threads){
+            if(thread.joinable()){
+                thread.join();
+            }
+        }
+    }
 
-    std::cout << "Result = " << value << '\n';
+};
+
+
+int main(){
+
+    Executor exe;
+
+    addTaskToQueue([](){
+        std::cout<<"Hello I am from main, Thread id: "<<std::this_thread::get_id()<<std::endl;
+    });
+
+    exe.shutdown();
+
+    return 0;
 }
