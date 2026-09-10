@@ -44,9 +44,15 @@ int main(){
 
     Executor exe;
 
-    addTaskToQueue([](){
-        std::cout<<"Hello I am from main, Thread id: "<<std::this_thread::get_id()<<std::endl;
+    for(int i=0;i<20;i++){
+        addTaskToQueue([i](){
+        std::cout<<"Hello I am  "<<i<<"from main, Thread id: "<<std::this_thread::get_id()<<std::endl;
+        std::cout<<"Processing...\n";
+        std::this_thread::sleep_for(std::chrono::seconds(i));
     });
+
+    }
+    
 
     exe.shutdown();
 
