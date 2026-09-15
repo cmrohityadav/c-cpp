@@ -5,6 +5,16 @@
 - [Mutex Type](#mutex-types)
 - []()
 - []()
+- [CV](#condition-variable)
+- [cv.wait()](#cvwait)
+- [cv.wait_for()](#cvwait_for)
+- []()
+- []()
+- []()
+- [Thread Pool](#thread-pool)
+- []()
+- []()
+
 ## Process
 
 ```
@@ -1211,6 +1221,189 @@ int main() {
 - ek thread ko CPU ya required resource/lock bahut der tak nahi milta, kyunki doosre threads baar-baar us resource ko le lete hain
 
 
+## std::async
+- function ko asynchronously execute karwta hai
+- Kisi callable/function ko asynchronously execute karwana aur uska future result provide karna
+
+```cpp
+std::future<ReturnDataType>varFuture=std::async(function);
+```
+## std::future
+- Abhi result mere paas nahi hai, lekin future mein milega
+
+### get
+- Result chahiye
+- Ready nahi → wait
+- Ready → result return
+- Exception → propagate+
+### wait
+Result ready hone tak wait
+Result return nahi karta
+### wait_for()
+Maximum 5 sec wait
+    ↓
+ready   → result ready
+timeout → time khatam, result ready nahi
+deferred → task deferred hai
+### wait_for()
+
+
+
+## Thread Pool
+
+```cpp
+#include <iostream>
+#include <thread>
+#include <queue>
+#include <vector>
+#include <chrono>
+#include <functional>
+#include <mutex>
+#include <condition_variable>
+
+using namespace std;
+
+class Executor {
+
+private:
+    queue<function<void()>> m_taskQueue;
+
+    vector<thread> m_threads;
+
+    mutex m_mutex;
+    condition_variable m_cv;
+
+    bool m_stop = false;
+
+public:
+
+    // Constructor
+    Executor(int numberOfThreads) {
+
+        for (int i = 0; i < numberOfThreads; i++) {
+
+            m_threads.push_back(
+                thread(&Executor::executeTask, this)
+            );
+        }
+    }
+
+      // Worker thread
+    void executeTask() {
+
+        while (true) {
+
+            function<void()> func;
+
+            {
+                unique_lock<mutex> lock(m_mutex);
+
+                // Wait until:
+                // 1. task available ho
+                // OR
+                // 2. shutdown ho raha ho
+                m_cv.wait(lock, [this]() {
+
+                    return !m_taskQueue.empty() || m_stop;
+
+                });
+
+
+                // Agar shutdown ho gaya
+                // aur queue bhi empty hai
+                if (m_stop && m_taskQueue.empty()) {
+                    return;
+                }
+
+
+                // Queue se task nikalo
+                func = move(m_taskQueue.front());
+
+                m_taskQueue.pop();
+            }
+
+            // IMPORTANT:
+            // Mutex unlock hone ke baad task execute karo
+            func();
+        }
+    }
+
+
+
+    // Add task to queue
+    void addTaskToQueue(function<void()> fn) {
+
+        {
+            lock_guard<mutex> lock(m_mutex);
+
+            cout << "Adding function to queue" << endl;
+
+            m_taskQueue.push(fn);
+        }
+
+        // Kisi ek waiting worker ko notify karo
+        m_cv.notify_one();
+    }
+
+
+  
+    // Shutdown
+    void shutdown() {
+
+        {
+            lock_guard<mutex> lock(m_mutex);
+
+            m_stop = true;
+        }
+
+        // Sab workers ko wake up karo
+        m_cv.notify_all();
+
+
+        // Workers ke finish hone ka wait karo
+        for (auto& thread : m_threads) {
+
+            if (thread.joinable()) {
+                thread.join();
+            }
+        }
+    }
+};
+
+
+int main() {
+
+    // 4 worker threads
+    Executor exe(4);
+
+
+    // 20 tasks
+    for (int i = 0; i < 20; i++) {
+
+        exe.addTaskToQueue([i]() {
+
+            cout << "Hello I am " << i
+                 << " | Thread ID: "
+                 << this_thread::get_id()
+                 << endl;
+
+            cout << "Processing..." << endl;
+
+            this_thread::sleep_for(
+                chrono::seconds(2)
+            );
+
+            cout << "Finished " << i << endl;
+        });
+    }
+
+
+    // Shutdown
+    exe.shutdown();
+
+    return 0;
+}
+```
 ## 9. Atomic
 
 ### 9.1 `std::atomic`
