@@ -1221,79 +1221,6 @@ int main() {
 - ek thread ko CPU ya required resource/lock bahut der tak nahi milta, kyunki doosre threads baar-baar us resource ko le lete hain
 
 
-## std::async
-- function ko asynchronously execute karwta hai
-- Kisi callable/function ko asynchronously execute karwana aur uska future result provide karna
-- `std::async(policy, callable, arguments...);`
-### policy
-- `std::launch::async` // Function ko asynchronous execution ke liye launch karo
-- `std::launch::deferred`
-- Iska meaning function immediately execute nahi hoga
-- Function tab execute hoga jab aap result request karoge
-
-```cpp
-std::future<ReturnDataType>varFuture=std::async(function);
-```
-## std::future
-- Abhi result mere paas nahi hai, lekin future mein milega
-### future.get()
-- Result do. Agar result abhi ready nahi hai, wait karo
-- yeh blocking hai, agar worker abhi process kr rh hai to wait karega
-- future.get() //sirf ek baar 
-
-### future.valid()
-- Check karta hai ki future ke paas valid shared state hai ya nahi
-- future.valid();
-- agar future.get() nhi use hua h to 1,
--  warna future.get() k baad future.valid() to 0 hoga
-
-### future.wait()
-- Result ready hone tak wait karo
-- sirf wait karta hai
-- baad me future.get() use krke value get kre
-### future.wait_for()
-- Maximum itne time tak wait karo
-```cpp
-auto status = f.wait_for(
-    std::chrono::seconds(1)
-);
-
-std::future_status::ready
-
-std::future_status::timeout
-
-std::future_status::deferred
-
-```
-
-### future.wait_until()
-- Is particular deadline tak result ka wait karo
-```cpp
-auto deadline =std::chrono::steady_clock::now()+ std::chrono::seconds(2);
-
-auto status = f.wait_until(deadline);
-
-
-```
-
-### future.share()
-- multiple owner 
-```cpp
-auto f = std::async(
-    std::launch::async,
-    [] {
-        return 42;
-    }
-);
-
-std::shared_future<int> sf = f.share();
-
-
-sf.get();
-sf.get();
-sf.get();
-```
-
 ## Thread Pool
 
 ```cpp
@@ -1478,4 +1405,122 @@ int main() {
 TODO
 ## false sharing
 TODO
+
+
+## std::async
+- function ko asynchronously execute karwta hai
+- Kisi callable/function ko asynchronously execute karwana aur uska future result provide karna
+- `std::async(policy, callable, arguments...);`
+### policy
+- `std::launch::async` // Function ko asynchronous execution ke liye launch karo
+- `std::launch::deferred`
+- Iska meaning function immediately execute nahi hoga
+- Function tab execute hoga jab aap result request karoge
+
+```cpp
+std::future<ReturnDataType>varFuture=std::async(function);
+```
+## std::future
+- Abhi result mere paas nahi hai, lekin future mein milega
+### future.get()
+- Result do. Agar result abhi ready nahi hai, wait karo
+- yeh blocking hai, agar worker abhi process kr rh hai to wait karega
+- future.get() //sirf ek baar 
+
+### future.valid()
+- Check karta hai ki future ke paas valid shared state hai ya nahi
+- future.valid();
+- agar future.get() nhi use hua h to 1,
+-  warna future.get() k baad future.valid() to 0 hoga
+
+### future.wait()
+- Result ready hone tak wait karo
+- sirf wait karta hai
+- baad me future.get() use krke value get kre
+### future.wait_for()
+- Maximum itne time tak wait karo
+```cpp
+auto status = f.wait_for(
+    std::chrono::seconds(1)
+);
+
+std::future_status::ready
+
+std::future_status::timeout
+
+std::future_status::deferred
+
+```
+
+### future.wait_until()
+- Is particular deadline tak result ka wait karo
+```cpp
+auto deadline =std::chrono::steady_clock::now()+ std::chrono::seconds(2);
+
+auto status = f.wait_until(deadline);
+
+
+```
+
+### future.share()
+- multiple owner 
+```cpp
+auto f = std::async(
+    std::launch::async,
+    [] {
+        return 42;
+    }
+);
+
+std::shared_future<int> sf = f.share();
+
+
+sf.get();
+sf.get();
+sf.get();
+```
+## std::promise
+- std::promise + std::future basically threads ke beech result/data communicate karne ka ek tareeka hai
+```cpp
+
+#include<iostream>
+#include<thread>
+#include<future>
+#include<chrono>
+
+
+void worker(std::promise<int>p){
+
+    std::cout<<"Getting Result....\n";
+    std::this_thread::sleep_for(std::chrono::seconds(5));
+
+    std::cout<<"Calculating....\n";
+
+    std::this_thread::sleep_for(std::chrono::seconds(3));
+    // Worker thread result provide karta hai
+    p.set_value(100);
+
+
+}
+
+int main(){
+
+    std::promise<int>int_promise;
+    
+    // Promise aur future ko connect karo
+    std::future<int>int_future=int_promise.get_future();
+
+    std::thread thread_worker(worker,std::move(int_promise));
+
+    int int_result=int_future.get();
+
+    std::cout<<"Result: "<<int_result<<std::endl;
+
+    if(thread_worker.joinable()){
+        thread_worker.join();
+    }
+
+    return 0;
+}
+```
 
