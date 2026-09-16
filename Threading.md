@@ -1224,30 +1224,75 @@ int main() {
 ## std::async
 - function ko asynchronously execute karwta hai
 - Kisi callable/function ko asynchronously execute karwana aur uska future result provide karna
+- `std::async(policy, callable, arguments...);`
+### policy
+- `std::launch::async` // Function ko asynchronous execution ke liye launch karo
+- `std::launch::deferred`
+- Iska meaning function immediately execute nahi hoga
+- Function tab execute hoga jab aap result request karoge
 
 ```cpp
 std::future<ReturnDataType>varFuture=std::async(function);
 ```
 ## std::future
 - Abhi result mere paas nahi hai, lekin future mein milega
+### future.get()
+- Result do. Agar result abhi ready nahi hai, wait karo
+- yeh blocking hai, agar worker abhi process kr rh hai to wait karega
+- future.get() //sirf ek baar 
 
-### get
-- Result chahiye
-- Ready nahi → wait
-- Ready → result return
-- Exception → propagate+
-### wait
-Result ready hone tak wait
-Result return nahi karta
-### wait_for()
-Maximum 5 sec wait
-    ↓
-ready   → result ready
-timeout → time khatam, result ready nahi
-deferred → task deferred hai
-### wait_for()
+### future.valid()
+- Check karta hai ki future ke paas valid shared state hai ya nahi
+- future.valid();
+- agar future.get() nhi use hua h to 1,
+-  warna future.get() k baad future.valid() to 0 hoga
+
+### future.wait()
+- Result ready hone tak wait karo
+- sirf wait karta hai
+- baad me future.get() use krke value get kre
+### future.wait_for()
+- Maximum itne time tak wait karo
+```cpp
+auto status = f.wait_for(
+    std::chrono::seconds(1)
+);
+
+std::future_status::ready
+
+std::future_status::timeout
+
+std::future_status::deferred
+
+```
+
+### future.wait_until()
+- Is particular deadline tak result ka wait karo
+```cpp
+auto deadline =std::chrono::steady_clock::now()+ std::chrono::seconds(2);
+
+auto status = f.wait_until(deadline);
 
 
+```
+
+### future.share()
+- multiple owner 
+```cpp
+auto f = std::async(
+    std::launch::async,
+    [] {
+        return 42;
+    }
+);
+
+std::shared_future<int> sf = f.share();
+
+
+sf.get();
+sf.get();
+sf.get();
+```
 
 ## Thread Pool
 
@@ -1417,7 +1462,7 @@ int main() {
 
 ### 11.3 `std::async`
 
-## 12. Thread Pool
+
 
 ## 13. Thread-Safe Design
 
@@ -1429,4 +1474,8 @@ int main() {
 
 ### 14.3 Producer-Consumer Queue
 
-### 14.4 Thread Pool
+## CPU cache line
+TODO
+## false sharing
+TODO
+
