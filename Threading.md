@@ -353,6 +353,46 @@ m.unlock();
 
 🔓 m.unlock()      = Gate free karna
 ```
+- *try_lock()*
+- Agar lock available hai to lock acquire karo, warna wait mat karo aur immediately return karo
+```cpp
+
+#include<iostream>
+#include<thread>
+#include<mutex>
+
+int counter=0;
+std::mutex m_mutex;
+
+
+void worker(){
+
+    if(m_mutex.try_lock()){
+
+        // lock successfully acquired
+
+        std::cout << "Thread got the lock\n";
+        std::cout<<std::this_thread::get_id()<<std::endl;
+        counter++;
+
+    }else{
+         // lock nahi mila
+         std::cout << "Thread could not get the lock\n";
+    }
+
+}
+int main(){
+
+    std::thread t(worker);
+    std::thread t2(worker);
+
+    t.join();
+    t2.join();
+
+    std::cout<<"Counter: "<<counter<<std::endl;
+    return 0;
+}
+```
 
 ## Mutex Types
 - [Mutex](#mutex)
@@ -386,6 +426,7 @@ int main(){
     return 0;
 }
 ```
+
 ### recursive_mutex
 - A recursive_mutex allows the same thread to lock the same mutex multiple times
 ```cpp
@@ -1384,11 +1425,6 @@ int main() {
 ## 11. Thread Communication
 
 ### 11.1 Producer-Consumer
-
-### 11.2 Future / Promise
-
-### 11.3 `std::async`
-
 
 
 ## 13. Thread-Safe Design

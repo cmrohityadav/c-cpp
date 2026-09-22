@@ -1,39 +1,32 @@
 #include<iostream>
 #include<thread>
-#include<future>
-#include<chrono>
+#include<mutex>
+
+int counter=0;
+std::mutex m_mutex;
 
 
-void worker(std::promise<int>p){
+void worker(){
 
-    std::cout<<"Getting Result....\n";
-    std::this_thread::sleep_for(std::chrono::seconds(5));
-
-    std::cout<<"Calculating....\n";
-
-    std::this_thread::sleep_for(std::chrono::seconds(3));
-    // Worker thread result provide karta hai
-    p.set_value(100);
+    if(m_mutex.try_lock()){
+        std::cout << "Thread got the lock\n";
+        std::cout<<std::this_thread::get_id()<<std::endl;
+        counter++;
 
 
-}
-
-int main(){
-
-    std::promise<int>int_promise;
-    
-    // Promise aur future ko connect karo
-    std::future<int>int_future=int_promise.get_future();
-
-    std::thread thread_worker(worker,std::move(int_promise));
-
-    int int_result=int_future.get();
-
-    std::cout<<"Result: "<<int_result<<std::endl;
-
-    if(thread_worker.joinable()){
-        thread_worker.join();
+    }else{
+         std::cout << "Thread could not get the lock\n";
     }
 
+}
+int main(){
+
+    std::thread t(worker);
+    std::thread t2(worker);
+
+    t.join();
+    t2.join();
+
+    std::cout<<"Counter: "<<counter<<std::endl;
     return 0;
 }
