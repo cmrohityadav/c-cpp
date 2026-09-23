@@ -1562,9 +1562,12 @@ int main(){
 
 
 ## Semaphore
+- A semaphore ek synchronization primitive hai jo internally ek counter (permit count) maintain karta hai
 - ek counter + waiting mechanism
 - jo decide karta hai ki ek time par maximum kitne threads kisi `resource/operation` ko access kar sakte hain
 ### acquire()
+- Agar permit available hai → thread immediately continue karega.
+- Agar permit available nahi hai → thread block/wait karega
 ```cpp
 acquire()
    ↓
@@ -1573,10 +1576,40 @@ count == 0 ?
   YES
    ↓
 WAIT
+
+
+
+---
+             acquire()
+                 │
+                 ↓
+          permit available?
+           /             \
+         YES              NO
+          │                │
+          ↓                ↓
+   decrement count       WAIT/BLOCK
+          │                │
+          ↓                │
+      continue ◄───────────┘
+                   release()
 ```
 
 ### release()
+- ek permit semaphore mein return/add karta hai
+- Agar koi thread semaphore par wait kar raha hai, to available permit us waiting thread ko proceed karne ka opportunity deta hai
+```cpp
+Before:
 
+Semaphore
+count = 0
+
+Thread A
+   ↓
+release()
+   ↓
+count = 1
+```
 
 ### try_acquire()
 ```cpp
@@ -1587,6 +1620,24 @@ else {
     // immediately fail
 }
 ```
+
+```
+             try_acquire()
+                  │
+                  ↓
+          permit available?
+           /             \
+         YES              NO
+          │                │
+          ↓                ↓
+       return true      return false
+          │                │
+          ↓                ↓
+      continue          immediately
+                         continue
+
+```
+
 
 ### type of Semaphore
 1. count
@@ -1647,7 +1698,53 @@ int main()
     return 0;
 }
 ```
+### binary
+- `std::binary_semaphore sem(initial);`
+- semaphore jiska permit count effectively 0 ya 1 hota hai
+```cpp
+#include <iostream>
+#include <thread>
+#include <semaphore>
+#include <chrono>
 
+using namespace std::chrono_literals;
+
+std::binary_semaphore entry_token(0);
+
+void organizer()
+{
+    std::cout << "[Organizer] Waiting for special entry...\n";
+
+    std::this_thread::sleep_for(3s);
+
+    std::cout << "[Organizer] Entry token issued!\n";
+
+    // Token available
+    entry_token.release();
+}
+
+void guest()
+{
+    std::cout << "[Guest] Waiting for entry token...\n";
+
+    // Token nahi hai -> BLOCK
+    entry_token.acquire();
+
+    std::cout << "[Guest] Token received. Entering event...\n";
+}
+
+int main()
+{
+    std::thread t1(organizer);
+    std::thread t2(guest);
+
+    t1.join();
+    t2.join();
+
+    return 0;
+}
+
+```
 latch
 
 barrier

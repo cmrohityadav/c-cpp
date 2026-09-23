@@ -1,49 +1,41 @@
 #include <iostream>
 #include <thread>
-#include <vector>
 #include <semaphore>
 #include <chrono>
 
 using namespace std::chrono_literals;
 
+std::binary_semaphore entry_token(0);
 
-std::counting_semaphore<4> order_slots(2);
-
-void process_order(int order_id)
+void organizer()
 {
-    std::cout<< "[Order " << order_id << "] Waiting for processing slot...\n";
+    std::cout << "[Organizer] Waiting for special entry...\n";
 
-    // Wait until a slot becomes available
-    order_slots.acquire();
-
-    std::cout<< "[Order " << order_id << "] Processing started\n";
-
-    // Simulate order validation + risk checks + processing
     std::this_thread::sleep_for(3s);
 
-    std::cout<< "[Order " << order_id << "] Processing completed\n";
+    std::cout << "[Organizer] Entry token issued!\n";
 
-    // Return the slot for another order
-    order_slots.release();
+    // Token available
+    entry_token.release();
+}
+
+void guest()
+{
+    std::cout << "[Guest] Waiting for entry token...\n";
+
+    // Token nahi hai -> BLOCK
+    entry_token.acquire();
+
+    std::cout << "[Guest] Token received. Entering event...\n";
 }
 
 int main()
 {
-    std::vector<std::thread> workers;
+    std::thread t1(organizer);
+    std::thread t2(guest);
 
-    // Simulating incoming orders
-    for (int order_id = 1; order_id <= 20; ++order_id)
-    {
-        workers.emplace_back(process_order, order_id);
-    }
-
-    // Wait for all orders to finish
-    for (auto& worker : workers)
-    {
-        worker.join();
-    }
-
-    std::cout << "\nAll orders processed.\n";
+    t1.join();
+    t2.join();
 
     return 0;
 }
