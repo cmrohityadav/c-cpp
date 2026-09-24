@@ -159,6 +159,37 @@ int main(){
     return 0;
 }
 ```
+### Callback
+- Aisa function/callable jo hum kisi aur function/object ko dete hain, taaki woh baad me usse call kare
+- Lambda ek way of creating a callable ha
+- Callback ek role/purpose hai
+- `ReturnType (*functionPointerName)(ParameterTypes);`
+```cpp
+#include <iostream>
+#include <thread>
+#include <functional>
+
+void increamentWorker(int& i){
+    i++;
+}
+
+void execute(void (*callback_func)(int&),int& i){
+
+    callback_func(i);
+
+}
+
+int main()
+{   
+    int counter=10;
+
+    execute(increamentWorker,counter);
+    
+    std::cout<<"counter: "<<counter<<std::endl;
+
+    return 0;
+}
+```
 
 ### thread ID
 ```cpp
@@ -330,6 +361,8 @@ int main()
 ```
 ### std::cref()
 Ab agar aapko object ko const reference ke through pass karna hai
+
+## std::jthread
 
 
 ###

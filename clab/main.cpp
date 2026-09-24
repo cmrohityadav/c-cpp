@@ -6,15 +6,18 @@ void increamentWorker(int& i){
     i++;
 }
 
+void execute(void (*callback_func)(int&),int& i){
+
+    callback_func(i);
+
+}
+
 int main()
 {   
-    int counter=1;
-    std::thread t(increamentWorker,std::ref(counter));
+    int counter=10;
 
-    if(t.joinable()){
-        t.join();
-    }
-
+    execute(increamentWorker,counter);
+    
     std::cout<<"counter: "<<counter<<std::endl;
 
     return 0;
