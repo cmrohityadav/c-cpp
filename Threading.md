@@ -202,6 +202,84 @@ int main()
 }
 ```
 
+### thread LifeCycle
+```txt
+
+             ┌─────────────────┐
+             │ Default Created │
+             │                 │
+             │ joinable=false  │
+             └────────┬────────┘
+                      │
+                      │ std::thread t(worker)
+                      ▼
+             ┌─────────────────┐
+             │    JOINABLE     │
+             │                 │
+             │ joinable=true   │
+             └───────┬─────────┘
+                     │
+             ┌───────┴────────┐
+             │                │
+           join()          detach()
+             │                │
+             ▼                ▼
+      ┌─────────────┐   ┌─────────────┐
+      │ Not         │   │ Not         │
+      │ Joinable    │   │ Joinable    │
+      └─────────────┘   └─────────────┘
+
+
+```
+- `join()`: Associated execution thread ko wait karke complete karo aur std::thread object ko non-joinable state mein le aao 
+```txt
+Detach ke baad t destroy ho sakta hai
+
+void foo()
+{
+    std::thread t(worker);
+}
+
+start()
+ │
+ ├── t created
+ │
+ ├── actual worker thread created
+ │
+ ├── detach()
+ │
+ │      t ───X──> worker
+ │
+ └── t destroyed
+
+
+t ka destructor kya karta hai?
+
+foo()
+ │
+ ├── t created
+ │
+ ├── worker thread started
+ │
+ │
+ └── scope ends
+       │
+       ▼
+    t destructor
+
+Ab destructor check karta hai: Is t joinable?
+
+joinable == true -> std::terminate()
+
+So program terminate ho sakta hai
+```
+- Ye important hai because std::thread is moveable but not copyable
+- join()   → worker finish → non-joinable → object destroy → SAFE
+
+- detach() → non-joinable → object destroy → worker independently continues
+
+- nothing  → joinable → object destroy → std::terminate()
+
 ## Mutex
 - Shared resources ko ek time pe ek hi Thread acccess kare
 - Agar koi shared variable/resource multiple threads use kar rahe hain, aur humne usko protect karne ke liye ek mutex choose kiya hai, toh jitni bhi jagah se us shared resource ko access karenge, wahan same mutex ka lock lena hoga.
