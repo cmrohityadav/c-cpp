@@ -1,9 +1,21 @@
 #include <iostream>
 #include <thread>
+#include <functional>
+
+void increamentWorker(int& i){
+    i++;
+}
 
 int main()
-{
-    unsigned int count = std::thread::hardware_concurrency();
+{   
+    int counter=1;
+    std::thread t(increamentWorker,std::ref(counter));
 
-    std::cout << "Hardware concurrency: "<< count << '\n';
+    if(t.joinable()){
+        t.join();
+    }
+
+    std::cout<<"counter: "<<counter<<std::endl;
+
+    return 0;
 }

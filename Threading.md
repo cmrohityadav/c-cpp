@@ -279,7 +279,60 @@ So program terminate ho sakta hai
 - detach() → non-joinable → object destroy → worker independently continues
 
 - nothing  → joinable → object destroy → std::terminate()
+### std::ref()
+- object ko copy mat karo; iske reference ko pass karo
+- without it
+```cpp
+#include <iostream>
+#include <thread>
 
+void increamentWorker(int i){
+    i++;
+}
+
+int main()
+{   
+    int counter=1;
+    std::thread t(increamentWorker,counter);
+
+    if(t.joinable()){
+        t.join();
+    }
+
+    std::cout<<"counter: "<<counter<<std::endl; //1
+
+    return 0;
+}
+```
+- with it
+```cpp
+#include <iostream>
+#include <thread>
+#include <functional>
+
+void increamentWorker(int& i){
+    i++;
+}
+
+int main()
+{   
+    int counter=1;
+    std::thread t(increamentWorker,std::ref(counter));
+
+    if(t.joinable()){
+        t.join();
+    }
+
+    std::cout<<"counter: "<<counter<<std::endl; //2
+
+    return 0;
+}
+```
+### std::cref()
+Ab agar aapko object ko const reference ke through pass karna hai
+
+
+###
 ## Mutex
 - Shared resources ko ek time pe ek hi Thread acccess kare
 - Agar koi shared variable/resource multiple threads use kar rahe hain, aur humne usko protect karne ke liye ek mutex choose kiya hai, toh jitni bhi jagah se us shared resource ko access karenge, wahan same mutex ka lock lena hoga.
