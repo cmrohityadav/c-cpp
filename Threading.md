@@ -1,5 +1,7 @@
 # Threading
 # Content
+- [Process](#Process)
+- []()
 - []()
 - []()
 - [Mutex Type](#mutex-types)
@@ -12,6 +14,9 @@
 - []()
 - []()
 - [Thread Pool](#thread-pool)
+- []()
+- []()
+- [Semaphore](#semaphore)
 - []()
 - []()
 
@@ -152,6 +157,48 @@ int main(){
     std::cout<<counter<<std::endl;
 
     return 0;
+}
+```
+
+### thread ID
+```cpp
+#include <iostream>
+#include <thread>
+
+void worker()
+{
+    std::cout << "Worker ID: "
+              << std::this_thread::get_id()
+              << '\n';
+}
+
+int main()
+{
+    std::cout << "Main ID: "
+              << std::this_thread::get_id()
+              << '\n';
+
+    std::thread t(worker);
+
+    std::cout << "Worker ID from main: "
+              << t.get_id()
+              << '\n';
+
+    t.join();
+}
+```
+
+### hardware_concurrency
+- Mere machine me kitne hardware threads available hain?
+```cpp
+#include <iostream>
+#include <thread>
+
+int main()
+{
+    unsigned int count = std::thread::hardware_concurrency();
+
+    std::cout << "Hardware concurrency: "<< count << '\n';
 }
 ```
 
@@ -1745,6 +1792,8 @@ int main()
 }
 
 ```
+
+
 latch
 
 barrier
