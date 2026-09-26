@@ -5,6 +5,10 @@
 
 using namespace std::chrono_literals;
 
+void shutdown_msg(){
+    std::cout<<"This Apllication going to stop... ... ..."<<std::endl;
+}
+
 void worker(std::stop_token token,int id){
     
     int count=0;
@@ -25,12 +29,21 @@ int main(){
 
     std::stop_token token=source.get_token();
 
+    std::stop_callback callbackObject(token,[](){
+        shutdown_msg();
+    });
+
     std::jthread t1(worker,token,1);
     std::jthread t2(worker,token,2);
 
     std::this_thread::sleep_for(1s);
 
     source.request_stop();
+
+    t1.join();
+    t2.join();
+
+    std::cout << "Application shutdown complete\n";
 
     return 0;
 }

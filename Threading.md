@@ -402,7 +402,15 @@ int main(){
 }
 ```
 ### stop_source
-- hum ek source banate hai jisse common token ko multple thread object me pass krte hai,fir common source ko stop signal dete hai to sabhi token stop ho jate hai
+- `std::stop_source` ek stop request bhejne wala object hai.
+- Hum `source.get_token()` se ek `std::stop_token` lete hain.
+- Same `std::stop_token` ko multiple `std::jthread / worker ` threads ko pass kar sakte hain.
+- Jab hum common `source.request_stop()` call karte hain, toh us shared stop state mein stop request set ho jaati hai.
+
+- Jitne workers usi stop state se associated token use kar rahe hain, unke liye:`token.stop_requested()` -> `true` return karega.
+
+- Token khud "stop" nahi hota; stop request shared stop state mein set hoti hai.
+- Workers ko khud `stop_requested()` check karke gracefully exit karna hota hai.
 ```cpp
 #include<iostream>
 #include<thread>
@@ -442,7 +450,63 @@ int main(){
 }
 ```
 ### stop_callback
+- `std::stop_callback` kisi `std::stop_token` ke saath ek callback register karta hai.
+- Jab associated stop state mein stop request aati hai, registered callback execute hota hai
+- Callback ek normal function ya lambda ho sakta hai.
+- stop_callback khud koi new thread create nahi karta.
+- Agar stop request pehle hi aa chuki ho aur uske baad callback register kiya jaye, toh callback registration ke time hi invoke ho sakta hai.
+- Callback ko request ke response mein ek baar invoke kiya jata hai.
+```cpp
+#include<iostream>
+#include<thread>
+#include<chrono>
+#include<stop_token>
 
+using namespace std::chrono_literals;
+
+void shutdown_msg(){
+    std::cout<<"This Apllication going to stop... ... ..."<<std::endl;
+}
+
+void worker(std::stop_token token,int id){
+    
+    int count=0;
+
+    while(!token.stop_requested()){
+
+        std::cout << "Working: " << ++count << '\n';
+
+        std::this_thread::sleep_for(200ms);
+    }
+
+    std::cout << "Worker " << id << " stopped\n";
+}
+
+int main(){
+
+    std::stop_source source;
+
+    std::stop_token token=source.get_token();
+
+    std::stop_callback callbackObject(token,[](){
+        shutdown_msg();
+    });
+
+    std::jthread t1(worker,token,1);
+    std::jthread t2(worker,token,2);
+
+    std::this_thread::sleep_for(1s);
+
+    source.request_stop();
+
+    t1.join();
+    t2.join();
+
+    std::cout << "Application shutdown complete\n";
+
+    return 0;
+}
+```
 ###
 ## Mutex
 - Shared resources ko ek time pe ek hi Thread acccess kare
