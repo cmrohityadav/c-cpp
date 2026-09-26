@@ -3,7 +3,7 @@
 - [Process](#Process)
 - []()
 - []()
-- []()
+- [std::jthread](#stdjthread)
 - [Mutex Type](#mutex-types)
 - []()
 - []()
@@ -363,7 +363,46 @@ int main()
 Ab agar aapko object ko const reference ke through pass karna hai
 
 ## std::jthread
+- `destructor`: Agar thread joinable hai, toh destructor pehle `request_stop()` karta hai aur phir `join()` karta hai. Yeh thread ko forcibly terminate nahi karta
+- `std::stop_token token` : Yeh ek token object hai jo associated stop state ko access karke check kar sakta hai ki stop request aayi hai ya nahi. Yeh sirf ek normal status variable nahi hai
+-  `t.request_stop();` : Associated stop state mein stop request set karta hai. Worker ko khud is request ko check karke kaam rokna hota hai
+- `token.stop_requested()` : true return karta hai agar stop request aa chuki hai, otherwise false
+```cpp
 
+#include<iostream>
+#include<thread>
+#include<chrono>
+#include<stop_token>
+
+using namespace std::chrono_literals;
+
+void worker(std::stop_token token){
+    
+    int count=0;
+
+    while(!token.stop_requested()){
+
+        std::cout << "Working: " << ++count << '\n';
+
+        std::this_thread::sleep_for(200ms);
+    }
+
+    std::cout << "Worker stopping gracefully\n";
+}
+
+int main(){
+
+    std::jthread t(worker);
+
+    std::this_thread::sleep_for(1s);
+
+    t.request_stop();
+
+    return 0;
+}
+```
+stop_source
+stop_callback
 
 ###
 ## Mutex

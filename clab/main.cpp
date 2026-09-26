@@ -1,24 +1,31 @@
-#include <iostream>
-#include <thread>
-#include <functional>
+#include<iostream>
+#include<thread>
+#include<chrono>
+#include<stop_token>
 
-void increamentWorker(int& i){
-    i++;
-}
+using namespace std::chrono_literals;
 
-void execute(void (*callback_func)(int&),int& i){
-
-    callback_func(i);
-
-}
-
-int main()
-{   
-    int counter=10;
-
-    execute(increamentWorker,counter);
+void worker(std::stop_token token){
     
-    std::cout<<"counter: "<<counter<<std::endl;
+    int count=0;
+
+    while(!token.stop_requested()){
+
+        std::cout << "Working: " << ++count << '\n';
+
+        std::this_thread::sleep_for(200ms);
+    }
+
+    std::cout << "Worker stopping gracefully\n";
+}
+
+int main(){
+
+    std::jthread t(worker);
+
+    std::this_thread::sleep_for(1s);
+
+    t.request_stop();
 
     return 0;
 }
