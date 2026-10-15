@@ -1,6 +1,8 @@
 # Network Programming (Socket Programming)
 - Build a program that recieves and transmits data between two or more computers by means of a network
+# content
 - [basic socket](#socket-socket-descriptor)
+- [Basic TCP Client ](#basic-tcp-client)
 - [epoll](#epoll)
 ## Socket (socket descriptor)
 - Socket ek endpoint hota hai jiske through do programs network ke upar baat karte hain
@@ -18,6 +20,17 @@ Baat karna = send() / recv()
 ```
 - Linux me socket ek file jaisa hota hai
 - Isliye socket ko file descriptor (FD) bola jata hai
+```txt
+#include<sys/socket.h> 
+
+It provides:
+- Functions: socket(), bind(), listen(), accept(), connect(), send(), recv(), setsockopt()
+- Constants: AF_INET, SOCK_STREAM, SOCK_DGRAM, SOL_SOCKET
+- Data types: struct sockaddr jaise socket address types.
+
+Purpose: C++ program ko OS ke socket API ke through network communication karne dena
+
+```
 ```cpp
 #include<sys/socket.h>
 
@@ -79,7 +92,20 @@ jo incoming data ko correct program ke socket tak pahunchata hai
 - bind(s, IP, 8080);
 - Program kernel ko bolta hai:
 - Port 8080 mujhe de do
+- **NOTES**
+```txt
+#include <sys/types.h>
 
+Definition: Linux/POSIX ka system header file hai, jo system-level programming mein use hone wale data types ki definitions provide karta hai.
+It provides:
+- pid_t — Process ID store karne ke liye.
+- size_t — Object ya memory size represent karne ke liye.
+- ssize_t — Signed size type, jo byte count ya -1 error represent kar sakta hai.
+- off_t — File offsets represent karne ke liye
+
+Purpose: System calls aur OS-related APIs mein use hone wale standard system data types available karana
+
+```
 ```bash
 int s=socket(int domain,int type,int protocol)
 
@@ -108,6 +134,24 @@ struct sockaddr {
 #include <netinet/in.h>
 struct sockaddr_in server;
 ```
+- **NOTES**
+```txt
+#include <netinet/in.h>
+
+Linux/POSIX networking header hai, jo IPv4/IPv6 internet address structures aur internet protocol-related constants provide karta hai
+
+It provides:
+- struct sockaddr_in — IPv4 address aur port store karne ke liye.
+- struct sockaddr_in6 — IPv6 address aur port store karne ke liye.
+- htons() / htonl() — Host byte order ko network byte order mein convert karne ke liye.
+- INADDR_ANY — Server ko available local IPv4 interfaces par bind karne ke liye.
+- IP
+PROTO_TCP / IPPROTO_UDP — TCP aur UDP protocol constants
+
+
+Purpose: Socket ko IP address aur port ke saath configure karne ke liye required structures aur constants provide karna
+
+```
 
 #### Internal struct sockadd_in
 ```cpp
@@ -131,6 +175,38 @@ struct sockaddr_in {
 #include <arpa/inet.h>
 
 inet_pton(AF_INET, "192.168.208.209", &server.sin_addr);
+```
+```txt
+#include <arpa/inet.h>
+
+Linux/POSIX networking header hai, jo IP addresses ko human-readable text format aur network binary format ke beech convert karne ke functions provide karta hai
+
+inet_pton() — IPv4/IPv6 text address ko binary format mein convert karta hai.
+
+
+
+inet_ntop() — Binary IP address ko readable text format mein convert karta hai.
+
+
+
+inet_addr() — IPv4 text address ko binary representation mein convert karta hai (legacy function).
+
+Purpose: IP addresses ko program mein parse aur display karna
+
+
+inet_pton() = Internet Presentation to Network
+
+inet_ntop() = Internet Network to Presentation
+
+p = Presentation (readable IP string, e.g. "192.168.1.10")
+
+n = Network (binary network format)
+
+inet_pton() → Readable IP → Binary format
+inet_ntop() → Binary format → Readable IP string
+
+
+
 ```
 - Internet Presentation TO Numeric
 ```cpp
@@ -314,7 +390,7 @@ if (n == 0) {
 ```
 
 
-# EPOLL
+## EPOLL
 - Bell system ko kaam karta hua dekho
 
 
@@ -737,5 +813,89 @@ read()/write()
    ↓
 close()
 
+
+```
+
+
+## Basic TCP Client 
+
+```cpp
+#include<iostream>
+#include<cstring>
+#include<sys/socket.h>
+#include<sys/types.h>
+#include<netinet/in.h>
+#include<arpa/inet.h>
+
+#define PORT 8080
+
+int main(){
+
+    int clientSocket;
+    struct sockaddr_in serverAddr;
+    char buffer[1024];
+
+    clientSocket=socket(AF_INET,SOCK_STREAM,0);
+
+    memset(&serverAddr,0,sizeof(serverAddr));
+
+    serverAddr.sin_family=AF_INET;
+    serverAddr.sin_port=htons(PORT);
+    serverAddr.sin_addr.s_addr=inet_addr("127.0.0.1");
+
+    connect(clientSocket,(struct sockaddr*)&serverAddr,sizeof(serverAddr));
+
+    recv(clientSocket,buffer,1024,0);
+
+    printf("DATA Recieved : %s",buffer);
+
+    return 0;
+
+}
+````
+- for server run netcat command
+```bash
+nc 127.0.0.1 -l 8080
+```
+
+## Basic TCP server
+```cpp
+#include<iostream>
+#include<cstring>
+#include<sys/socket.h>
+#include<sys/types.h>
+#include<netinet/in.h>
+#include<arpa/inet.h>
+
+# define PORT 8080
+
+int main(){
+
+    int serverfd, clientfd;;
+    struct sockaddr_in serverAddr, clientAddr;
+    memset(&serverAddr,0,sizeof(serverAddr));
+
+    socklen_t client_addr_size;
+    char buffer[1024];
+    strcpy(buffer,"hello client rohit");
+
+
+    serverfd=socket(AF_INET,SOCK_STREAM,0);
+
+    serverAddr.sin_family=AF_INET;
+    serverAddr.sin_port=htons(PORT);
+    serverAddr.sin_addr.s_addr=inet_addr("127.0.0.1");
+
+    bind(serverfd,(struct sockaddr*)&serverAddr,sizeof(serverAddr));
+
+    listen(serverfd,5);
+
+    client_addr_size=sizeof(clientAddr);
+    clientfd=accept(serverfd,(struct sockaddr*)&clientAddr,&client_addr_size);
+
+    send(clientfd,buffer,strlen(buffer),0);
+    
+    return 0;
+}
 
 ```
