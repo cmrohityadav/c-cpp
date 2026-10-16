@@ -37,5 +37,4 @@ int main(int argCount, char* argValue[])
     std::cout<<"Data Recieved : "<<buffer<<std::endl;
 
     return 0;
-    // nc -u 127.0.0.1 8080
 }

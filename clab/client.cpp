@@ -1,32 +1,38 @@
-#include<iostream>
-#include<cstring>
-#include<sys/socket.h>
-#include<sys/types.h>
-#include<netinet/in.h>
-#include<arpa/inet.h>
+#include <iostream>
+#include <cstring>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
 
-#define PORT 8080
+int main(int argCount, char* argValue[])
+{
 
-int main(){
+    if (argCount!=2)
+    {
+        std::cout<<"Invalid command\nEnter Proper Port\n\n"<<std::endl;
+        exit(0);
+    }
 
-    int clientSocket;
-    struct sockaddr_in serverAddr;
+    int port=std::atoi(argValue[1]);
+    int clientFd;
     char buffer[1024];
+    struct sockaddr_in serverAddr;
+    socklen_t serverAddrSize=sizeof(serverAddr);
 
-    clientSocket=socket(AF_INET,SOCK_STREAM,0);
+    clientFd=socket(AF_INET,SOCK_DGRAM,0);
 
     memset(&serverAddr,0,sizeof(serverAddr));
-
     serverAddr.sin_family=AF_INET;
-    serverAddr.sin_port=htons(PORT);
+    serverAddr.sin_port=htons(port);
     serverAddr.sin_addr.s_addr=inet_addr("127.0.0.1");
 
-    connect(clientSocket,(struct sockaddr*)&serverAddr,sizeof(serverAddr));
+    strcpy(buffer,"Hello guys I am UDP client\n");
+    
+    // Its UDP, so no connect() needed
+    sendto(clientFd,buffer,1024,0,(struct sockaddr*)&serverAddr,serverAddrSize);
 
-    recv(clientSocket,buffer,1024,0);
-
-    printf("DATA Recieved : %s\n",buffer);
+    std::cout<<"Data sended"<<std::endl;
 
     return 0;
-
 }
