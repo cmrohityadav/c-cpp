@@ -1,37 +1,41 @@
-#include<iostream>
-#include<cstring>
-#include<sys/socket.h>
-#include<sys/types.h>
-#include<netinet/in.h>
-#include<arpa/inet.h>
+#include <iostream>
+#include <cstring>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
 
-# define PORT 8080
+int main(int argCount, char* argValue[])
+{
 
-int main(){
+    if (argCount!=2)
+    {
+        std::cout<<"Invalid command\nEnter Proper Port\n\n"<<std::endl;
+        exit(0);
+    }
 
-    int serverfd, clientfd;;
-    struct sockaddr_in serverAddr, clientAddr;
-    memset(&serverAddr,0,sizeof(serverAddr));
-
-    socklen_t client_addr_size;
+    int port=std::atoi(argValue[1]);
+    int serverFd, clientFd;
     char buffer[1024];
-    strcpy(buffer,"hello client rohit");
+    struct sockaddr_in serverAddr,clientAddr;
+    socklen_t clientAddrSize;
+    clientAddrSize=sizeof(clientAddr);
 
+    serverFd=socket(AF_INET,SOCK_DGRAM,0);
 
-    serverfd=socket(AF_INET,SOCK_STREAM,0);
-
+    memset(&serverAddr,0,sizeof(serverAddr));
     serverAddr.sin_family=AF_INET;
-    serverAddr.sin_port=htons(PORT);
+    serverAddr.sin_port=htons(port);
     serverAddr.sin_addr.s_addr=inet_addr("127.0.0.1");
 
-    bind(serverfd,(struct sockaddr*)&serverAddr,sizeof(serverAddr));
+    bind(serverFd,(struct sockaddr*)&serverAddr,sizeof(serverAddr));
 
-    listen(serverfd,5);
+    //UDP is connectionless, so there is no listen() or accept()
 
-    client_addr_size=sizeof(clientAddr);
-    clientfd=accept(serverfd,(struct sockaddr*)&clientAddr,&client_addr_size);
+    recvfrom(serverFd,buffer,1024,0,(struct sockaddr*)&clientAddr,&clientAddrSize);
 
-    send(clientfd,buffer,strlen(buffer),0);
-    
+    std::cout<<"Data Recieved : "<<buffer<<std::endl;
+
     return 0;
+    // nc -u 127.0.0.1 8080
 }

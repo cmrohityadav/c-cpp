@@ -3,6 +3,7 @@
 # content
 - [basic socket](#socket-socket-descriptor)
 - [Basic TCP Client ](#basic-tcp-client)
+- [Basic TCP server](#basic-tcp-server)
 - [epoll](#epoll)
 ## Socket (socket descriptor)
 - Socket ek endpoint hota hai jiske through do programs network ke upar baat karte hain
@@ -898,4 +899,69 @@ int main(){
     return 0;
 }
 
+```
+- we can create server or client for testing
+```txt
+// its client
+// udp,
+nc -u 127.0.0.1 8080 
+
+//tcp
+nc 127.0.0.1 8080
+
+
+// its server
+//udp
+nc -u -l 8080
+
+//tcp
+nc  -l 8080
+```
+
+## Basic UDP client
+
+
+## Basic UDP server
+```cpp
+#include <iostream>
+#include <cstring>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+
+int main(int argCount, char* argValue[])
+{
+
+    if (argCount!=2)
+    {
+        std::cout<<"Invalid command\nEnter Proper Port\n\n"<<std::endl;
+        exit(0);
+    }
+
+    int port=std::atoi(argValue[1]);
+    int serverFd, clientFd;
+    char buffer[1024];
+    struct sockaddr_in serverAddr,clientAddr;
+    socklen_t clientAddrSize;
+    clientAddrSize=sizeof(clientAddr);
+
+    serverFd=socket(AF_INET,SOCK_DGRAM,0);
+
+    memset(&serverAddr,0,sizeof(serverAddr));
+    serverAddr.sin_family=AF_INET;
+    serverAddr.sin_port=htons(port);
+    serverAddr.sin_addr.s_addr=inet_addr("127.0.0.1");
+
+    bind(serverFd,(struct sockaddr*)&serverAddr,sizeof(serverAddr));
+
+    //UDP is connectionless, so there is no listen() or accept()
+
+    recvfrom(serverFd,buffer,1024,0,(struct sockaddr*)&clientAddr,&clientAddrSize);
+
+    std::cout<<"Data Recieved : "<<buffer<<std::endl;
+
+    return 0;
+    // nc -u 127.0.0.1 8080
+}
 ```
