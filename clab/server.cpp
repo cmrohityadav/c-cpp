@@ -5,6 +5,9 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+#include<time.h>
+#define BACKLOG 10
+
 
 int main(int argCount, char *argValue[])
 {
@@ -17,12 +20,9 @@ int main(int argCount, char *argValue[])
     }
 
     int port = std::atoi(argValue[1]);
-    int serverSocketFd, clientSocketFd, ret;
-    char buffer[1024];
-    pid_t childpid;
-    struct sockaddr_in serverAddr, clientAddr;
-    socklen_t clientAddrSize;
-    clientAddrSize = sizeof(clientAddr);
+    int serverSocketFd, ret;
+    struct sockaddr_in serverAddr;
+    int client_count=0;
 
     serverSocketFd = socket(AF_INET, SOCK_STREAM, 0);
     if (serverSocketFd < 0)
@@ -59,7 +59,7 @@ int main(int argCount, char *argValue[])
 
     while (1)
     {
-        clientSocketFd = accept(serverSocketFd, (struct sockaddr *)&clientAddr, &clientAddrSize);
+        int clientSocketFd = accept(serverSocketFd,NULL,NULL);
        
         if (clientSocketFd < 0)
         {
@@ -67,35 +67,14 @@ int main(int argCount, char *argValue[])
             continue;
         }
 
-        char clientIP[INET_ADDRSTRLEN];
+        client_count++;
+        time_t current_time;
+        time(&current_time);
 
-        inet_ntop(AF_INET, &clientAddr.sin_addr, clientIP, sizeof(clientIP));
-
-        std::cout << "Connection accepted successfully\n";
-        std::cout << "Client IP: " << clientIP << '\n';
-        std::cout << "Client Port: "<< ntohs(clientAddr.sin_port) << '\n';
-
-        if((childpid=fork())==0){
-            
-            close(serverSocketFd);
-            while(1){
-                recv(clientSocketFd,buffer,1024,0);
-                if(strcmp(buffer,":exit")==0){
-                    std::cout<<"Client Disconnected"<<std::endl;
-                    std::cout << "Client IP: " << clientIP << '\n';
-                    std::cout << "Client Port: "<< ntohs(clientAddr.sin_port) << '\n';
-                    break;
-
-                }else{
-                    std::cout<<"Client: "<<buffer<<std::endl;
-                    send(clientSocketFd,buffer,strlen(buffer),0);
-                    memset(buffer,0,sizeof(buffer));
-                }
-            }
-
-        }
+        std::cout<<"Client: "<<client_count<<" Request for time at "<<ctime(&current_time)<<std::endl;
+        send(clientSocketFd,ctime(&current_time),30,0);
+       
     }
 
-    close(serverSocketFd);
     return 0;
 }
