@@ -1,80 +1,82 @@
-#include <iostream>
-#include <cstring>
-#include <sys/socket.h>
-#include <sys/types.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <unistd.h>
-#include<time.h>
-#define BACKLOG 10
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
 
+#include<sys/socket.h>
+#include<sys/types.h>
+#include<netinet/in.h>
+#include<arpa/inet.h>
+#include<unistd.h>
 
-int main(int argCount, char *argValue[])
-{
+#include<errno.h>
+#include<pthread.h>
+#include<signal.h>
 
-    if (argCount != 2)
-    {
-        std::cout << "Invalid command\nEnter Proper Port\n\n"
-                  << std::endl;
-        exit(0);
+#define MAX_CLIENTS 100
+#define BUFFER_SIZE 2048
+
+int main(int argCount,char* argValue[]){
+
+    if(argCount!=2){
+        printf("Usage: %s <port>\n",argValue[1]);
+        return EXIT_FAILURE;
     }
 
-    int port = std::atoi(argValue[1]);
-    int serverSocketFd, ret;
+    char* ip="127.0.0.1";
+    int port=atoi(argValue[1]);
+
+    int option=1;
+    int server_socket_fd=0,confd=0;
+
     struct sockaddr_in serverAddr;
-    int client_count=0;
+    struct sockaddr_in clientAddr;
 
-    serverSocketFd = socket(AF_INET, SOCK_STREAM, 0);
-    if (serverSocketFd < 0)
-    {
-        std::cout << "Error while creating socket!!" << std::endl;
-        exit(1);
+    //socket settings
+    server_socket_fd=socket(AF_INET,SOCK_STREAM,0);
+
+    serverAddr.sin_family=AF_INET;
+    serverAddr.sin_addr.s_addr=inet_addr(ip);
+    serverAddr.sin_port=htons(port);
+
+    // Signals
+    signal(SIGPIPE,SIG_IGN);
+
+    // socket configuration
+    int set_socket_opt=setsockopt(server_socket_fd,SOL_SOCKET,(SO_REUSEPORT | SO_REUSEADDR),(char*)&option,sizeof(option));
+    if(set_socket_opt<0){
+       printf("ERROR: while setting up setsockopt()\n"); 
+       return EXIT_FAILURE;
     }
 
-    std::cout << "Created successfully socket" << std::endl;
-
-    memset(&serverAddr, 0, sizeof(serverAddr));
-    serverAddr.sin_family = AF_INET;
-    serverAddr.sin_port = htons(port);
-    serverAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
-
-    ret = bind(serverSocketFd, (struct sockaddr *)&serverAddr, sizeof(serverAddr));
-    if (ret < 0)
-    {
-        std::cout << "Error while binding socket" << std::endl;
-        exit(1);
+    //binding
+    int bind_socket=bind(server_socket_fd,(struct sockaddr*)&serverAddr,sizeof(serverAddr));
+    if(bind_socket<0){
+        printf("Error: while binding\n");
+        return EXIT_FAILURE;
     }
 
-    std::cout << "Created successfully socket binding to port : " << port << std::endl;
-
-    if (listen(serverSocketFd, 10) == 0)
-    {
-        std::cout << "Serve start listening at port : " << port << std::endl;
-    }
-    else
-    {
-        std::cout << "Error while listening socket" << std::endl;
-        exit(1);
+    //listen
+    int listen_socket=listen(server_socket_fd,10);
+    if(listen_socket<0){
+       printf("Error: while listing...\n");
+       return EXIT_FAILURE;
     }
 
-    while (1)
-    {
-        int clientSocketFd = accept(serverSocketFd,NULL,NULL);
-       
-        if (clientSocketFd < 0)
-        {
-            std::cout << "A client wanna to connect but disconnected due to unable get proper socket of client" << std::endl;
-            continue;
-        }
+    printf("=== WELLCOME TO GAPSAP===\n");
 
-        client_count++;
-        time_t current_time;
-        time(&current_time);
+    
 
-        std::cout<<"Client: "<<client_count<<" Request for time at "<<ctime(&current_time)<<std::endl;
-        send(clientSocketFd,ctime(&current_time),30,0);
-       
-    }
 
-    return 0;
+
+
+
+
+
+
+
+
+    return EXIT_SUCCESS;
 }
+
+
+
