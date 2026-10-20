@@ -1007,6 +1007,84 @@ int main(int argCount, char* argValue[])
 }
 ```
 
+## Blocking vs Non-blocking socket
+### Blocking
+- recv jis thread me call hota , agar data buffer me hai recieve krta agar data available nhi hota to wait krta hai isko blocking bolte h
+- kyuki yeh pure thread ko rok deta hai
+
+### Non blocking
+- recv ya send wait nhi krta
+- hum socket ka setting change kr dete hai
+- Socket ki current setting bata : `int flags = fcntl(sockfd, F_GETFL, 0);`
+- Socket ki setting mein non-blocking ON kar de: `fcntl(sockfd, F_SETFL, flags | O_NONBLOCK);`
+- fcntl() koi naya socket nahi banata. recv() ko replace nahi karta. Sirf socket ka behaviour change karta hai
+
+## sendAll and recieveAll
+```cpp
+#include <sys/socket.h>
+#include <unistd.h>
+#include <cerrno>
+#include <cstdio>
+#include <cstddef>
+
+// Send all bytes
+bool sendAll(int sockfd, const char* data, size_t length) {
+    size_t total_sent = 0;
+
+    while (total_sent < length) {
+        ssize_t sent = send(sockfd, data + total_sent, length - total_sent,0);
+
+        if (sent < 0) {
+            if (errno == EINTR) continue;
+
+            if (errno == EAGAIN || errno == EWOULDBLOCK)
+                continue;
+
+            perror("Send failed");
+            return false;
+        }
+
+        if (sent == 0) {
+            return false;
+        }
+
+        total_sent += static_cast<size_t>(sent);
+    }
+
+    return true;
+}
+
+// Receive all bytes
+bool receiveAll(int sockfd, char* buffer, size_t length) {
+    
+    size_t total_received = 0;
+
+    while (total_received < length) {
+        ssize_t received = recv(sockfd,buffer + total_received,length - total_received,0);
+
+        if (received < 0) {
+            if (errno == EINTR) continue;
+
+            if (errno == EAGAIN || errno == EWOULDBLOCK)
+                continue;
+
+            perror("Receive failed");
+            return false;
+        }
+
+        if (received == 0) {
+            // Connection closed by peer
+            return false;
+        }
+
+        total_received += static_cast<size_t>(received);
+    }
+
+    return true;
+}
+
+```
+
 
 
 # Example Programs
