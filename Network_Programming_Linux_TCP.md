@@ -4,6 +4,9 @@
 - [basic socket](#socket-socket-descriptor)
 - [Basic TCP Client ](#basic-tcp-client)
 - [Basic TCP server](#basic-tcp-server)
+- [Blocking vs Non-blocking socket](#blocking-vs-non-blocking-socket)
+- [sendAll and recieveAll](#sendall-and-recieveall)
+- [socket configuration]()
 - [epoll](#epoll)
 ## Socket (socket descriptor)
 - Socket ek endpoint hota hai jiske through do programs network ke upar baat karte hain
@@ -314,7 +317,7 @@ ssize_t recv(
 ```
 - recv ka 3rd parameter = kitne BYTES chahiye
 buffer ka size nahi, DATA ka size
-# Client
+
 
 ## Create a socket
 ```cpp
@@ -1084,6 +1087,72 @@ bool receiveAll(int sockfd, char* buffer, size_t length) {
 }
 
 ```
+
+## socket Configuration
+- setsockopt()
+- Isko socket ki settings control karne wala remote control samjho
+```cpp
+#include <sys/types.h>
+#include <sys/socket.h>
+
+int setsockopt(int sockfd,int level,int optname,const void *optval,socklen_t optlen
+);
+
+```
+### level — setting kis layer ki hai?
+```bash
+SOL_SOCKET — generic socket settings.
+
+IPPROTO_TCP — TCP-specific settings.
+
+IPPROTO_IP — IPv4 settings.
+
+IPPROTO_IPV6 — IPv6 settings.
+
+IPPROTO_UDP — UDP-specific settings, platform support ke hisaab se
+
+```
+### optname — exactly kya change karna hai?
+- Jaise SO_REUSEADDR, SO_KEEPALIVE, TCP_NODELAY, SO_RCVBUF.
+
+### optval — setting ki value kya hogi?
+- Aksar integer variable ka address dete hain
+
+### optlen — value kitne bytes ki hai?
+
+
+
+| Level | Option | Value / Range | Real-World Use |
+|---|---|---|---|
+| `SOL_SOCKET` | `SO_REUSEADDR` | `0` = Disable, `1` = Enable | Server restart ke baad port ko dobara bind karna |
+| `SOL_SOCKET` | `SO_REUSEPORT` | `0` = Disable, `1` = Enable | Multiple sockets ko same port share karwana |
+| `SOL_SOCKET` | `SO_KEEPALIVE` | `0` = Disable, `1` = Enable | Idle TCP connection ki reachability check karna |
+| `SOL_SOCKET` | `SO_RCVBUF` | Positive integer (bytes) | Receive buffer size configure karna |
+| `SOL_SOCKET` | `SO_SNDBUF` | Positive integer (bytes) | Send buffer size configure karna |
+| `SOL_SOCKET` | `SO_RCVTIMEO` | `timeval` / `time_t`-based timeout structure, platform-dependent | Blocking receive operation par timeout set karna |
+| `SOL_SOCKET` | `SO_SNDTIMEO` | `timeval` / `time_t`-based timeout structure, platform-dependent | Blocking send operation par timeout set karna |
+| `SOL_SOCKET` | `SO_BROADCAST` | `0` = Disable, `1` = Enable | IPv4 UDP broadcast packets bhejna |
+| `SOL_SOCKET` | `SO_LINGER` | `struct linger` — `l_onoff` aur `l_linger` | `close()` par pending outgoing data ka behavior control karna |
+| `IPPROTO_TCP` | `TCP_NODELAY` | `0` = Disable, `1` = Enable | Nagle algorithm disable karke latency kam karne mein madad karna |
+| `IPPROTO_TCP` | `TCP_KEEPIDLE` | Positive integer (seconds; Linux) | Keepalive probes shuru hone se pehle idle interval set karna |
+| `IPPROTO_TCP` | `TCP_KEEPINTVL` | Positive integer (seconds; Linux) | Keepalive probes ke beech ka interval set karna |
+| `IPPROTO_TCP` | `TCP_KEEPCNT` | Positive integer (Linux) | Failed keepalive probes ki maximum limit set karna |
+| `IPPROTO_TCP` | `TCP_USER_TIMEOUT` | Non-negative integer (milliseconds; Linux) | Transmitted data ke unacknowledged rehne ki maximum duration set karna |
+| `IPPROTO_IP` | `IP_TTL` | `1–255` (IPv4) | IPv4 packets ki hop limit set karna |
+| `IPPROTO_IP` | `IP_TOS` | `0–255` (8-bit field) | IPv4 traffic-class aur DSCP/ECN-related marking set karna |
+| `IPPROTO_IPV6` | `IPV6_V6ONLY` | `0` = Dual-stack allowed, `1` = IPv6-only | IPv6 socket par IPv4-mapped connections ko control karna |
+
+### Important Notes
+
+- **Boolean options:** Aam taur par `0` se disable aur `1` se enable kiye jaate hain.
+- **Buffer sizes:** `SO_RCVBUF` aur `SO_SNDBUF` bytes mein configure hote hain. OS in values ko adjust kar sakta hai.
+- **Timeouts:** `SO_RCVTIMEO` aur `SO_SNDTIMEO` ki value representation platform-dependent hoti hai; Linux par aam taur par `struct timeval` use hota hai.
+- **TCP keepalive:** `TCP_KEEPIDLE`, `TCP_KEEPINTVL` aur `TCP_KEEPCNT` Linux-specific naming hai; doosre OS par equivalent options alag ho sakte hain.
+- **IPv4 TTL:** Technically valid field range `0–255` hai, lekin forwarding ke liye practical TTL aam taur par `1–255` hota hai.
+- **Configuration:** `setsockopt()` se option set aur `getsockopt()` se option read kiya jata hai. Exact accepted values aur behavior OS aur socket type par depend karte hain.
+
+
+
 
 
 
