@@ -30,7 +30,7 @@ typedef struct{
     struct sockaddr_in address;
     int socket_fd;
     int uid;
-    char name[NAME_LEN]
+    char name[NAME_LEN];
 } client_t;
 
 client_t* clients[MAX_CLIENTS];
@@ -44,8 +44,8 @@ void str_overwrite_stdout(){
 
 void str_trim_lf(char* arr,int length){
  for(int i=0;i<length;i++){
-    if(arr[i]=="\n"){
-        arr[i]="\0";
+    if(arr[i]=='\n'){
+        arr[i]='\0';
         break;
     }   
  }
@@ -70,7 +70,7 @@ void queue_remove(int uid){
     for(int i=0;i<MAX_CLIENTS;i++){
      if(clients[i]){
         if(clients[i]->uid==uid){
-          clients[i]==NULL;
+          clients[i]=NULL;
           break;  
         }
      }   
@@ -99,6 +99,81 @@ void send_message(char* s,int uid){
 
 }
 
+void* handle_client(void* arg){
+
+    char buffer[BUFFER_SIZE];
+    char name[NAME_LEN];
+    int leave_flag=0;
+    client_count++;
+
+    client_t* cli=(client_t*)arg;
+    ssize_t recv_byte=recv(cli->socket_fd,name,NAME_LEN,0);
+    if(recv_byte<= 0 || strlen(name)<2 || strlen(name)>=NAME_LEN-1){
+        printf("Enter the name correctly\n");
+        leave_flag=1;
+
+    }else{
+          strcpy(cli->name,name);
+          sprintf(buffer,"%s has joined\n",cli->name);
+          printf("%s",buffer);
+          send_message(buffer,cli->uid);
+
+
+    }
+
+    bzero(buffer,BUFFER_SIZE);
+
+    while(1){
+        if(leave_flag){
+            break;
+        }
+
+        int recieve_byte=recv(cli->socket_fd,buffer,BUFFER_SIZE,0);
+        if (recieve_byte>0){
+            str_trim_lf(buffer,strlen(buffer));
+            if(strcmp(buffer,"exit")==0){
+                leave_flag = 1;
+                snprintf(buffer, sizeof(buffer),
+                        "%s has left\n", cli->name);
+                send_message(buffer, cli->uid);
+                printf("%s", buffer);
+                break;
+            }
+
+            if(strlen(buffer)>0){
+                send_message(buffer,cli->uid);
+                str_trim_lf(buffer,strlen(buffer));
+                printf("%s -> %s",buffer,cli->name);
+            }
+        }else if(recieve_byte==0 || (strcmp(buffer,"exit")==0)){
+            bzero(buffer,BUFFER_SIZE);
+            sprintf(buffer,"%s has left \n",cli->name);
+            printf("%s",buffer);
+            send_message(buffer,cli->uid);
+            leave_flag=1;
+
+        }else{
+            printf("Error: -1\n");
+            leave_flag=1;
+
+        }
+
+        bzero(buffer,BUFFER_SIZE);  
+    }
+    
+    close(cli->socket_fd);
+    queue_remove(cli->uid);
+
+    free(cli);
+
+    client_count--;
+
+    pthread_detach(pthread_self());
+
+    return NULL;
+
+}
+
 int main(int argCount,char* argValue[]){
 
     if(argCount!=2){
@@ -111,6 +186,7 @@ int main(int argCount,char* argValue[]){
 
     int option=1;
     int server_socket_fd=0,connection_fd=0;
+    pthread_t tid;
 
     struct sockaddr_in serverAddr;
     struct sockaddr_in clientAddr;
@@ -169,6 +245,21 @@ int main(int argCount,char* argValue[]){
            close(connection_fd);
            continue;
         }
+
+        //Client settings
+        client_t* cli=(client_t*)malloc(sizeof(client_t));
+        cli->address=clientAddr;
+        cli->socket_fd=connection_fd;
+        cli->uid=uid++;
+
+        //add client to queue
+        queue_add(cli);
+
+        pthread_create(&tid,NULL,&handle_client,(void*)cli);
+
+        //reduce cpu usages
+        sleep(1);
+
 
     }
 

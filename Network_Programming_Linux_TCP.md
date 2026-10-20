@@ -1010,3 +1010,460 @@ int main(int argCount, char* argValue[])
 
 
 # Example Programs
+- [Chat Room gapsap](#chat-room-gapsap)
+## Chat Room gapsap
+- I have use native POSIX API using c programming not c++
+- `server.c`
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+
+#include<sys/socket.h>
+#include<sys/types.h>
+#include<netinet/in.h>
+#include<arpa/inet.h>
+#include<unistd.h>
+
+#include<errno.h>
+#include<pthread.h>
+#include<signal.h>
+#include <stdatomic.h>
+
+#define MAX_CLIENTS 100
+#define BUFFER_SIZE 2048
+#define NAME_LEN 32
+static _Atomic unsigned int client_count=0;
+static int uid=10;
+void print_ip_addr(struct sockaddr_in addr){
+    char ip[INET_ADDRSTRLEN];
+
+    inet_ntop(AF_INET,&addr.sin_addr,ip,sizeof(ip));
+    
+    printf("%s\n",ip);
+}
+
+typedef struct{
+    struct sockaddr_in address;
+    int socket_fd;
+    int uid;
+    char name[NAME_LEN];
+} client_t;
+
+client_t* clients[MAX_CLIENTS];
+
+pthread_mutex_t clients_mutex=PTHREAD_MUTEX_INITIALIZER;
+
+void str_overwrite_stdout(){
+    printf("\r%s","> ");
+    fflush(stdout);
+}
+
+void str_trim_lf(char* arr,int length){
+ for(int i=0;i<length;i++){
+    if(arr[i]=='\n'){
+        arr[i]='\0';
+        break;
+    }   
+ }
+    
+}
+
+void queue_add(client_t* cl){
+    pthread_mutex_lock(&clients_mutex);
+        for(int i=0;i<MAX_CLIENTS;i++){
+            if(!clients[i]){
+                clients[i]=cl;
+                break;
+            }
+        }
+
+    pthread_mutex_unlock(&clients_mutex);
+}
+
+void queue_remove(int uid){
+    pthread_mutex_lock(&clients_mutex);
+
+    for(int i=0;i<MAX_CLIENTS;i++){
+     if(clients[i]){
+        if(clients[i]->uid==uid){
+          clients[i]=NULL;
+          break;  
+        }
+     }   
+    }
+
+    pthread_mutex_unlock(&clients_mutex);
+}
+
+void send_message(char* s,int uid){
+    pthread_mutex_lock(&clients_mutex);
+
+    for(int i=0;i<MAX_CLIENTS;i++){
+        if(clients[i]){
+            if(clients[i]->uid!=uid){
+                if(write(clients[i]->socket_fd,s,strlen(s))<0){
+                    printf("Error: write to descriptor failed\n");
+                    break;
+                }
+
+            }
+        }
+    }
+
+
+    pthread_mutex_unlock(&clients_mutex);
+
+}
+
+void* handle_client(void* arg){
+
+    char buffer[BUFFER_SIZE];
+    char name[NAME_LEN];
+    int leave_flag=0;
+    client_count++;
+
+    client_t* cli=(client_t*)arg;
+    ssize_t recv_byte=recv(cli->socket_fd,name,NAME_LEN,0);
+    if(recv_byte<= 0 || strlen(name)<2 || strlen(name)>=NAME_LEN-1){
+        printf("Enter the name correctly\n");
+        leave_flag=1;
+
+    }else{
+          strcpy(cli->name,name);
+          sprintf(buffer,"%s has joined\n",cli->name);
+          printf("%s",buffer);
+          send_message(buffer,cli->uid);
+
+
+    }
+
+    bzero(buffer,BUFFER_SIZE);
+
+    while(1){
+        if(leave_flag){
+            break;
+        }
+
+        int recieve_byte=recv(cli->socket_fd,buffer,BUFFER_SIZE,0);
+        if (recieve_byte>0){
+            str_trim_lf(buffer,strlen(buffer));
+            if(strcmp(buffer,"exit")==0){
+                leave_flag = 1;
+                snprintf(buffer, sizeof(buffer),
+                        "%s has left\n", cli->name);
+                send_message(buffer, cli->uid);
+                printf("%s", buffer);
+                break;
+            }
+
+            if(strlen(buffer)>0){
+                send_message(buffer,cli->uid);
+                str_trim_lf(buffer,strlen(buffer));
+                printf("%s -> %s",buffer,cli->name);
+            }
+        }else if(recieve_byte==0 || (strcmp(buffer,"exit")==0)){
+            bzero(buffer,BUFFER_SIZE);
+            sprintf(buffer,"%s has left \n",cli->name);
+            printf("%s",buffer);
+            send_message(buffer,cli->uid);
+            leave_flag=1;
+
+        }else{
+            printf("Error: -1\n");
+            leave_flag=1;
+
+        }
+
+        bzero(buffer,BUFFER_SIZE);  
+    }
+    
+    close(cli->socket_fd);
+    queue_remove(cli->uid);
+
+    free(cli);
+
+    client_count--;
+
+    pthread_detach(pthread_self());
+
+    return NULL;
+
+}
+
+int main(int argCount,char* argValue[]){
+
+    if(argCount!=2){
+        printf("Usage: %s <port>\n",argValue[0]);
+        return EXIT_FAILURE;
+    }
+
+    const char* ip="127.0.0.1";
+    int port=atoi(argValue[1]);
+
+    int option=1;
+    int server_socket_fd=0,connection_fd=0;
+    pthread_t tid;
+
+    struct sockaddr_in serverAddr;
+    struct sockaddr_in clientAddr;
+
+    //socket settings
+    server_socket_fd=socket(AF_INET,SOCK_STREAM,0);
+
+    serverAddr.sin_family=AF_INET;
+    serverAddr.sin_addr.s_addr=inet_addr(ip);
+    serverAddr.sin_port=htons(port);
+
+    // Signals
+    signal(SIGPIPE,SIG_IGN);
+
+    // socket configuration
+    int set_socket_opt=setsockopt(server_socket_fd,SOL_SOCKET,(SO_REUSEPORT | SO_REUSEADDR),(char*)&option,sizeof(option));
+    if(set_socket_opt<0){
+       printf("ERROR: while setting up setsockopt()\n"); 
+       return EXIT_FAILURE;
+    }
+
+    //binding
+    int bind_socket=bind(server_socket_fd,(struct sockaddr*)&serverAddr,sizeof(serverAddr));
+    if(bind_socket<0){
+        printf("Error: while binding\n");
+        return EXIT_FAILURE;
+    }
+
+    //listen
+    int listen_socket=listen(server_socket_fd,10);
+    if(listen_socket<0){
+       printf("Error: while listing...\n");
+       return EXIT_FAILURE;
+    }
+
+    printf("=== WELLCOME TO GAPSAP===\n");
+
+    while(1){
+        socklen_t client_addr_len=sizeof(clientAddr);
+
+        connection_fd=accept(server_socket_fd,(struct sockaddr*)&clientAddr,&client_addr_len);
+        if(connection_fd<0){
+            printf("Error: while accepting client...\n");
+            return EXIT_FAILURE;
+        }
+
+        if(connection_fd>=0){
+            printf("Client successfully connected: ");
+            print_ip_addr(clientAddr);
+        }
+        //check for MAx client
+        if((client_count+1)==MAX_CLIENTS){
+           printf("Maximum clients connected, connection Reject\n");
+           
+           print_ip_addr(clientAddr);
+           close(connection_fd);
+           continue;
+        }
+
+        //Client settings
+        client_t* cli=(client_t*)malloc(sizeof(client_t));
+        cli->address=clientAddr;
+        cli->socket_fd=connection_fd;
+        cli->uid=uid++;
+
+        //add client to queue
+        queue_add(cli);
+
+        pthread_create(&tid,NULL,&handle_client,(void*)cli);
+
+        //reduce cpu usages
+        sleep(1);
+
+
+    }
+
+
+
+
+
+
+
+
+
+
+    return EXIT_SUCCESS;
+}
+
+
+
+
+```
+- `client.c`
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <signal.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <pthread.h>
+
+#define LENGTH 2048
+
+// Global variables
+volatile sig_atomic_t flag = 0;
+int sockfd = 0;
+char name[32];
+
+void str_overwrite_stdout()
+{
+    printf("\n%s", "> ");
+    fflush(stdout);
+}
+
+void str_trim_lf(char *arr, int length)
+{
+    int i;
+    for (i = 0; i < length; i++)
+    { // trim \n
+        if (arr[i] == '\n')
+        {
+            arr[i] = '\0';
+            break;
+        }
+    }
+}
+
+void catch_ctrl_c_and_exit(int sig)
+{
+    flag = 1;
+}
+
+void send_msg_handler()
+{
+    char message[LENGTH] = {};
+    char buffer[LENGTH + 32] = {};
+
+    while (1)
+    {
+        str_overwrite_stdout();
+        fgets(message, LENGTH, stdin);
+        str_trim_lf(message, LENGTH);
+
+        if (strcmp(message, "exit") == 0)
+        {
+            break;
+        }
+        else
+        {
+            sprintf(buffer, "%s: %s\n", name, message);
+            send(sockfd, buffer, strlen(buffer), 0);
+        }
+
+        bzero(message, LENGTH);
+        bzero(buffer, LENGTH + 32);
+    }
+    catch_ctrl_c_and_exit(2);
+}
+
+void recv_msg_handler()
+{
+    char message[LENGTH] = {};
+    while (1)
+    {
+
+        int receive = recv(sockfd, message, LENGTH, 0);
+
+        if (receive > 0)
+        {
+            message[receive] = '\0';
+            printf("\r%s", message);
+            str_overwrite_stdout();
+
+        }
+        else if (receive == 0)
+        {
+            break;
+        }
+        else
+        {
+            // -1
+        }
+
+        memset(message, 0, sizeof(message));
+    }
+}
+
+int main(int argc, char **argv)
+{
+    if (argc != 2)
+    {
+        printf("Usage: %s <port>\n", argv[0]);
+        return EXIT_FAILURE;
+    }
+
+    char *ip = "127.0.0.1";
+    int port = atoi(argv[1]);
+
+    signal(SIGINT, catch_ctrl_c_and_exit);
+
+    printf("Please enter your name: ");
+    fgets(name, 32, stdin);
+    str_trim_lf(name, strlen(name));
+
+    if (strlen(name) > 32 || strlen(name) < 2)
+    {
+        printf("Name must be less than 30 and more than 2 characters.\n");
+        return EXIT_FAILURE;
+    }
+
+    struct sockaddr_in server_addr;
+
+    // Socket settings
+    sockfd = socket(AF_INET, SOCK_STREAM, 0);
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_addr.s_addr = inet_addr(ip);
+    server_addr.sin_port = htons(port);
+
+    // Connect to Server
+    int err = connect(sockfd, (struct sockaddr *)&server_addr, sizeof(server_addr));
+    if (err == -1)
+    {
+        printf("ERROR: connect\n");
+        return EXIT_FAILURE;
+    }
+
+    // Send name
+    send(sockfd, name, 32, 0);
+
+    printf("=== WELCOME TO THE CHATROOM ===\n");
+
+    pthread_t send_msg_thread;
+    if (pthread_create(&send_msg_thread, NULL, (void *)send_msg_handler, NULL) != 0)
+    {
+        printf("ERROR: pthread\n");
+        return EXIT_FAILURE;
+    }
+
+    pthread_t recv_msg_thread;
+    if (pthread_create(&recv_msg_thread, NULL, (void *)recv_msg_handler, NULL) != 0)
+    {
+        printf("ERROR: pthread\n");
+        return EXIT_FAILURE;
+    }
+
+    while (1)
+    {
+        if (flag)
+        {
+            printf("\nBye\n");
+            break;
+        }
+    }
+
+    close(sockfd);
+
+    return EXIT_SUCCESS;
+}
+```
