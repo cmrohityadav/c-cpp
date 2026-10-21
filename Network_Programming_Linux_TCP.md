@@ -6,7 +6,8 @@
 - [Basic TCP server](#basic-tcp-server)
 - [Blocking vs Non-blocking socket](#blocking-vs-non-blocking-socket)
 - [sendAll and recieveAll](#sendall-and-recieveall)
-- [socket configuration]()
+- [socket configuration](#socket-configuration)
+- [Message Framing](#message-framing)
 - [epoll](#epoll)
 ## Socket (socket descriptor)
 - Socket ek endpoint hota hai jiske through do programs network ke upar baat karte hain
@@ -1152,7 +1153,68 @@ IPPROTO_UDP — UDP-specific settings, platform support ke hisaab se
 - **Configuration:** `setsockopt()` se option set aur `getsockopt()` se option read kiya jata hai. Exact accepted values aur behavior OS aur socket type par depend karte hain.
 
 
+## Message Framing
+### Fixed-Length Framing
+- Har message ka size fixed hota hai.
 
+- Example: Har packet 64 bytes ka hai.
+
+- [64 bytes] [64 bytes] [64 bytes]
+
+### Delimiter-Based / Sentinel-Based Framing
+
+- Special character message ka end batata hai.
+
+- Example: Newline \n, pipe |, null byte \0.
+
+- BUY|SELL|CANCEL|
+
+| Delimiter | Typical use |
+|---|---|
+| \n | Line-based text protocols |
+| \r\n | HTTP headers, SMTP lines |
+| \0 | Null-terminated strings |
+| | | Custom text protocols |
+| ; | Custom record formats |
+| 0x7E | Kuch protocols mein frame boundary, jaise HDLC-like framing |
+
+
+### Length-Prefix Framing
+
+- Message ke start mein payload ki length hoti hai.
+
+- Example: [0005][HELLO] — 5-byte payload.
+
+- [Length][Payload]
+```
+┌──────────────┬────────────────┐
+│ Length       │ Payload        │
+│ 4 bytes      │ N bytes        │
+└──────────────┴────────────────┘
+```
+### Header-Based / Structured Framing
+- Header mein length, message type, flags, version aur doosri metadata hoti hain.
+
+- Example: [Header][Payload]
+```
+┌────────┬────────┬─────────┬──────────┬──────────┐
+│ Magic  │ Version│ Type    │ Length   │ Payload  │
+│ 2 byte │ 1 byte │ 1 byte  │ 4 bytes  │ N bytes  │
+└────────┴────────┴─────────┴──────────┴──────────┘
+
+```
+
+### Hybrid Framing
+
+- Multiple framing techniques combine hoti hain.
+
+- Example: Fixed magic bytes + length prefix + payload + checksum.
+
+### Self-Describing / Serialization-Based Framing
+
+- Encoding format se structure aur kabhi-kabhi message boundaries identify hoti hain.
+
+- Examples: JSON with a delimiter, CBOR, Protocol Buffers with length-delimited records
 
 
 
