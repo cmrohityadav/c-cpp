@@ -395,6 +395,38 @@ if (n == 0) {
 ```
 
 
+## close() vs shutdown()
+### close(sockfd)
+- Yeh socket file descriptor ka reference count decrement kar deta hai
+- Agar reference count 0 ho gaya, toh OS socket ko destroy kar deta hai, dono directions (read aur write) ek sath band ho jati hain, aur TCP ka FIN packet peer ko bhej diya jata hai
+- **Problem**: Isme TCP Half-Close ka control nahi milta. Agar tumne close() kiya, toh samne wala agar kuch bhej raha ho ya tumne abhi tak kuch receive na kiya ho, toh data abrupt tareeke se drop ho sakta hai
+
+### shutdown(sockfd, how)
+- Yeh socket ko destroy nahi karta, balki specific direction me communication band karta hai
+- **SHUT_RD** (0): Further receives disable kar deta hai (aur read buffer ko clear kar deta hai)
+- **SHUT_WR** (1): Further sends disable kar deta hai aur peer ko FIN packet bhej deta hai (batata hai ki "Mera kaam khatam, maine sara data bhej diya"). Par tum abhi bhi peer se data recv kar sakte ho!
+
+- **SHUT_RDWR** (2): Dono read aur write band kar deta hai.
+
+```cpp
+#include <iostream>
+#include <unistd.h>
+#include <sys/socket.h>
+
+int main() {
+    int sockfd = /* connected socket fd */;
+
+    if (shutdown(sockfd, SHUT_WR) == -1) {
+        perror("shutdown");
+        return 1;
+    }
+
+    close(sockfd);
+    return 0;
+}
+```
+- 0 : Success, -1 : Fail
+- SHUT_RD, SHUT_WR aur SHUT_RDWR Linux/POSIX socket API ke constants hain
 
 ## EPOLL
 - Bell system ko kaam karta hua dekho
