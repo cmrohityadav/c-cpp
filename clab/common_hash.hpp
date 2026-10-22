@@ -11,6 +11,8 @@
 #define NAME 20
 #define PASSWORD 40
 #define MESSAGE 50
+#define MAXMSGSIZE 5000
+
 
 
 //enums

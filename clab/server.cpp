@@ -11,106 +11,49 @@
 #include <network_utils.hpp>
 #include <common_hash.hpp>
 #include <common_struct.hpp>
+#include<process_request.hpp>
 
-Signup_res process_signup(const Signup_req &req)
-{
-    Signup_res res;
-    res.header.transcode = SIGNUP_RES;
-    res.header.length = sizeof(Signup_res) - sizeof(Header);
 
-    std::cout << "Processing Signup for:\n";
-    std::cout << " - Name: " << req.name << "\n";
-    std::cout << " - Username: " << req.username << "\n";
-
-    std::strncpy(res.name,req.name,sizeof(res.name)-1);
-    res.name[sizeof(res.name)-1]='\0';
-
-    std::strncpy(res.username,req.username,sizeof(res.username)-1);
-    res.username[sizeof(res.username)-1]='\0';
-
-    // hardcoding
-    if(std::strcmp(req.name,"rohit")==0){
-        res.login_status = LOGIN_STATUS::SUCCESS;
-        std::strncpy(res.msg, "Signup Successful! You can login now.", sizeof(res.msg) - 1);
-    }else{
-        res.login_status = LOGIN_STATUS::USER_NOT_FOUND;
-        std::strncpy(res.msg, "Signup Fail! User Does not exits", sizeof(res.msg) - 1);
-    }
-       
-    
-   
-
-    res.msg[sizeof(res.msg) - 1] = '\0'; // Safe null-termination
-    return res;
-}
 
 void handle_client(int client_socket_fd)
 {
     printf("Client handler thread started for socket: %d\n", client_socket_fd);
 
+    
+    char request_buffer[MAXMSGSIZE];
+    char response_buffer[MAXMSGSIZE];
+    const int packetSize = MAXMSGSIZE;
+
     while (true)
-    {
-        Header header;
+    {   
+        if (!recvAll(client_socket_fd, request_buffer, sizeof(Header))) {
+            printf("Client disconnected or error reading header.\n");
+            break; 
+        }
 
-        //  Header receive karo
-        if (!recvAll(client_socket_fd,&header, sizeof(Header)))
-        {
-            printf("Client disconnected or error reading header on socket: %d\n", client_socket_fd);
+        Header header = *(Header*)request_buffer;
+        int payload_size = header.length;
+
+        if (sizeof(Header) + payload_size > packetSize) {
+
+            printf("Error: Packet size (%lu) exceeds buffer limit (5000)!\n", sizeof(Header) + payload_size);
             break;
         }
 
-        // Login Request Check
-        if (header.transcode == LOGIN_REQ)
-        {
-            Login_req req;
-            req.header = header;
-
-            size_t payload_size = sizeof(Login_req) - sizeof(Header);
-            if (!recvAll(client_socket_fd, &req.username, payload_size))
-            {
-                break;
-            }
-
-            // Login process call (jo pehle banaya tha)
-            // Login_res res = process_login(req);
-            // sendAll(client_socket_fd, &res, sizeof(Login_res));
-            // if (res.login_status == LOGIN_STATUS::FAIL) break;
+        if (!recvAll(client_socket_fd, request_buffer + sizeof(Header), payload_size)) {
+            printf("Error: while receiving payload\n");
+            break; 
         }
-        // Signup Request Check
-        else if (header.transcode == SIGNUP_REQ)
-        {
-            
-            if (header.length != (sizeof(Signup_req) - sizeof(Header)))
-            {
-                std::cout << "Error: Payload length mismatch!\n";
-                break;
-            }
 
-            Signup_req req;
-            req.header = header;
-
-            
-            if (!recvAll(client_socket_fd, &req.name, header.length))
-            {
-                printf("Error receiving signup payload.\n");
-                break;
-            }
-
-            // Signup process call karo
-            Signup_res res = process_signup(req);
-
-            // Response send karo
-            if (!sendAll(client_socket_fd, &res, sizeof(Signup_res)))
-            {
-                printf("Failed to send signup response.\n");
+        int response_size=processRequest(request_buffer,response_buffer);
+        if (response_size > 0) {
+            if (!sendAll(client_socket_fd, response_buffer, response_size)) {
+                printf("Failed to send response.\n");
                 break;
             }
         }
-        else
-        {
-            std::cout << "Unknown packet type received.\n";
-            break;
-        }
+        
+
     }
 
     close(client_socket_fd);
