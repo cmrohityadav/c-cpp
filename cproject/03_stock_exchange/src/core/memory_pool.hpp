@@ -9,6 +9,8 @@ namespace exchange::core{
     class MemoryPool{
         static_assert(N>0,"MemoryPool capacity must be positive");
         static_assert(sizeof(T)>=sizeof(void *),"Object storage must fit an instrusive free List pointer");
-        
+
     };
 }
+
+3:22:50

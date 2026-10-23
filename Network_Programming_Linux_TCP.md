@@ -428,9 +428,6 @@ int main() {
 - 0 : Success, -1 : Fail
 - SHUT_RD, SHUT_WR aur SHUT_RDWR Linux/POSIX socket API ke constants hain
 
-## EPOLL
-- Bell system ko kaam karta hua dekho
-
 
 
 ## STORY
@@ -865,7 +862,7 @@ close()
 # define PORT 8080
 
 int main(){
-
+    
     int serverfd, clientfd;;
     struct sockaddr_in serverAddr, clientAddr;
     memset(&serverAddr,0,sizeof(serverAddr));
@@ -908,7 +905,7 @@ int main(){
 #define PORT 8080
 
 int main(){
-
+    
     int clientSocket;
     struct sockaddr_in serverAddr;
     char buffer[1024];
@@ -967,7 +964,7 @@ nc  -l 8080
 
 int main(int argCount, char* argValue[])
 {
-
+    
     if (argCount!=2)
     {
         std::cout<<"Invalid command\nEnter Proper Port\n\n"<<std::endl;
@@ -1249,6 +1246,14 @@ IPPROTO_UDP — UDP-specific settings, platform support ke hisaab se
 - Examples: JSON with a delimiter, CBOR, Protocol Buffers with length-delimited records
 
 
+## EPOLL
+- Bell system ko kaam karta hua dekho
+- epoll_create1(0): ek epoll ka instance banata hai jisme ek table hoti event ki
+- aur uska file descriptor return karta hai
+- epoll_ctl(epoll_fd, EPOLL_CTL_ADD, client_fd, &ev): Kernel ko batata hai ki is specific client socket par nazar rakho (e.g., EPOLLIN matlab read events ke liye monitor karo).
+- epoll_wait(epoll_fd, events, max_events, timeout): Yeh thread ko tab tak roke rakhta hai jab tak kisi bhi registered socket par koi action na ho jaye. Jaise hi data aata hai, yeh un sockets ki list return kar deta hai jinke upar kaam karna hai
+- LT vs ET
+    
 
 # Example Programs
 - [Chat Room gapsap](#chat-room-gapsap)
