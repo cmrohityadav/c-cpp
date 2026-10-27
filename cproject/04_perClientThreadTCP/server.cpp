@@ -12,7 +12,17 @@
 #include <common_hash.hpp>
 #include <common_struct.hpp>
 #include<process_request.hpp>
+#include<unordered_map>
+#include<fstream>
+#include<mutex>
+#include<vector>
 
+std::unordered_map<int32_t,ClientDetail>g_map_clients_detail;
+int32_t g_userid=1;
+
+using  UserMap=std::unordered_map<std::string,std::string>;
+UserMap g_map_user_password;
+std::mutex mtx_user_detail;
 
 
 void handle_client(int client_socket_fd)
@@ -59,6 +69,96 @@ void handle_client(int client_socket_fd)
     close(client_socket_fd);
     printf("Thread exiting and socket closed for: %d\n", client_socket_fd);
 }
+
+bool loadUsersFile(std::string& userfile,UserMap& usermap){
+      
+    std::ifstream file(userfile);
+    
+    if(!file.is_open()){
+        printf("%s","could not open file for reading\n");
+        return false;
+    }
+
+    std::string line;
+
+    //reading heading here username,password
+    if(!getline(file,line)){
+        return true;// file is empty
+    }
+
+    //reading content 
+    while(getline(file,line)){
+        size_t comma=line.find(',');
+        
+        if(comma==std::string::npos){
+            continue;
+        }
+
+        std::string username=line.substr(0,comma);
+        std::string password=line.substr(comma+1);
+
+        {
+            std::lock_guard<std::mutex>lck(mtx_user_detail);
+            usermap[username]=password;
+            
+        }
+
+    }
+
+
+    if(file.bad()){
+        printf("%s","Erro while reading file\n");
+        return false;
+    }
+
+    return true;
+
+}
+
+void save_in_file_from_map(std::string filename){
+    
+    UserMap snapshotUserPass;
+
+    {
+        
+        std::lock_guard<std::mutex>lck(mtx_user_detail);
+        snapshotUserPass=g_map_user_password;
+    }
+
+    std::ofstream file(filename);
+
+    if(!file.is_open()){
+        printf("%s", "Could not open file for writing\n");
+        return;
+    }
+    file<<"username,password\n";
+
+    
+    auto itr=snapshotUserPass.begin();
+    while(itr!=snapshotUserPass.end()){
+        file<<itr->first<<','<<itr->second<<'\n';
+        itr++;
+    }
+
+    file.flush();
+
+    if(!file){
+        printf("%s","Error while writing to file");
+        return;
+    }
+
+    file.close();
+
+    if(file.fail()){
+        printf("%s","Error while clsosing");
+        return;
+    }
+
+    return;
+
+}
+
+
 int main(int arg_count, char *agr_value[])
 {
 
@@ -101,7 +201,18 @@ int main(int arg_count, char *agr_value[])
 
     printf("Server is listening on port %d...\n", port);
 
-    while (1)
+    std::string filename= USERPASSFILENAME;
+
+    bool isFileLoaded=loadUsersFile(filename,g_map_user_password);
+    if(isFileLoaded){
+        printf("%s", "file loaded succesfully\n");
+    }else{
+        printf("%s", "file not loaded  succesfully\n");
+    }
+
+
+    std::vector<std::thread> workers;   
+    while (true)
     {
         sockaddr_in client_addr{};
         socklen_t client_addr_len = sizeof(client_addr);
@@ -111,14 +222,28 @@ int main(int arg_count, char *agr_value[])
         {
             printf("Error: Accept failed\n");
             close(server_fd);
-            return EXIT_FAILURE;
+            break;
         }
 
         printf("Client connected successfully!\n");
 
-        std::thread threadObject(handle_client, client_socket);
-        threadObject.detach();
+        workers.emplace_back(handle_client,client_socket);
     }
 
+    printf("%s","Shutdown requested...\n");
+
+    close(server_fd);
+
+    for (std::thread& worker : workers)
+    {
+        if (worker.joinable())
+        {
+            worker.join();
+        }
+    }
+
+    save_in_file_from_map(filename);
+    
+    std::cout << "Server shutdown complete.\n";
     return EXIT_SUCCESS;
 }

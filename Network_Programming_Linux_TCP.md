@@ -1250,10 +1250,14 @@ IPPROTO_UDP — UDP-specific settings, platform support ke hisaab se
 - Bell system ko kaam karta hua dekho
 - epoll_create1(0): ek epoll ka instance banata hai jisme ek table hoti event ki
 - aur uska file descriptor return karta hai
+
 - epoll_ctl(epoll_fd, EPOLL_CTL_ADD, client_fd, &ev): Kernel ko batata hai ki is specific client socket par nazar rakho (e.g., EPOLLIN matlab read events ke liye monitor karo).
+
 - epoll_wait(epoll_fd, events, max_events, timeout): Yeh thread ko tab tak roke rakhta hai jab tak kisi bhi registered socket par koi action na ho jaye. Jaise hi data aata hai, yeh un sockets ki list return kar deta hai jinke upar kaam karna hai
+
 - LT vs ET
-    
+
+-    
 
 # Example Programs
 - [Chat Room gapsap](#chat-room-gapsap)

@@ -10,6 +10,13 @@ struct Header
     uint32_t length;
 };
 
+struct ClientDetail{
+    int32_t userid;
+    char username[USERNAME];
+    bool isLoggedIn;
+    int32_t clientfd;
+};
+
 struct Signup_req
 {
     Header header;

@@ -13,7 +13,7 @@
 #define MESSAGE 50
 #define MAXMSGSIZE 5000
 
-
+#define USERPASSFILENAME "userpass.txt"
 
 //enums
 enum class LOGIN_STATUS:uint16_t{
