@@ -16,6 +16,7 @@
 #include<fstream>
 #include<mutex>
 #include<vector>
+#include<csignal>
 
 std::unordered_map<int32_t,ClientDetail>g_map_clients_detail;
 int32_t g_userid=1;
@@ -36,6 +37,8 @@ void handle_client(int client_socket_fd)
 
     while (true)
     {   
+        memset(request_buffer,0,MAXMSGSIZE);
+        memset(response_buffer,0,MAXMSGSIZE);
         if (!recvAll(client_socket_fd, request_buffer, sizeof(Header))) {
             printf("Client disconnected or error reading header.\n");
             break; 
@@ -100,7 +103,6 @@ bool loadUsersFile(std::string& userfile,UserMap& usermap){
         {
             std::lock_guard<std::mutex>lck(mtx_user_detail);
             usermap[username]=password;
-            
         }
 
     }
@@ -108,6 +110,44 @@ bool loadUsersFile(std::string& userfile,UserMap& usermap){
 
     if(file.bad()){
         printf("%s","Erro while reading file\n");
+        return false;
+    }
+
+    return true;
+
+}
+
+bool append_in_user_file(std::string username,std::string password){
+
+    std::unique_lock<std::mutex> lck(mtx_user_detail);
+
+    std::string userfilename=USERPASSFILENAME;
+    std::ofstream outfile(userfilename,std::ios::app);
+
+
+    if(!outfile.is_open()){
+        printf("Error: while opening file\n");
+        return false;
+    }
+
+    outfile<<username<<','<<password<<'\n';
+
+    if (!outfile) {
+        std::fprintf(stderr, "Failed to write user record\n");
+        return false;
+    }
+
+    outfile.flush();
+
+    if(!outfile){
+        printf("Error: while writing in file\n");
+        return false;
+    }
+
+    outfile.close();
+
+    if(outfile.fail()){
+        printf("Error: while closing  file\n");
         return false;
     }
 
@@ -159,6 +199,7 @@ void save_in_file_from_map(std::string filename){
 }
 
 
+
 int main(int arg_count, char *agr_value[])
 {
 
@@ -172,6 +213,8 @@ int main(int arg_count, char *agr_value[])
 
     int server_fd;
 
+    signal(SIGPIPE,SIG_IGN);
+
     server_fd = socket(AF_INET, SOCK_STREAM, 0);
     if (server_fd < 0)
     {
@@ -183,6 +226,14 @@ int main(int arg_count, char *agr_value[])
     server_addr.sin_family = AF_INET;
     server_addr.sin_port = htons(port);
     server_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
+
+    int opt = 1;
+
+    if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR,&opt, sizeof(opt)) == -1) {
+            perror("setsockopt SO_REUSEADDR");
+            close(server_fd);
+            return 1;
+    }
 
     int bindValue = bind(server_fd, (struct sockaddr *)&server_addr, sizeof(server_addr));
     if (bindValue < 0)
@@ -226,7 +277,6 @@ int main(int arg_count, char *agr_value[])
         }
 
         printf("Client connected successfully!\n");
-
         workers.emplace_back(handle_client,client_socket);
     }
 
@@ -234,14 +284,13 @@ int main(int arg_count, char *agr_value[])
 
     close(server_fd);
 
-    for (std::thread& worker : workers)
-    {
-        if (worker.joinable())
-        {
+    for(std::thread& worker:workers){
+        if(worker.joinable()){
             worker.join();
         }
     }
 
+    
     save_in_file_from_map(filename);
     
     std::cout << "Server shutdown complete.\n";

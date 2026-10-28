@@ -2,6 +2,7 @@
 #include <sys/socket.h>
 #include <unistd.h>
 #include <cstddef>
+#include<cerrno>
 
 
 inline bool sendAll(int sock, const void* data, size_t total_bytes) {
@@ -9,7 +10,12 @@ inline bool sendAll(int sock, const void* data, size_t total_bytes) {
     size_t bytes_sent = 0;
 
     while (bytes_sent < total_bytes) {
-        ssize_t sent = send(sock, ptr + bytes_sent, total_bytes - bytes_sent, 0);
+        ssize_t sent = send(sock, ptr + bytes_sent, total_bytes - bytes_sent, MSG_NOSIGNAL);
+        
+        if(sent<0 && errno==EINTR){
+            continue;
+        }
+
         if (sent <= 0) {
             
             return false; 
@@ -25,6 +31,10 @@ inline bool recvAll(int sock, void* data, size_t total_bytes) {
 
     while (bytes_received < total_bytes) {
         ssize_t received = recv(sock, ptr + bytes_received, total_bytes - bytes_received, 0);
+        
+        if(received<0 && errno==EINTR){
+            continue;
+        }
         if (received <= 0) {
            
             return false; 
