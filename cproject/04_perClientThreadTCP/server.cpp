@@ -18,7 +18,7 @@
 #include<vector>
 #include<csignal>
 
-std::unordered_map<int32_t,ClientDetail>g_map_clients_detail;
+std::unordered_map<std::string,ClientDetail>g_map_clients_detail;
 int32_t g_userid=1;
 
 using  UserMap=std::unordered_map<std::string,std::string>;
@@ -103,6 +103,9 @@ bool loadUsersFile(std::string& userfile,UserMap& usermap){
         {
             std::lock_guard<std::mutex>lck(mtx_user_detail);
             usermap[username]=password;
+            ClientDetail clientdetail={0};
+            strncpy(clientdetail.username,username.c_str(),sizeof(clientdetail.username)-1);
+            g_map_clients_detail[username]=clientdetail;
         }
 
     }

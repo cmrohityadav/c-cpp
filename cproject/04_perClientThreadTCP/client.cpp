@@ -180,6 +180,9 @@ int main(int arg_count, char *agr_value[])
             } else if (choice == 2) {
                 if (do_login(sock, connection_ok)) {
                     printf("Welcome! Logged in successfully.\n");
+                    while(true){
+                        
+                    }
                     break;
                 }
             } else if (choice == 3) {

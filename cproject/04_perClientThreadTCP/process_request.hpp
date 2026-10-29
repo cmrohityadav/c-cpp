@@ -8,7 +8,7 @@
 #include <mutex>
 #include<fstream>
 
-extern std::unordered_map<int32_t, ClientDetail> g_map_clients_detail;
+extern std::unordered_map<std::string, ClientDetail> g_map_clients_detail;
 extern std::unordered_map<std::string,std::string>g_map_user_password;
 extern std::mutex mtx_user_detail;
 using  UserMap=std::unordered_map<std::string,std::string>;
@@ -77,7 +77,7 @@ Signup_res process_signup(const Signup_req& req)
 
 
 
-    std::lock_guard<std::mutex> lck(mtx_user_detail);
+    std::unique_lock<std::mutex> lck(mtx_user_detail);
     if(g_map_user_password.find(username)!=g_map_user_password.end()){
         copy_field(res.msg,"User Already exist Please check username",sizeof(res.msg));
         res.login_status=LOGIN_STATUS::FAIL;
@@ -92,6 +92,9 @@ Signup_res process_signup(const Signup_req& req)
 
 
     g_map_user_password[username]=password;
+    ClientDetail clientdetail={0};
+    copy_field(clientdetail.username,username,sizeof(clientdetail.username));
+    g_map_clients_detail[username]=clientdetail;
 
     res.login_status = LOGIN_STATUS::SUCCESS;
     copy_field(res.msg, "Signup Successful! You can login now.", sizeof(res.msg));
@@ -100,36 +103,74 @@ Signup_res process_signup(const Signup_req& req)
 
 }
 
-Login_res process_login(const Login_req &req)
+
+
+
+Login_res process_login(Login_req& loginReq)
 {
-    Login_res res{};
-    res.header.transcode = LOGIN_RES;
-    res.header.length = sizeof(Login_res) - sizeof(Header);
+    Login_res objLoginRes={0};
 
-    char username[USERNAME];
-    char password[PASSWORD];
-    copy_field(username, req.username, sizeof(req.username));
-    copy_field(password, req.password, sizeof(req.password));
+    objLoginRes.header.transcode = LOGIN_RES;
+    objLoginRes.header.length =
+        sizeof(Login_res) - sizeof(Header);
 
-    std::cout << "Processing Login for: " << username << "\n";
+    char username[USERNAME]{};
+    char password[PASSWORD]{};
 
-    std::lock_guard<std::mutex> lck(mtx_user_detail);
+    copy_field(username, loginReq.username, sizeof(username));
+    copy_field(password, loginReq.password, sizeof(password));
 
-    UserMap::iterator itr=g_map_user_password.find(username);
-    if(itr==g_map_user_password.end()){
-        res.login_status = LOGIN_STATUS::USER_NOT_FOUND;
-        copy_field(res.msg, "User does not exist, please signup", sizeof(res.msg));
-    }else if(itr->second!=password){
-        res.login_status = LOGIN_STATUS::FAIL;
-        copy_field(res.msg, "Wrong password", sizeof(res.msg));
-    }else{
-        res.login_status = LOGIN_STATUS::SUCCESS;
-        copy_field(res.msg, "Login Successful!", sizeof(res.msg));
+    std::unique_lock<std::mutex> lck(mtx_user_detail);
+
+    auto itr = g_map_user_password.find(username);
+
+    if (itr == g_map_user_password.end())
+    {
+        objLoginRes.login_status = LOGIN_STATUS::USER_NOT_FOUND;
+
+        strncpy(objLoginRes.msg, "User not found. Please signup.",
+                sizeof(objLoginRes.msg) - 1);
+
+        return objLoginRes;
     }
 
-    return res;
-}
+    if (strcmp(password, itr->second.c_str()) != 0)
+    {
+        objLoginRes.login_status = LOGIN_STATUS::FAIL;
 
+        strncpy(objLoginRes.msg, "Wrong password.",
+                sizeof(objLoginRes.msg) - 1);
+
+        return objLoginRes;
+    }
+
+    auto itr_clientdetail = g_map_clients_detail.find(username);
+
+    if (itr_clientdetail != g_map_clients_detail.end())
+    {
+        ClientDetail& client = itr_clientdetail->second;
+
+        if (client.isLoggedIn)
+        {
+            objLoginRes.login_status = LOGIN_STATUS::FAIL;
+
+            strncpy(objLoginRes.msg, "User already logged in.",
+                    sizeof(objLoginRes.msg) - 1);
+
+            return objLoginRes;
+        }
+
+        client.isLoggedIn = true;
+    }
+    
+
+    objLoginRes.login_status = LOGIN_STATUS::SUCCESS;
+
+    strncpy(objLoginRes.msg, "Login successful.",
+            sizeof(objLoginRes.msg) - 1);
+
+    return objLoginRes;
+}
 
 
 int processRequest(const char *buffer, char *response)
@@ -152,6 +193,14 @@ int processRequest(const char *buffer, char *response)
     break;
     case LOGIN_REQ:
     {
+        Login_req* pLoginRequest=(Login_req*)buffer;
+
+        Login_res loginResponse=process_login(*pLoginRequest);
+        std::memcpy(response,&loginResponse,sizeof(Login_res));
+
+        return sizeof(loginResponse);
+
+
     }
     break;
     default:
