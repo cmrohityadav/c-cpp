@@ -33,6 +33,7 @@ void handle_client(int client_socket_fd)
     
     char request_buffer[MAXMSGSIZE];
     char response_buffer[MAXMSGSIZE];
+    char usernameforsocket[USERNAME]={0};
     const int packetSize = MAXMSGSIZE;
 
     while (true)
@@ -59,17 +60,41 @@ void handle_client(int client_socket_fd)
         }
 
         int response_size=processRequest(request_buffer,response_buffer);
+
+        if(header.transcode==LOGIN_REQ && (((Login_res*)response_buffer)->login_status==LOGIN_STATUS::SUCCESS)){
+        
+            std::unique_lock<std::mutex>lck(mtx_user_detail);
+            ClientDetail objClientDetail={0};
+            objClientDetail.clientfd=client_socket_fd;
+            objClientDetail.isLoggedIn=true;
+            strncpy(objClientDetail.username,((Login_req*)request_buffer)->username,sizeof(objClientDetail.username)-1);
+            g_map_clients_detail[objClientDetail.username]=objClientDetail;
+            strncpy(usernameforsocket,objClientDetail.username,sizeof(usernameforsocket)-1);
+        }
+
         if (response_size > 0) {
             if (!sendAll(client_socket_fd, response_buffer, response_size)) {
                 printf("Failed to send response.\n");
                 break;
             }
         }
+
+        
         
 
     }
 
     close(client_socket_fd);
+    {
+        std::lock_guard<std::mutex>lck(mtx_user_detail);
+        
+        auto itr=g_map_clients_detail.find(usernameforsocket);
+        if(itr!=g_map_clients_detail.end()){
+            ClientDetail& cd=itr->second;
+            cd.isLoggedIn=false;
+        }
+    }
+
     printf("Thread exiting and socket closed for: %d\n", client_socket_fd);
 }
 
