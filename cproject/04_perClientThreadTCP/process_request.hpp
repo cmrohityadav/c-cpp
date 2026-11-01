@@ -7,6 +7,7 @@
 #include <unordered_map>
 #include <mutex>
 #include<fstream>
+#include<types.hpp>
 
 extern std::unordered_map<std::string, ClientDetail> g_map_clients_detail;
 extern std::unordered_map<std::string,std::string>g_map_user_password;
@@ -15,6 +16,10 @@ using  UserMap=std::unordered_map<std::string,std::string>;
 extern UserMap g_map_user_password;
 extern int32_t g_userid;
 extern bool append_in_user_file(std::string username,std::string password);
+
+extern TokenByUserNameMap_t g_map_token_by_client;
+extern std::mutex mtx_token;
+// extern TokenDetailMap_t g_map_token_detail;
 
 
 template<size_t N>
@@ -172,6 +177,46 @@ Login_res process_login(Login_req& loginReq)
     return objLoginRes;
 }
 
+AddTokenResponse process_add_token(AddTokenRequest& addTokenReq){
+        AddTokenResponse addtokenRes={0};
+        addtokenRes.header.transcode=ADDTOKEN_RES;
+        addtokenRes.header.length=sizeof(AddTokenResponse)-sizeof(Header);
+
+        char username[USERNAME]={0};
+        strncpy(username,addTokenReq.username,sizeof(username)-1);
+        username[USERNAME-1]='\0';
+
+        {
+            std::lock_guard<std::mutex>lck(mtx_user_detail);
+            auto itr=g_map_clients_detail.find(username);
+            if(itr==g_map_clients_detail.end()){
+                //TODo for security check
+            }
+        }
+
+        // if token already exist
+        // TODO
+        
+        // add token
+        TokenDetail temp_token_detail={0};
+        temp_token_detail.token=addTokenReq.token;
+        strncpy(temp_token_detail.scrip,addTokenReq.scrip,sizeof(temp_token_detail.scrip)-1);
+        strncpy(temp_token_detail.remark,addTokenReq.remark,sizeof(temp_token_detail.remark)-1);
+
+        {
+          std::lock_guard<std::mutex>lck(mtx_token);
+          TokenDetailMap_t map_token_detail;
+          map_token_detail[addTokenReq.token]=temp_token_detail;
+          g_map_token_by_client[username]=map_token_detail;
+
+        }
+
+        addtokenRes.isAddedflag=1;
+        strncpy(addtokenRes.msg,"Token Added sucessfully",MESSAGE-1);
+        addtokenRes.msg[MESSAGE-1]='\0';
+
+        return addtokenRes;
+}
 
 int processRequest(const char *buffer, char *response)
 {
@@ -203,6 +248,16 @@ int processRequest(const char *buffer, char *response)
 
     }
     break;
+    case ADDTOKEN_REQ:
+    {
+        AddTokenRequest* pAddTokenReq=(AddTokenRequest*)buffer;
+
+        AddTokenResponse addTokenRes=process_add_token(*pAddTokenReq);
+        std::memcpy(response,&addTokenRes,sizeof(AddTokenResponse));
+
+        return sizeof(addTokenRes);
+
+    }break;
     default:
         break;
     }

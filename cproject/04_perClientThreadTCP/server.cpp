@@ -17,6 +17,7 @@
 #include<mutex>
 #include<vector>
 #include<csignal>
+#include<types.hpp>
 
 std::unordered_map<std::string,ClientDetail>g_map_clients_detail;
 int32_t g_userid=1;
@@ -25,6 +26,9 @@ using  UserMap=std::unordered_map<std::string,std::string>;
 UserMap g_map_user_password;
 std::mutex mtx_user_detail;
 
+TokenByUserNameMap_t g_map_token_by_client;
+std::mutex mtx_token;
+// TokenDetailMap_t g_map_token_detail;
 
 void handle_client(int client_socket_fd)
 {

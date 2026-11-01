@@ -11,6 +11,7 @@
 #include <common_hash.hpp>
 #include <common_struct.hpp>
 
+char g_username[USERNAME];
 
 void clear_input(){
     int c;
@@ -96,6 +97,7 @@ bool do_login(int sock, bool &connection_ok)
 
     printf("Enter Username: ");
     scanf("%19s", req.username);
+    strncpy(g_username,req.username,sizeof(g_username)-1);
     clear_input();
 
     printf("Enter Password: ");
@@ -124,6 +126,104 @@ bool do_login(int sock, bool &connection_ok)
     return res.login_status == LOGIN_STATUS::SUCCESS;
 }
 
+bool do_add_token(int sock,bool& connection_ok){
+    AddTokenRequest addTokenReq={0};
+    AddTokenResponse addTokenRes={0};
+    addTokenReq.header.transcode=ADDTOKEN_REQ;
+    addTokenReq.header.length=sizeof(addTokenReq)-sizeof(Header);
+
+    
+    strncpy(addTokenReq.username,g_username,USERNAME-1);
+
+    printf("Enter token Number: ");
+    scanf("%d",&addTokenReq.token);
+    clear_input();
+
+    printf("Enter Scrip Name: ");
+    scanf("%14s",addTokenReq.scrip);
+    clear_input();
+
+    printf("Enter Any remark: ");
+    scanf("%49s",addTokenReq.remark);
+    clear_input();
+
+    if(!sendAll(sock,&addTokenReq,sizeof(addTokenReq))){
+        printf("Error: Failed to send addtoken request\n");
+        connection_ok = false;
+        return false;
+        
+    }
+
+    if(!recv_response(sock,ADDTOKEN_RES,&addTokenRes,sizeof(addTokenRes))){
+        printf("Error: Failed to send addtoken request\n");
+        connection_ok = false;
+        return false;
+    }
+
+
+    addTokenRes.msg[MESSAGE-1]='\0';
+
+    std::cout << "\n--- Server Response ---\n";
+    std::cout << "Message: " << addTokenRes.msg << "\n";
+    if(addTokenRes.isAddedflag){
+        std::cout << "Status: " << "Token Added" << "\n";
+        return true;
+    }else{
+        std::cout << "Status: " << "Token NOT  Added" << "\n";
+        return false;
+    }
+
+}
+
+void authenticated_menu(int sock, bool &connection_ok)
+{
+    while (connection_ok)
+    {
+        int choice = 0;
+
+        printf("\n========== WELCOME TO  PORTFOLIO MANAGER ==========\n");
+        printf("1. Check Holdings\n");
+        printf("2. Modify Holding\n");
+        printf("3. Add Token\n");
+        printf("4. Logout\n");
+        printf("Enter choice: ");
+
+        if (scanf("%d", &choice) != 1)
+        {
+            if (feof(stdin))
+                break;
+
+            clear_input();
+            printf("Invalid input!\n");
+            continue;
+        }
+
+        clear_input();
+
+        switch (choice)
+        {
+            case 1:
+                // do_check_holdings(sock, connection_ok);
+                break;
+
+            case 2:
+                // do_modify_holding(sock, connection_ok);
+                break;
+
+            case 3:
+                do_add_token(sock, connection_ok);
+                break;
+
+            case 4:
+                // do_logout(sock, connection_ok);
+                return;
+
+            default:
+                printf("Invalid choice!\n");
+                break;
+        }
+    }
+}
 int main(int arg_count, char *agr_value[])
 {
     if (arg_count != 3)
@@ -180,10 +280,7 @@ int main(int arg_count, char *agr_value[])
             } else if (choice == 2) {
                 if (do_login(sock, connection_ok)) {
                     printf("Welcome! Logged in successfully.\n");
-                    while(true){
-                        
-                    }
-                    break;
+                    authenticated_menu(sock,connection_ok);
                 }
             } else if (choice == 3) {
                 break;

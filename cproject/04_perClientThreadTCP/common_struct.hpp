@@ -48,4 +48,25 @@ struct Login_res
     LOGIN_STATUS login_status;
 };
 
+struct AddTokenRequest{
+    Header header;
+    char username[USERNAME];
+    char scrip[SCRIPSIZE];
+    char remark[MESSAGE];
+    uint32_t token;
+};
+
+struct AddTokenResponse{
+    Header header;
+    uint8_t isAddedflag; //1: added sucessfully , 2: fail to add 
+    char msg[MESSAGE];
+    uint32_t token;
+};
+
+struct TokenDetail{
+    char scrip[SCRIPSIZE];
+    char remark[MESSAGE];
+    uint32_t token;
+};
+
 #pragma pack(pop)
