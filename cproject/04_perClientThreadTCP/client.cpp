@@ -10,6 +10,7 @@
 #include <network_utils.hpp>
 #include <common_hash.hpp>
 #include <common_struct.hpp>
+#include <cmath>
 
 char g_username[USERNAME];
 
@@ -175,6 +176,58 @@ bool do_add_token(int sock,bool& connection_ok){
 
 }
 
+bool add_holding(int sock,bool& connection_ok){
+    AddHoldingRequest objHoldingReq={0};
+    AddHoldingResponse objHoldingRes={0};
+    objHoldingReq.header.transcode=ADD_HOLDING_REQ;
+    objHoldingReq.header.length=sizeof(objHoldingReq)-sizeof(Header);
+
+    
+    strncpy(objHoldingReq.username,g_username,USERNAME-1);
+
+    printf("Enter token Number: ");
+    scanf("%d",&objHoldingReq.token);
+    clear_input();
+
+    printf("Enter Qty: ");
+    scanf("%ld",&objHoldingReq.qty);
+    clear_input();
+
+    printf("Enter Price: ");
+    double price = 0.0;
+
+    scanf("%lf", &price);
+
+    objHoldingReq.price =static_cast<uint64_t>(std::llround(price * objHoldingReq.divisor));
+    clear_input();
+
+    if(!sendAll(sock,&objHoldingReq,sizeof(objHoldingReq))){
+        printf("Error: Failed to send add holding request\n");
+        connection_ok = false;
+        return false;
+        
+    }
+
+    if(!recv_response(sock,ADD_HOLDING_RES,&objHoldingRes,sizeof(objHoldingRes))){
+        printf("Error: Failed to recieve add holding response\n");
+        connection_ok = false;
+        return false;
+    }
+
+
+    objHoldingRes.msg[MESSAGE-1]='\0';
+
+    std::cout << "\n--- Server Response ---\n";
+    std::cout << "Message: " << objHoldingRes.msg << "\n";
+    if(objHoldingRes.isAdded){
+        std::cout << "Status: " << "Holding Added Successfully" << "\n";
+        return true;
+    }else{
+        std::cout << "Status: " << "Holding NOT Added " << "\n";
+        return false;
+    }
+}
+
 void authenticated_menu(int sock, bool &connection_ok)
 {
     while (connection_ok)
@@ -183,9 +236,10 @@ void authenticated_menu(int sock, bool &connection_ok)
 
         printf("\n========== WELCOME TO  PORTFOLIO MANAGER ==========\n");
         printf("1. Check Holdings\n");
-        printf("2. Modify Holding\n");
-        printf("3. Add Token\n");
-        printf("4. Logout\n");
+        printf("2. Add Holdings\n");
+        printf("3. Modify Holding\n");
+        printf("4. Add Token\n");
+        printf("5. Logout\n");
         printf("Enter choice: ");
 
         if (scanf("%d", &choice) != 1)
@@ -205,16 +259,22 @@ void authenticated_menu(int sock, bool &connection_ok)
             case 1:
                 // do_check_holdings(sock, connection_ok);
                 break;
-
             case 2:
+            {
+                //add holding
+                add_holding(sock,connection_ok);
+
+            }break;
+
+            case 3:
                 // do_modify_holding(sock, connection_ok);
                 break;
 
-            case 3:
+            case 4:
                 do_add_token(sock, connection_ok);
                 break;
 
-            case 4:
+            case 5:
                 // do_logout(sock, connection_ok);
                 return;
 

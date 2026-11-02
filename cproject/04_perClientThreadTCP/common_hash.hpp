@@ -14,6 +14,8 @@
 #define HOLDING_TRAILER 1011
 #define MODIFY_HOLDING_REQ 1012
 #define MODIFY_HOLDING_RES 1013
+#define ADD_HOLDING_REQ 1014
+#define ADD_HOLDING_RES 1015
 
 
 // fixex size len
@@ -32,5 +34,6 @@ enum class LOGIN_STATUS:uint16_t{
     FAIL,
     USER_NOT_FOUND
 };
+
 
 

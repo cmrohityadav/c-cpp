@@ -69,4 +69,34 @@ struct TokenDetail{
     uint32_t token;
 };
 
+struct AddHoldingRequest{
+    Header header;
+    char username[USERNAME];
+    uint32_t token;
+    uint64_t qty;
+    uint64_t price;
+    uint8_t divisor=100;
+};
+
+struct AddHoldingResponse{
+    Header header;
+    uint8_t isAdded;
+    char msg[MESSAGE];
+};
+
+struct CheckHoldingRequest{
+    Header header;
+    
+};
+
+
 #pragma pack(pop)
+
+struct HoldingDetail{
+    uint32_t token;
+    uint64_t qty;
+    uint64_t avg_price; 
+};
+
+
+

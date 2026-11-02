@@ -30,6 +30,9 @@ TokenByUserNameMap_t g_map_token_by_client;
 std::mutex mtx_token;
 // TokenDetailMap_t g_map_token_detail;
 
+HoldingByUserNameMap_t g_map_holding_by_username;
+std::mutex mtx_holding_map;
+
 void handle_client(int client_socket_fd)
 {
     printf("Client handler thread started for socket: %d\n", client_socket_fd);
