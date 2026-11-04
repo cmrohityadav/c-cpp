@@ -86,7 +86,31 @@ struct AddHoldingResponse{
 
 struct CheckHoldingRequest{
     Header header;
+    char username[USERNAME];
     
+};
+
+struct CheckHoldingResponse{
+    Header header;
+    char msg[MESSAGE];
+    
+};
+
+struct CheckHoldingHeader{
+    Header header;
+    uint16_t holdingCount;
+};
+
+struct CheckHoldingData{
+    Header header;
+    uint64_t qty;
+    uint64_t avg_price; 
+    TokenDetail tokendetail;
+};
+
+struct CheckHoldingTrailer{
+    Header header;
+    uint8_t isHoldingSended;
 };
 
 

@@ -252,10 +252,6 @@ int processRequest(const char *buffer, char *response)
         return sizeof(addTokenRes);
     }
     break;
-    case CHECK_HOLDING_REQ:
-    {
-    }
-    break;
     case ADD_HOLDING_REQ:
     {
         AddHoldingRequest *pAddHoldingReq = (AddHoldingRequest *)buffer;
@@ -276,7 +272,7 @@ int processRequest(const char *buffer, char *response)
         {
             std::lock_guard<std::mutex> lck(mtx_token);
 
-            // if token exist
+            // if token  not exist
             auto itr = g_map_token_by_client.find(username);
             if (itr == g_map_token_by_client.end())
             {
@@ -359,8 +355,29 @@ int processRequest(const char *buffer, char *response)
 
         std::memcpy(response, &addholdingRes, sizeof(addholdingRes));
         return sizeof(addholdingRes);
-    }
-    break;
+    }break;
+    case CHECK_HOLDING_REQ:
+    {
+        CheckHoldingRequest* pcheckHoldingReq=(CheckHoldingRequest*)buffer;
+
+        CheckHoldingResponse objcheckHoldingRes={0};
+        objcheckHoldingRes.header.transcode=CHECK_HOLDING_RES;
+        objcheckHoldingRes.header.length=sizeof(CheckHoldingResponse)-sizeof(Header);
+
+        char username[USERNAME] = {0};
+        strncpy(username, pcheckHoldingReq->username, USERNAME - 1);
+        {
+            std::lock_guard<std::mutex>lck(mtx_user_detail);
+            auto itr=g_map_clients_detail.find(username);
+            if(itr==g_map_clients_detail.end()){
+                strncpy(objcheckHoldingRes.msg,"User does not exist in Our system",MESSAGE-1);
+                return sizeof(objcheckHoldingRes);
+                
+            }
+        }
+        
+
+    }break;
     default:
         break;
     }
