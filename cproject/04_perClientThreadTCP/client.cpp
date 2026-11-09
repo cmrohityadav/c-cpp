@@ -228,6 +228,25 @@ bool add_holding(int sock,bool& connection_ok){
     }
 }
 
+bool do_check_holdings(int sock,bool& connection_ok){
+    // send request for holding -> CHECK_HOLDING_REQ
+
+    // then we may send error or send Header 
+    // if error then we will show it to user
+    //else recievd header it contains number of holding 
+
+    // then we recv data 
+
+
+    // after all we recv trailer so server here stop sending data it will we final
+
+
+
+    // 
+}
+
+
+
 void authenticated_menu(int sock, bool &connection_ok)
 {
     while (connection_ok)
@@ -257,7 +276,7 @@ void authenticated_menu(int sock, bool &connection_ok)
         switch (choice)
         {
             case 1:
-                // do_check_holdings(sock, connection_ok);
+                do_check_holdings(sock, connection_ok);
                 break;
             case 2:
             {

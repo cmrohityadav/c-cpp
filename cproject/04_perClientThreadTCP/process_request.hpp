@@ -363,8 +363,10 @@ int processRequest(const char *buffer, char *response)
         CheckHoldingResponse objcheckHoldingRes={0};
         objcheckHoldingRes.header.transcode=CHECK_HOLDING_RES;
         objcheckHoldingRes.header.length=sizeof(CheckHoldingResponse)-sizeof(Header);
+        memcpy(response,&objcheckHoldingRes,sizeof(objcheckHoldingRes));
 
         char username[USERNAME] = {0};
+        ClientDetail objClientDetail={0};
         strncpy(username, pcheckHoldingReq->username, USERNAME - 1);
         {
             std::lock_guard<std::mutex>lck(mtx_user_detail);
@@ -372,11 +374,66 @@ int processRequest(const char *buffer, char *response)
             if(itr==g_map_clients_detail.end()){
                 strncpy(objcheckHoldingRes.msg,"User does not exist in Our system",MESSAGE-1);
                 return sizeof(objcheckHoldingRes);
-                
             }
+            objClientDetail=itr->second;
         }
-        
 
+        {
+            std::lock_guard<std::mutex>lck(mtx_holding_map);
+            auto itr=g_map_holding_by_username.find(username);
+            if(itr==g_map_holding_by_username.end()){
+                strncpy(objcheckHoldingRes.msg,"Set token",MESSAGE-1);
+                return sizeof(objcheckHoldingRes);
+            }
+
+            HoldingDetailMap_t map_holding_token=itr->second;
+
+            size_t map_size=map_holding_token.size();
+            CheckHoldingHeader objHeader={0};
+            objHeader.header.transcode=HOLDING_HEADER;
+            objHeader.header.length=sizeof(objHeader)-sizeof(Header);
+            objHeader.holdingCount=map_size;
+            sendAll(objClientDetail.clientfd,&objHeader,sizeof(CheckHoldingHeader));
+
+            // sending All token data of user
+
+            auto itr_begin=map_holding_token.begin();
+            auto itr_end=map_holding_token.end();
+            for(;itr_begin!=itr_end;itr_begin++){
+
+                CheckHoldingData objtokenData={0};
+                objtokenData.header.transcode=HOLDING_DATA;
+                objtokenData.header.length=sizeof(objtokenData)-sizeof(Header);
+
+                HoldingDetail objHoldingDetail=itr_begin->second;
+
+                auto token=objHoldingDetail.token;
+                auto tokenmap=g_map_token_by_client[username][token];
+
+                objtokenData.tokendetail.token=token;
+                strncpy(objtokenData.tokendetail.scrip,tokenmap.scrip,SCRIPSIZE-1);
+                strncpy(objtokenData.tokendetail.remark,tokenmap.remark,50-1);
+                objtokenData.avg_price=objHoldingDetail.avg_price;
+                objtokenData.qty=objHoldingDetail.qty;
+
+                sendAll(objClientDetail.clientfd,&objtokenData,sizeof(objtokenData));
+        
+            }
+
+            CheckHoldingTrailer objholdingTrailer={0};
+            objholdingTrailer.header.transcode=HOLDING_TRAILER;
+            objholdingTrailer.header.length=sizeof(CheckHoldingTrailer)-sizeof(Header);
+            objholdingTrailer.isHoldingSended=1;
+
+            sendAll(objClientDetail.clientfd,&objholdingTrailer,sizeof(CheckHoldingTrailer));
+            
+
+        }
+
+        strncpy(objcheckHoldingRes.msg,"Your recieved your all holding",MESSAGE-1);
+        return sizeof(objcheckHoldingRes);
+
+        
     }break;
     default:
         break;
