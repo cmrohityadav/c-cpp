@@ -314,6 +314,7 @@ int processRequest(const char *buffer, char *response)
                 HoldingDetail holdingdetail = {0};
                 holdingdetail.avg_price = new_avg_price;
                 holdingdetail.qty = new_total_qty;
+                holdingdetail.token=pAddHoldingReq->token;
 
                 holdingMap[pAddHoldingReq->token] = holdingdetail;
             }
@@ -363,7 +364,7 @@ int processRequest(const char *buffer, char *response)
         CheckHoldingResponse objcheckHoldingRes={0};
         objcheckHoldingRes.header.transcode=CHECK_HOLDING_RES;
         objcheckHoldingRes.header.length=sizeof(CheckHoldingResponse)-sizeof(Header);
-        memcpy(response,&objcheckHoldingRes,sizeof(objcheckHoldingRes));
+        
 
         char username[USERNAME] = {0};
         ClientDetail objClientDetail={0};
@@ -383,6 +384,7 @@ int processRequest(const char *buffer, char *response)
             auto itr=g_map_holding_by_username.find(username);
             if(itr==g_map_holding_by_username.end()){
                 strncpy(objcheckHoldingRes.msg,"Set token",MESSAGE-1);
+                memcpy(response,&objcheckHoldingRes,sizeof(objcheckHoldingRes));
                 return sizeof(objcheckHoldingRes);
             }
 
@@ -431,6 +433,7 @@ int processRequest(const char *buffer, char *response)
         }
 
         strncpy(objcheckHoldingRes.msg,"Your recieved your all holding",MESSAGE-1);
+        memcpy(response,&objcheckHoldingRes,sizeof(objcheckHoldingRes));
         return sizeof(objcheckHoldingRes);
 
         

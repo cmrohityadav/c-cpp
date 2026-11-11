@@ -14,33 +14,39 @@
 
 char g_username[USERNAME];
 
-void clear_input(){
+void clear_input()
+{
     int c;
-    while((c=getchar()) != '\n' && c!=EOF){
-
+    while ((c = getchar()) != '\n' && c != EOF)
+    {
     }
 }
 
-bool recv_response(int sock,uint32_t expected_transcode,void* p_res,size_t res_size ){
+bool recv_response(int sock, uint32_t expected_transcode, void *p_res, size_t res_size)
+{
 
-    Header* resp_header=(Header*)p_res;
-    
-    if(!recvAll(sock,resp_header,sizeof(Header))){
+    Header *resp_header = (Header *)p_res;
+
+    if (!recvAll(sock, resp_header, sizeof(Header)))
+    {
         printf("Error: Failed to recieve response header\n");
         return false;
     }
 
-    if(resp_header->transcode!=expected_transcode){
+    if (resp_header->transcode != expected_transcode)
+    {
         printf("Error: Unknown response type recieve from server\n");
         return false;
     }
 
-    if(resp_header->length != res_size- sizeof(Header)){
+    if (resp_header->length != res_size - sizeof(Header))
+    {
         printf("Error: Invalid response length %u\n", resp_header->length);
         return false;
     }
 
-    if(!recvAll(sock,(char*)p_res+sizeof(Header),resp_header->length)){
+    if (!recvAll(sock, (char *)p_res + sizeof(Header), resp_header->length))
+    {
         printf("Error: Failed to receive response payload\n");
         return false;
     }
@@ -98,7 +104,7 @@ bool do_login(int sock, bool &connection_ok)
 
     printf("Enter Username: ");
     scanf("%19s", req.username);
-    strncpy(g_username,req.username,sizeof(g_username)-1);
+    strncpy(g_username, req.username, sizeof(g_username) - 1);
     clear_input();
 
     printf("Enter Password: ");
@@ -127,70 +133,72 @@ bool do_login(int sock, bool &connection_ok)
     return res.login_status == LOGIN_STATUS::SUCCESS;
 }
 
-bool do_add_token(int sock,bool& connection_ok){
-    AddTokenRequest addTokenReq={0};
-    AddTokenResponse addTokenRes={0};
-    addTokenReq.header.transcode=ADDTOKEN_REQ;
-    addTokenReq.header.length=sizeof(addTokenReq)-sizeof(Header);
+bool do_add_token(int sock, bool &connection_ok)
+{
+    AddTokenRequest addTokenReq = {0};
+    AddTokenResponse addTokenRes = {0};
+    addTokenReq.header.transcode = ADDTOKEN_REQ;
+    addTokenReq.header.length = sizeof(addTokenReq) - sizeof(Header);
 
-    
-    strncpy(addTokenReq.username,g_username,USERNAME-1);
+    strncpy(addTokenReq.username, g_username, USERNAME - 1);
 
     printf("Enter token Number: ");
-    scanf("%d",&addTokenReq.token);
+    scanf("%d", &addTokenReq.token);
     clear_input();
 
     printf("Enter Scrip Name: ");
-    scanf("%14s",addTokenReq.scrip);
+    scanf("%14s", addTokenReq.scrip);
     clear_input();
 
     printf("Enter Any remark: ");
-    scanf("%49s",addTokenReq.remark);
+    scanf("%49s", addTokenReq.remark);
     clear_input();
 
-    if(!sendAll(sock,&addTokenReq,sizeof(addTokenReq))){
-        printf("Error: Failed to send addtoken request\n");
-        connection_ok = false;
-        return false;
-        
-    }
-
-    if(!recv_response(sock,ADDTOKEN_RES,&addTokenRes,sizeof(addTokenRes))){
+    if (!sendAll(sock, &addTokenReq, sizeof(addTokenReq)))
+    {
         printf("Error: Failed to send addtoken request\n");
         connection_ok = false;
         return false;
     }
 
+    if (!recv_response(sock, ADDTOKEN_RES, &addTokenRes, sizeof(addTokenRes)))
+    {
+        printf("Error: Failed to send addtoken request\n");
+        connection_ok = false;
+        return false;
+    }
 
-    addTokenRes.msg[MESSAGE-1]='\0';
+    addTokenRes.msg[MESSAGE - 1] = '\0';
 
     std::cout << "\n--- Server Response ---\n";
     std::cout << "Message: " << addTokenRes.msg << "\n";
-    if(addTokenRes.isAddedflag){
+    if (addTokenRes.isAddedflag)
+    {
         std::cout << "Status: " << "Token Added" << "\n";
         return true;
-    }else{
+    }
+    else
+    {
         std::cout << "Status: " << "Token NOT  Added" << "\n";
         return false;
     }
-
 }
 
-bool add_holding(int sock,bool& connection_ok){
-    AddHoldingRequest objHoldingReq={0};
-    AddHoldingResponse objHoldingRes={0};
-    objHoldingReq.header.transcode=ADD_HOLDING_REQ;
-    objHoldingReq.header.length=sizeof(objHoldingReq)-sizeof(Header);
+bool add_holding(int sock, bool &connection_ok)
+{
+    AddHoldingRequest objHoldingReq = {0};
+    AddHoldingResponse objHoldingRes = {0};
+    objHoldingReq.header.transcode = ADD_HOLDING_REQ;
+    objHoldingReq.header.length = sizeof(objHoldingReq) - sizeof(Header);
 
-    
-    strncpy(objHoldingReq.username,g_username,USERNAME-1);
+    strncpy(objHoldingReq.username, g_username, USERNAME - 1);
 
     printf("Enter token Number: ");
-    scanf("%d",&objHoldingReq.token);
+    scanf("%d", &objHoldingReq.token);
     clear_input();
 
     printf("Enter Qty: ");
-    scanf("%ld",&objHoldingReq.qty);
+    scanf("%ld", &objHoldingReq.qty);
     clear_input();
 
     printf("Enter Price: ");
@@ -198,54 +206,125 @@ bool add_holding(int sock,bool& connection_ok){
 
     scanf("%lf", &price);
 
-    objHoldingReq.price =static_cast<uint64_t>(std::llround(price * objHoldingReq.divisor));
+    objHoldingReq.price = static_cast<uint64_t>(std::llround(price * objHoldingReq.divisor));
     clear_input();
 
-    if(!sendAll(sock,&objHoldingReq,sizeof(objHoldingReq))){
+    if (!sendAll(sock, &objHoldingReq, sizeof(objHoldingReq)))
+    {
         printf("Error: Failed to send add holding request\n");
         connection_ok = false;
         return false;
-        
     }
 
-    if(!recv_response(sock,ADD_HOLDING_RES,&objHoldingRes,sizeof(objHoldingRes))){
+    if (!recv_response(sock, ADD_HOLDING_RES, &objHoldingRes, sizeof(objHoldingRes)))
+    {
         printf("Error: Failed to recieve add holding response\n");
         connection_ok = false;
         return false;
     }
 
-
-    objHoldingRes.msg[MESSAGE-1]='\0';
+    objHoldingRes.msg[MESSAGE - 1] = '\0';
 
     std::cout << "\n--- Server Response ---\n";
     std::cout << "Message: " << objHoldingRes.msg << "\n";
-    if(objHoldingRes.isAdded){
+    if (objHoldingRes.isAdded)
+    {
         std::cout << "Status: " << "Holding Added Successfully" << "\n";
         return true;
-    }else{
+    }
+    else
+    {
         std::cout << "Status: " << "Holding NOT Added " << "\n";
         return false;
     }
 }
 
-bool do_check_holdings(int sock,bool& connection_ok){
+bool do_check_holdings(int sock, bool &connection_ok)
+{
     // send request for holding -> CHECK_HOLDING_REQ
+    printf("Loading Holding.....\n");
 
-    // then we may send error or send Header 
-    // if error then we will show it to user
-    //else recievd header it contains number of holding 
+    CheckHoldingRequest objCheckHoldingReq = {0};
+    objCheckHoldingReq.header.transcode = CHECK_HOLDING_REQ;
+    objCheckHoldingReq.header.length = sizeof(objCheckHoldingReq) - sizeof(Header);
+    strncpy(objCheckHoldingReq.username, g_username, USERNAME - 1);
 
-    // then we recv data 
+    if (!sendAll(sock, &objCheckHoldingReq, sizeof(objCheckHoldingReq)))
+    {
+        printf("Error: Failed to send Check holding request\n");
+        connection_ok = false;
+        return false;
+    }
+    char buffer_req[MAXMSGSIZE] = {0};
+    recv(sock, buffer_req, MAXMSGSIZE, 0);
+    // recvAll(sock, buffer_req, MAXMSGSIZE);
+
+    Header *pHeader = (Header *)buffer_req;
+    if (pHeader->transcode == CHECK_HOLDING_RES)
+    {
+        CheckHoldingResponse *pcheckHoldingRes = (CheckHoldingResponse *)buffer_req;
+        printf("Server Message: %s", pcheckHoldingRes->msg);
+        return false;
+    }
+    else if (pHeader->transcode == HOLDING_HEADER)
+    {
+        CheckHoldingHeader *pCheckHoldingHeader = (CheckHoldingHeader *)buffer_req;
+
+        printf("You Have %d number of holding\n", pCheckHoldingHeader->holdingCount);
+        int numberofHolding = pCheckHoldingHeader->holdingCount;
+        while (numberofHolding != 0)
+        {
+            numberofHolding--;
+            CheckHoldingData objCheckHoldingData = {0};
+
+            if (!recv_response(sock, HOLDING_DATA, &objCheckHoldingData, sizeof(objCheckHoldingData)))
+            {
+                printf("Error: Failed to recieve holding data response\n");
+                connection_ok = false;
+                return false;
+            }
 
 
-    // after all we recv trailer so server here stop sending data it will we final
+            printf("Token: %d | Scrip: %s | Avg Price: %.2f | Total Qty: %d | Notes: %s\n",
+                    objCheckHoldingData.tokendetail.token,
+                    objCheckHoldingData.tokendetail.scrip ? objCheckHoldingData.tokendetail.scrip : "(null)",
+                    static_cast<double>(objCheckHoldingData.avg_price) / 100.0,
+                    objCheckHoldingData.qty,
+                    objCheckHoldingData.tokendetail.remark ? objCheckHoldingData.tokendetail.remark : "(null)");
+        }
+            
+        CheckHoldingTrailer objholdingTrailer={0};
+
+        if(!recv_response(sock,HOLDING_TRAILER,&objholdingTrailer,sizeof(CheckHoldingTrailer))){
+            printf("Error: Failed to recieve check holding trailer response\n");
+            connection_ok = false;
+            return false;
+        }
+
+        if(objholdingTrailer.isHoldingSended){
+            printf("You Recieved Your all holding stocks\n");
+        }
+        
+    }
+
+    CheckHoldingResponse objcheckHoldingRes={0};
+    
+    if(!recv_response(sock,CHECK_HOLDING_RES,&objcheckHoldingRes,sizeof(CheckHoldingResponse))){
+            printf("Error: Failed to recieve check holding  response\n");
+            connection_ok = false;
+            return false;
+    }
+
+
+    std::cout << "\n--- Server Response ---\n";
+    std::cout << "Message: " << objcheckHoldingRes.msg << "\n";
+    return true;
 
 
 
-    // 
+
+    
 }
-
-
 
 void authenticated_menu(int sock, bool &connection_ok)
 {
@@ -275,31 +354,31 @@ void authenticated_menu(int sock, bool &connection_ok)
 
         switch (choice)
         {
-            case 1:
-                do_check_holdings(sock, connection_ok);
-                break;
-            case 2:
-            {
-                //add holding
-                add_holding(sock,connection_ok);
+        case 1:
+            do_check_holdings(sock, connection_ok);
+            break;
+        case 2:
+        {
+            // add holding
+            add_holding(sock, connection_ok);
+        }
+        break;
 
-            }break;
+        case 3:
+            // do_modify_holding(sock, connection_ok);
+            break;
 
-            case 3:
-                // do_modify_holding(sock, connection_ok);
-                break;
+        case 4:
+            do_add_token(sock, connection_ok);
+            break;
 
-            case 4:
-                do_add_token(sock, connection_ok);
-                break;
+        case 5:
+            // do_logout(sock, connection_ok);
+            return;
 
-            case 5:
-                // do_logout(sock, connection_ok);
-                return;
-
-            default:
-                printf("Invalid choice!\n");
-                break;
+        default:
+            printf("Invalid choice!\n");
+            break;
         }
     }
 }
@@ -314,7 +393,6 @@ int main(int arg_count, char *agr_value[])
     const char *server_ip = agr_value[1];
     int port = std::atoi(agr_value[2]);
 
-    
     int sock = socket(AF_INET, SOCK_STREAM, 0);
     if (sock < 0)
     {
@@ -327,7 +405,6 @@ int main(int arg_count, char *agr_value[])
     server_addr.sin_port = htons(port);
     inet_pton(AF_INET, server_ip, &server_addr.sin_addr);
 
-    
     if (connect(sock, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0)
     {
         printf("Error: Connection to server failed\n");
@@ -346,52 +423,69 @@ int main(int arg_count, char *agr_value[])
         if (!signed_up)
         {
             printf("1. Signup\n2. Login\n3. Exit\nEnter choice: ");
-            if (scanf("%d", &choice) != 1) {
-                if (feof(stdin)) break;
+            if (scanf("%d", &choice) != 1)
+            {
+                if (feof(stdin))
+                    break;
                 clear_input();
                 printf("Invalid choice\n\n");
                 continue;
             }
             clear_input();
 
-            if (choice == 1) {
+            if (choice == 1)
+            {
                 signed_up = do_signup(sock, connection_ok);
-            } else if (choice == 2) {
-                if (do_login(sock, connection_ok)) {
+            }
+            else if (choice == 2)
+            {
+                if (do_login(sock, connection_ok))
+                {
                     printf("Welcome! Logged in successfully.\n");
-                    authenticated_menu(sock,connection_ok);
+                    authenticated_menu(sock, connection_ok);
                 }
-            } else if (choice == 3) {
+            }
+            else if (choice == 3)
+            {
                 break;
-            } else {
+            }
+            else
+            {
                 printf("Invalid choice\n\n");
             }
         }
         else
         {
             printf("1. Login\n2. Exit\nEnter choice: ");
-            if (scanf("%d", &choice) != 1) {
-                if (feof(stdin)) break;
+            if (scanf("%d", &choice) != 1)
+            {
+                if (feof(stdin))
+                    break;
                 clear_input();
                 printf("Invalid choice\n\n");
                 continue;
             }
             clear_input();
 
-            if (choice == 1) {
-                if (do_login(sock, connection_ok)) {
+            if (choice == 1)
+            {
+                if (do_login(sock, connection_ok))
+                {
                     printf("Welcome! Logged in successfully.\n");
                     break;
                 }
-            } else if (choice == 2) {
+            }
+            else if (choice == 2)
+            {
                 break;
-            } else {
+            }
+            else
+            {
                 printf("Invalid choice\n\n");
             }
         }
     }
 
-    
     close(sock);
     printf("Bye!\n");
     return EXIT_SUCCESS;
