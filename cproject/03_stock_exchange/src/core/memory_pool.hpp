@@ -10,7 +10,12 @@ namespace exchange::core{
         static_assert(N>0,"MemoryPool capacity must be positive");
         static_assert(sizeof(T)>=sizeof(void *),"Object storage must fit an instrusive free List pointer");
 
+
+        struct Slot{
+            std::array<std::byte,sizeof(T)> storage{};
+
+        };
+
     };
 }
 
-3:22:50

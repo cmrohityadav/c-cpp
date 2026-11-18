@@ -76,6 +76,8 @@ ninja -C build
 - virtual memory
 - when heap full for a program thenn How it call OS , when OS retirn virtual occurs page fault 
 - understand cache line
+- cache aligned return
+
 
 
 
