@@ -30,6 +30,38 @@ namespace exchange::core{
         MemoryPool(MemoryPool&&)=delete;
         MemoryPool& operator =(MemoryPool&&)=delete;
 
+        T* allocate()noexcept{
+            if(free_list_head_==nullptr)[[unlikely]]{
+                return nullptr;
+            }
+
+            FreeNode* node=free_list_head_;
+            free_list_head_=free_list_head_->nextNode;
+            ++allocated_count_;
+            return reinterpret_cast<T*>(node);
+        }
+
+        void deallocate(T* object)noexcept{
+          if(object==nullptr)[[unlikely]]{
+            return;
+          } 
+          
+          std::destroy_at(object);
+
+          auto* node=reinterpret_cast<FreeNode*>(object);
+          node->next=free_list_head_;
+          free_list_head_=node;
+          --allocated_count_;
+        }
+
+        [[nodiscard]] constexpr std::size_t capacity() const noexcept {
+            return N;
+        }
+
+        [[nodiscard]] bool empty() const noexcept{
+            return free_list_head_== nullptr;
+        }
+
         private:
 
         void initialize_free_list() noexcept{
@@ -44,6 +76,8 @@ namespace exchange::core{
 
         std::unique_ptr<Slot[]>slots_;
         FreeNode* free_list_head_{nullptr};
+
+        std::size_t allocated_count_{0};
 
     };
 }
