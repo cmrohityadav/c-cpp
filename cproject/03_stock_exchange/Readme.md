@@ -69,14 +69,28 @@ ninja -C build
 
 ```
 - index %n => index & (N-1)
-
-
 # TODO
 - study malloc and internal working of new keyword
 - virtual memory
 - when heap full for a program thenn How it call OS , when OS retirn virtual occurs page fault 
 - understand cache line
 - cache aligned return
+
+
+## SPSC Queue
+
+```txt
+Thread 1 | TCP Gateway
+Thread 2 | Risk Gateway
+Thread 3 | Sequencer
+Thread 4 | Matching
+Thread 5 | Market Data
+Thread 6 | Heatbeat
+```
+- we need Queue where producer and consumer never block each other, never call into the kernal and never touch the heap
+- Each of the threads to work parallely
+- Ring Buffer
+
 
 
 
