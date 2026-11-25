@@ -91,6 +91,13 @@ Thread 6 | Heatbeat
 - Each of the threads to work parallely
 - Ring Buffer
 
+# TODO
+- 2^k , every multiple has its lowest k bits eqqual to 0;
+- so remainder is exactly those k bits
+-
+- false sharing cache align between two core coherence at hardware level
+- There we split into two cache align/lines
+
 
 
 
