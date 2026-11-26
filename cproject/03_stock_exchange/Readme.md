@@ -90,13 +90,20 @@ Thread 6 | Heatbeat
 - we need Queue where producer and consumer never block each other, never call into the kernal and never touch the heap
 - Each of the threads to work parallely
 - Ring Buffer
+- push() ->  Tail advance on push
+- pop() ->  head will advance
 
 # TODO
 - 2^k , every multiple has its lowest k bits eqqual to 0;
 - so remainder is exactly those k bits
--
+- eg. number%n= number&(n-1)
+
 - false sharing cache align between two core coherence at hardware level
 - There we split into two cache align/lines
+- Atomic | release |acquire |CAS
+
+
+
 
 
 
