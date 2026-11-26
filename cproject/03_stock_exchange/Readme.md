@@ -102,6 +102,21 @@ Thread 6 | Heatbeat
 - There we split into two cache align/lines
 - Atomic | release |acquire |CAS
 
+## Clocks
+### Logical Time
+- steady_clock -> Monotonic time measurement
+- used by: sequencer,matching engine
+### Real Time
+- system_clock	Actual wall-clock time (date/time)
+- used by: TCP gateway heartbeat supervisor,Journal flush policy
+
+# TODO
+- learn chrono lib
+
+## Order
+
+
+
 
 
 
