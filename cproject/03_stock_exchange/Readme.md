@@ -115,6 +115,32 @@ Thread 6 | Heatbeat
 
 ## Order
 
+### Iceberg Oder
+
+```txt
+Buy 10k share at 150.25, peak 500
+
+qty=10000 => 9500
+
+display_qty=500 -> 500
+hidden_qty=9500 -> 9000
+peak_qty=500
+
+500 share @ 150.25
+Match ! 500 shares trade
+
+- reduce qty by 500
+- reduce display_qty by 500
+- sees display_qty==0 ?
+
+        - pull =min(hidden_qty,peak_qty)=min(9500,500)=500
+
+
+```
+
+# TODo
+- learn trigger order, stop loss all
+
 
 
 
