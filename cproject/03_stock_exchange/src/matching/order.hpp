@@ -27,6 +27,14 @@ namespace exchange::matching{
         Order* next{nullptr};
         Level* parent_level{nullptr};
 
+        [[nodscard]] bool is_stop_order() const noexcept{
+            return type==core::OrderType::STOP || type==core::OrderType::STOP_LIMIT;
+        }
+
+
     };
+
+    static_assert(sizeof(Order)<=128,"Order should stay compact enough for cache-friendly access");
+    static_assert(std::is_standard_layout_v<Order>);
 
 }
