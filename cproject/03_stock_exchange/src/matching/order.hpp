@@ -7,6 +7,8 @@
 
 namespace exchange::matching{
 
+    struct Level;
+
     struct alignas(64) Order{
         core::OrderId id{0};
         core::Side side{core::Side::BUY};
